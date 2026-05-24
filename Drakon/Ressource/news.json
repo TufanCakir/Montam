@@ -17,7 +17,7 @@
             "body":
                 "Special Events koennen zeitlich limitierte Eier als Reward enthalten.",
             "category": "event",
-            "icon": "egg_drakon_fire",
+            "icon": "egg_baby_pyro",
             "startDate": "24.05.2026 00:00",
             "endDate": "21.06.2026 23:59",
             "featured": false
@@ -28,7 +28,7 @@
             "body":
                 "Story Battles sind jetzt eigener Modus mit Kapitel-Auswahl und Difficulty.",
             "category": "story",
-            "icon": "evolution_drakon_baby",
+            "icon": "skin_pyro_baby_default",
             "startDate": "24.05.2026 00:00",
             "endDate": "30.06.2026 23:59",
             "featured": false

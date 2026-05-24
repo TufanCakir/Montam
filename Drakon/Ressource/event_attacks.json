@@ -3,7 +3,7 @@
         {
             "id": "firestorm",
             "title": "Firestorm",
-            "icon": "evolution_drakon_imperial",
+            "icon": "skin_solarion_imperial_default",
             "power": 95,
             "energyCost": 0,
             "element": "fire"
@@ -11,7 +11,7 @@
         {
             "id": "fireburst",
             "title": "Fireburst",
-            "icon": "evolution_drakon_rookie",
+            "icon": "skin_blazion_rookie_default",
             "power": 58,
             "energyCost": 0,
             "element": "fire"
@@ -19,7 +19,7 @@
         {
             "id": "blade_core",
             "title": "Blade Core",
-            "icon": "evolution_drakon_baby",
+            "icon": "skin_pyro_baby_default",
             "power": 72,
             "energyCost": 0,
             "element": "blade"
@@ -27,7 +27,7 @@
         {
             "id": "royal_break",
             "title": "Royal Break",
-            "icon": "evolution_drakon_advanced",
+            "icon": "skin_infernon_advanced_default",
             "power": 84,
             "energyCost": 0,
             "element": "blade"

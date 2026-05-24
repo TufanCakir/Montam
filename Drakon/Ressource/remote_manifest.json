@@ -12,6 +12,7 @@
         "pass_rewards",
         "launchpass",
         "starterpass",
+        "babypass",
         "rookiepass",
         "advancedpass",
         "imperialpass",
@@ -50,20 +51,36 @@
             "file": "drakon_icon.png"
         },
         {
-            "id": "evolution_drakon_baby",
-            "file": "evolution_drakon_baby.png"
+            "id": "skin_pyro_baby_default",
+            "file": "skin_pyro_baby_default.png"
         },
         {
-            "id": "evolution_drakon_rookie",
-            "file": "evolution_drakon_rookie.png"
+            "id": "skin_blazion_rookie_default",
+            "file": "skin_blazion_rookie_default.png"
         },
         {
-            "id": "evolution_drakon_advanced",
-            "file": "evolution_drakon_advanced.png"
+            "id": "skin_infernon_advanced_default",
+            "file": "skin_infernon_advanced_default.png"
         },
         {
-            "id": "evolution_drakon_imperial",
-            "file": "evolution_drakon_imperial.png"
+            "id": "skin_solarion_imperial_default",
+            "file": "skin_solarion_imperial_default.png"
+        },
+        {
+            "id": "skin_pyro_baby_blue",
+            "file": "skin_pyro_baby_blue.png"
+        },
+        {
+            "id": "skin_blazion_rookie_blue",
+            "file": "skin_blazion_rookie_blue.png"
+        },
+        {
+            "id": "skin_infernon_advanced_blue",
+            "file": "skin_infernon_advanced_blue.png"
+        },
+        {
+            "id": "skin_solarion_imperial_blue",
+            "file": "skin_solarion_imperial_blue.png"
         },
         {
             "id": "icon_drakon_coin",
@@ -94,16 +111,12 @@
             "file": "icon_info.png"
         },
         {
-            "id": "egg_drakon_fire",
-            "file": "egg_drakon_fire.png"
-        },
-        {
-            "id": "skin_solarion_gold",
-            "file": "evolution_drakon_imperial.png"
+            "id": "egg_baby_pyro",
+            "file": "egg_baby_pyro.png"
         },
         {
             "id": "loading1",
-            "file": "evolution_drakon_imperial.png"
+            "file": "skin_solarion_imperial_default.png"
         }
     ]
 }

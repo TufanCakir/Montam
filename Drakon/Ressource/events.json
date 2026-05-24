@@ -15,24 +15,24 @@
     ],
     "events": [
         {
-            "id": "event_blade_rookie",
+            "id": "event_pyro_trial",
             "type": "boss",
             "category": "boss",
             "mode": "island",
-            "title": "Blazion Blade Clash",
+            "title": "Pyro Clash",
             "description": "Event Kampf mit aktiven Spezialattacken.",
             "startDate": "24.05.2026 00:00",
             "endDate": "07.06.2026 23:59",
             "storyText":
-                "Blazion wird von einer Klingen-Aura herausgefordert. Spezialattacken brechen den Schild schneller.",
+                "Pyro wird von einer Klingen-Aura herausgefordert. Spezialattacken brechen den Schild schneller.",
             "difficultyIds": [
                 "normal",
                 "hard"
             ],
-            "icon": "evolution_drakon_rookie",
+            "icon": "skin_pyro_baby_default",
             "battleBackground": "drakon_icon",
-            "bossEnemy": "drakon_rookie_shadow",
-            "bossLevelId": "event_blade_rookie",
+            "bossEnemy": "skin_pyro_baby_default",
+            "bossLevelId": "event_pyro_trial",
             "enemyElement": "nature",
             "targetStages": 5,
             "durationDays": 7,
@@ -45,20 +45,59 @@
                 "draken": 1200,
                 "eggs": [
                     {
-                        "eggId": "egg_drakon_baby_fire",
+                        "eggId": "egg_baby_pyro",
                         "amount": 1
                     }
                 ],
-                "medalId": "baby_medal",
+                "medalId": "blazion_medal",
                 "medals": 25
             }
         },
         {
-            "id": "event_advanced_trial",
+            "id": "event_blazion_trial",
+            "type": "boss",
+            "category": "boss",
+            "mode": "island",
+            "title": "Blazion Clash",
+            "description": "Event Kampf mit aktiven Spezialattacken.",
+            "startDate": "24.05.2026 00:00",
+            "endDate": "07.06.2026 23:59",
+            "storyText":
+                "Blazion wird von einer Klingen-Aura herausgefordert. Spezialattacken brechen den Schild schneller.",
+            "difficultyIds": [
+                "normal",
+                "hard"
+            ],
+            "icon": "skin_blazion_rookie_default",
+            "battleBackground": "drakon_icon",
+            "bossEnemy": "skin_blazion_rookie_default",
+            "bossLevelId": "event_blazion_trial",
+            "enemyElement": "nature",
+            "targetStages": 5,
+            "durationDays": 7,
+            "rewards": {
+                "coins": 300,
+                "gems": 2,
+                "ruby": 1,
+                "exp": 120,
+                "eventToken": 180,
+                "draken": 1200,
+                "eggs": [
+                    {
+                        "eggId": "egg_baby_pyro",
+                        "amount": 1
+                    }
+                ],
+                "medalId": "blazion_medal",
+                "medals": 25
+            }
+        },
+        {
+            "id": "event_infernon_trial",
             "type": "boss",
             "category": "story",
             "mode": "island",
-            "title": "Infernon Trial",
+            "title": "Infernon Clash",
             "description": "Besiege Infernon und farme Ruby.",
             "startDate": "24.05.2026 00:00",
             "endDate": "14.06.2026 23:59",
@@ -69,10 +108,10 @@
                 "hard",
                 "legend"
             ],
-            "icon": "evolution_drakon_advanced",
+            "icon": "skin_infernon_advanced_default",
             "battleBackground": "drakon_icon",
-            "bossEnemy": "drakon_advanced_shadow",
-            "bossLevelId": "event_advanced_trial",
+            "bossEnemy": "skin_infernon_advanced_default",
+            "bossLevelId": "event_infernon_trial",
             "enemyElement": "fire",
             "targetStages": 6,
             "durationDays": 7,
@@ -85,33 +124,33 @@
                 "draken": 160,
                 "eggs": [
                     {
-                        "eggId": "egg_drakon_baby_fire",
+                        "eggId": "egg_baby_pyro",
                         "amount": 1
                     }
                 ],
-                "medalId": "advanced_medal",
+                "medalId": "infernon_medal",
                 "medals": 30
             }
         },
         {
-            "id": "event_imperial_skin_hunt",
+            "id": "event_solarion_skin_hunt",
             "type": "skin",
             "category": "special",
             "mode": "island",
             "title": "Solarion Skin Hunt",
-            "description": "Event Waehrung für Skin-Shop sammeln.",
+            "description": "Drakens Währungen für Skin-Shop sammeln.",
             "startDate": "24.05.2026 00:00",
             "endDate": "21.06.2026 23:59",
             "storyText":
-                "Solarion Gold Skins tauchen nur waehrend dieses Events auf. Farm Tokens und seltene Eier.",
+                "Solarion Blauer Skins tauchen nur waehrend dieses Events auf. Farm Tokens und seltene Eier.",
             "difficultyIds": [
                 "hard",
                 "legend"
             ],
-            "icon": "evolution_drakon_imperial",
+            "icon": "skin_solarion_imperial_default",
             "battleBackground": "drakon_icon",
-            "bossEnemy": "evolution_drakon_imperial",
-            "bossLevelId": "event_imperial_skin_hunt",
+            "bossEnemy": "skin_solarion_imperial_default",
+            "bossLevelId": "event_solarion_skin_hunt",
             "enemyElement": "dark",
             "targetStages": 7,
             "durationDays": 7,
@@ -124,11 +163,11 @@
                 "draken": 220,
                 "eggs": [
                     {
-                        "eggId": "egg_drakon_baby_fire",
+                        "eggId": "egg_baby_pyro",
                         "amount": 2
                     }
                 ],
-                "medalId": "imperial_medal",
+                "medalId": "solarion_medal",
                 "medals": 40
             }
         }

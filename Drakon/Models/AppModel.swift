@@ -62,10 +62,10 @@ final class AppModel: ObservableObject {
     /// Zufälliges Loading Bild
     let loadingImages = [
         "drakon_icon",
-        "evolution_drakon_baby",
-        "evolution_drakon_rookie",
-        "evolution_drakon_advanced",
-        "evolution_drakon_imperial",
+        "skin_pyro_baby_default",
+        "skin_blazion_rookie_default",
+        "skin_infernon_advanced_default",
+        "skin_solarion_defaul",
     ]
 
     enum AppState {
@@ -236,6 +236,7 @@ final class AppModel: ObservableObject {
             "pass_rewards",
             "launchpass",
             "starterpass",
+            "babypass",
             "rookiepass",
             "advancedpass",
             "imperialpass",

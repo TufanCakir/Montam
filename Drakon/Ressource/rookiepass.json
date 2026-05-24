@@ -1,21 +1,30 @@
 {
-    "id": "rookiepass_s1",
-    "title": "RookiePass",
-    "icon": "evolution_drakon_rookie",
-    "currencyTitle": "Rookie XP",
+    "id": "blazionpass_s1",
+    "title": "Blazion Pass",
+    "icon": "skin_blazion_rookie_default",
+    "backgroundImage": "skin_blazion_rookie_default",
+    "infoTitle": "Blazion RookiePass",
+    "infoBody":
+        "Sammle Blazion XP fuer Rookie-Form Rewards und Blazion Progress.",
+    "infoTasks": [
+        "Kaempfe mit deinem Team, um Blazion XP zu sammeln.",
+        "Alle 110 Blazion XP wird ein Tier freigeschaltet.",
+        "Rookie Rewards helfen dir beim Aufbau der Blazion Form."
+    ],
+    "currencyTitle": "Blazion XP",
     "pointsPerTier": 110,
     "tiers": [
         {
             "tier": 1,
             "free": {
-                "title": "Rookie Medals",
+                "title": "Blazion Medals",
                 "type": "eventCurrency",
                 "amount": 120
             },
             "premium": {
                 "title": "Blazion",
                 "type": "drakon",
-                "characterId": "character_drakon_rookie"
+                "characterId": "character_drakon_rookie_blazion"
             }
         }
     ]

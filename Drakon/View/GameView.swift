@@ -218,7 +218,7 @@ struct GameView: View {
             VStack(spacing: 2) {
                 RemoteAssetImage(
                     name: battle.eventAttacks.first?.icon
-                        ?? "evolution_drakon_imperial"
+                        ?? "skin_solarion_imperial_default"
                 )
                 .scaledToFit()
                 .frame(width: 34, height: 28)
@@ -514,10 +514,10 @@ final class BattleViewModel: ObservableObject {
 
         var characterId: String {
             switch self {
-            case .baby: "character_drakon_baby"
-            case .rookie: "character_drakon_rookie"
-            case .advanced: "character_drakon_advanced"
-            case .imperial: "character_drakon_imperial"
+            case .baby: "character_drakon_baby_pyro"
+            case .rookie: "character_drakon_rookie_blazion"
+            case .advanced: "character_drakon_advanced_infernon"
+            case .imperial: "character_drakon_imperial_solarion"
             }
         }
     }
@@ -567,12 +567,12 @@ final class BattleViewModel: ObservableObject {
 
     var enemyImageName: String {
         if let event = EventRuntime.shared.activeEvent {
-            return event.icon ?? "evolution_drakon_imperial"
+            return event.icon ?? "skin_solarion_imperial_default"
         }
         if let chapter = appModel?.selectedStoryChapter {
             return chapter.enemyImage
         }
-        return "evolution_drakon_imperial"
+        return "skin_solarion_imperial_default"
     }
 
     func configure(

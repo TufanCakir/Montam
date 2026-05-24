@@ -5,7 +5,7 @@
         "icon": "drakon_icon",
         "type": "ruby",
         "amount": 25,
-        "note": "Premium Ruby fuer Summons und Shop."
+        "note": "Premium Ruby für Summons und Shop."
     },
     {
         "id": "launch_shards",
@@ -18,33 +18,33 @@
     {
         "id": "launch_event_tokens",
         "title": "Event Token Pack",
-        "icon": "evolution_drakon_rookie",
+        "icon": "skin_blazion_rookie_default",
         "type": "eventCurrency",
         "amount": 150,
-        "note": "Event Waehrung fuer Drakon Skins."
+        "note": "Event Waehrung für Drakon Skins."
     },
     {
         "id": "launch_coins",
         "title": "Blade Coins",
-        "icon": "evolution_drakon_baby",
+        "icon": "skin_pyro_baby_default",
         "type": "coins",
         "amount": 500,
-        "note": "Upgrade Coins fuer den Idle Battle."
+        "note": "Upgrade Coins für den Idle Battle."
     },
     {
         "id": "launch_skin_imperial_gold",
         "title": "Solarion Gold Skin",
-        "icon": "evolution_drakon_imperial",
+        "icon": "skin_solarion_imperial_default",
         "type": "skin",
-        "skinId": "imperial_gold",
-        "note": "Skin unlock fuer Solarion."
+        "skinId": "solarion_blue",
+        "note": "Skin unlock für Solarion."
     },
     {
         "id": "launch_rookie_drakon",
         "title": "Blazion",
-        "icon": "evolution_drakon_rookie",
+        "icon": "skin_blazion_rookie_default",
         "type": "drakon",
-        "characterId": "character_drakon_rookie",
-        "note": "Direkter Drakon fuer dein Team."
+        "characterId": "character_drakon_rookie_blazion",
+        "note": "Direkter Drakon für dein Team."
     }
 ]

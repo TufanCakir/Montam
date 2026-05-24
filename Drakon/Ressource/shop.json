@@ -52,23 +52,87 @@
         "tag": "event"
     },
     {
-        "id": "gems_pack_50",
+        "id": "gems_pack_small",
         "storeProductId": "com.drakon.gems.50",
         "category": {
             "id": "real_money",
             "icon": "icon_drakon_gem",
             "color": "blue"
         },
-        "gems": 50
+        "gems": 50,
+        "tag": "gems"
     },
     {
-        "id": "ruby_pack_50",
-        "storeProductId": " ",
+        "id": "ruby_pack_small",
+        "storeProductId": "com.drakon.ruby.50",
         "category": {
             "id": "real_money",
             "icon": "icon_drakon_ruby",
             "color": "red"
         },
-        "rubies": 50
+        "rubies": 50,
+        "tag": "ruby"
+    },
+    {
+        "id": "draken_pack_small",
+        "storeProductId": "com.drakon.draken.small",
+        "category": {
+            "id": "real_money",
+            "icon": "icon_draken",
+            "color": "yellow"
+        },
+        "draken": 600,
+        "tag": "hatch"
+    },
+    {
+        "id": "summon_shard_pack_small",
+        "storeProductId": "com.drakon.shards.50",
+        "category": {
+            "id": "real_money",
+            "icon": "icon_drakon_shard",
+            "color": "purple"
+        },
+        "shards": 50,
+        "tag": "summon"
+    },
+    {
+        "id": "pyro_egg_special_pack",
+        "storeProductId": "com.drakon.pack.pyroegg.special",
+        "category": {
+            "id": "special_packs",
+            "icon": "egg_baby_pyro",
+            "color": "orange"
+        },
+        "draken": 300,
+        "eggId": "egg_baby_pyro",
+        "eggs": 3,
+        "tag": "egg pack"
+    },
+    {
+        "id": "solarion_skin_pack",
+        "storeProductId": "com.drakon.pack.solarion.skin",
+        "category": {
+            "id": "skin_packs",
+            "icon": "skin_solarion_imperial_blue",
+            "color": "yellow"
+        },
+        "rubies": 25,
+        "skinId": "skin_solarion_imperial_blue",
+        "tag": "skin pack"
+    },
+    {
+        "id": "launch_mixed_pack",
+        "storeProductId": "com.drakon.pack.launch.mixed",
+        "category": {
+            "id": "special_packs",
+            "icon": "drakon_icon",
+            "color": "green"
+        },
+        "coins": 5000,
+        "gems": 80,
+        "rubies": 20,
+        "draken": 500,
+        "shards": 1000,
+        "tag": "launch"
     }
 ]

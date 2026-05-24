@@ -59,10 +59,10 @@ extension TutorialConfig {
             ),
         ],
         previewForms: [
-            "evolution_drakon_baby",
-            "evolution_drakon_rookie",
-            "evolution_drakon_advanced",
-            "evolution_drakon_imperial",
+            "skin_pyro_baby_default",
+            "skin_blazion_rookie_default",
+            "skin_infernon_advanced_default",
+            "skin_solarion_imperial_default",
         ]
     )
 }

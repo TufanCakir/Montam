@@ -249,7 +249,7 @@ struct CharacterDetailView: View {
                     attackSpeed: 1.6
                 ),
                 energyType: "fire",
-                sprite: "evolution_drakon_baby",
+                sprite: "skin_pyro_baby_default",
                 skins: []
             )
         )

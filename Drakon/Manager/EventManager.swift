@@ -83,6 +83,15 @@ class EventManager: ObservableObject {
         return rotatedEvents(from: shuffled, count: 3)
     }
 
+    func events(forCategoryId categoryId: String, mode: HomeMode) -> [GameEvent]
+    {
+        guard let category = EventCategory(rawValue: categoryId) else {
+            return []
+        }
+
+        return events(for: category, mode: mode)
+    }
+
     var bossEvents: [GameEvent] {
         events(for: .boss, mode: .island)
     }

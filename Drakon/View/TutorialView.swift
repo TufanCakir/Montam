@@ -64,7 +64,7 @@ struct TutorialView: View {
 
     private var battlePreview: some View {
         VStack(spacing: 14) {
-            RemoteAssetImage(name: "evolution_drakon_imperial")
+            RemoteAssetImage(name: "skin_solarion_imperial_default")
                 .scaledToFit()
                 .frame(height: 116)
 

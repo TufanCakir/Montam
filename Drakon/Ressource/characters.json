@@ -1,6 +1,6 @@
 [
     {
-        "id": "character_drakon_baby",
+        "id": "character_drakon_baby_pyro",
         "name": "Pyro",
         "rarity": "common",
         "role": "dps",
@@ -11,11 +11,11 @@
             "attackSpeed": 1.6
         },
         "energyType": "fire",
-        "sprite": "evolution_drakon_baby",
+        "sprite": "skin_pyro_baby_default",
         "skins": [
             {
-                "id": "default",
-                "sprite": "evolution_drakon_baby"
+                "id": "pyro_blue",
+                "sprite": "skin_blazion_baby_blue"
             }
         ],
         "skills": [
@@ -30,7 +30,7 @@
         ]
     },
     {
-        "id": "character_drakon_rookie",
+        "id": "character_drakon_rookie_blazion",
         "name": "Blazion",
         "rarity": "rare",
         "role": "dps",
@@ -41,11 +41,11 @@
             "attackSpeed": 1.45
         },
         "energyType": "arcane",
-        "sprite": "evolution_drakon_rookie",
+        "sprite": "skin_blazion_rookie_default",
         "skins": [
             {
-                "id": "default",
-                "sprite": "evolution_drakon_rookie"
+                "id": "blazion_blue",
+                "sprite": "skin_blazion_rookie_blue"
             }
         ],
         "skills": [
@@ -60,7 +60,7 @@
         ]
     },
     {
-        "id": "character_drakon_advanced",
+        "id": "character_drakon_advanced_infernon",
         "name": "Infernon",
         "rarity": "epic",
         "role": "dps",
@@ -71,11 +71,11 @@
             "attackSpeed": 1.28
         },
         "energyType": "lightning",
-        "sprite": "evolution_drakon_advanced",
+        "sprite": "skin_infernon_advanced_default",
         "skins": [
             {
-                "id": "default",
-                "sprite": "evolution_drakon_advanced"
+                "id": "infernon_blue",
+                "sprite": "skin_infernon_advanced_blue"
             }
         ],
         "skills": [
@@ -90,7 +90,7 @@
         ]
     },
     {
-        "id": "character_drakon_imperial",
+        "id": "character_drakon_imperial_solarion",
         "name": "Solarion",
         "rarity": "legendary",
         "role": "dps",
@@ -101,11 +101,11 @@
             "attackSpeed": 1.12
         },
         "energyType": "chaos",
-        "sprite": "evolution_drakon_imperial",
+        "sprite": "skin_solarion_imperial_default",
         "skins": [
             {
-                "id": "default",
-                "sprite": "evolution_drakon_imperial"
+                "id": "solarion_blue",
+                "sprite": "skin_solarion_imperial_blue"
             }
         ],
         "skills": [

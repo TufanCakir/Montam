@@ -50,7 +50,7 @@ struct HatcheryView: View {
 
     private var header: some View {
         VStack(spacing: 10) {
-            RemoteAssetImage(name: "egg_drakon_fire")
+            RemoteAssetImage(name: "egg_baby_pyro")
                 .scaledToFit()
                 .frame(width: 92, height: 92)
 
@@ -127,7 +127,7 @@ struct HatcheryView: View {
                         .foregroundStyle(.white)
 
                     Text(
-                        (egg.description ?? "Schluepft zu einem Drakon.")
+                        (egg.description ?? "Schlüpft zu einem Drakon.")
                             .uppercased()
                     )
                     .font(.system(size: 10, weight: .black, design: .rounded))
@@ -235,7 +235,7 @@ struct HatcheryView: View {
 
             appModel.teamManager.addOwnedCharacter(OwnedCharacter(base: baby))
             hatchedEgg = egg
-            message = "\(baby.name) ist geschluepft."
+            message = "\(baby.name) ist geschlüpft."
         } catch {
             EggInventoryManager.shared.add(1, eggId: egg.id)
             DrakenManager.shared.add(egg.hatchCostDraken)

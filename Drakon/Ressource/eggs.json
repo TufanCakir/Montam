@@ -1,18 +1,18 @@
 {
     "eggs": [
         {
-            "id": "egg_drakon_baby_fire",
+            "id": "egg_baby_pyro",
             "title": "Pyro Egg",
-            "eggImage": "egg_drakon_fire",
-            "babyImage": "evolution_drakon_baby",
-            "characterId": "character_drakon_baby",
+            "eggImage": "egg_baby_pyro",
+            "babyImage": "skin_pyro_baby_default",
+            "characterId": "character_drakon_baby_pyro",
             "hatchCostDraken": 100,
             "rarity": "common",
             "element": "fire",
             "isLimited": true,
             "startDate": "24.05.2026 00:00",
             "endDate": "21.06.2026 23:59",
-            "description": "Schluepft zu Pyro."
+            "description": "Schlüpft zu Pyro."
         }
     ]
 }

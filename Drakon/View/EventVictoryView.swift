@@ -32,17 +32,17 @@ struct EventVictoryView: View {
                 DrakonRewardLine(
                     title: "COINS",
                     value: result.coins,
-                    icon: "evolution_drakon_baby"
+                    icon: "icon_draken_coin"
                 )
                 DrakonRewardLine(
                     title: "RUBY",
                     value: result.rubies,
-                    icon: "evolution_drakon_rookie"
+                    icon: "icon_draken_ruby"
                 )
                 DrakonRewardLine(
                     title: "EVENT",
                     value: result.eventTokens,
-                    icon: "drakon_icon"
+                    icon: "icon_draken_container"
                 )
                 DrakonRewardLine(
                     title: "DRAKEN",
@@ -56,7 +56,7 @@ struct EventVictoryView: View {
                     DrakonRewardLine(
                         title: (egg?.title ?? reward.eggId).uppercased(),
                         value: reward.amount,
-                        icon: egg?.eggImage ?? "egg_drakon_fire"
+                        icon: egg?.eggImage ?? "egg_baby_pyro"
                     )
                 }
                 if let medalId = result.medalId {

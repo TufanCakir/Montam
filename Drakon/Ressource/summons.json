@@ -19,11 +19,11 @@
     ],
     "banners": [
         {
-            "id": "drakon_core_banner",
-            "title": "Drakon Core Summon",
+            "id": "draken_pyro_banner",
+            "title": "Pyro Summon",
             "category": "standard",
             "currency": "gem",
-            "bannerImage": "evolution_drakon_rookie",
+            "bannerImage": "skin_pyro_baby_default",
             "summons": [
                 {
                     "amount": 1,
@@ -37,15 +37,15 @@
             "maxSummons": 0,
             "pool": [
                 {
-                    "characterId": "character_drakon_rookie",
+                    "characterId": "character_blazion_rookie",
                     "rateUp": false
                 },
                 {
-                    "characterId": "character_drakon_advanced",
+                    "characterId": "character_infernon_advanced",
                     "rateUp": false
                 },
                 {
-                    "characterId": "character_drakon_imperial",
+                    "characterId": "character_solarion_imperial",
                     "rateUp": false
                 }
             ],
@@ -54,7 +54,7 @@
                 "requiredPulls": 100,
                 "guaranteedPool": [
                     {
-                        "characterId": "character_drakon_imperial"
+                        "characterId": "character_solarion_imperial"
                     }
                 ]
             }
@@ -64,7 +64,7 @@
             "title": "Evolution Monster Summon",
             "category": "evolution",
             "currency": "shard",
-            "bannerImage": "evolution_drakon_advanced",
+            "bannerImage": "skin_infernon_advanced_default",
             "summons": [
                 {
                     "amount": 1,
@@ -78,15 +78,15 @@
             "maxSummons": 0,
             "pool": [
                 {
-                    "characterId": "character_drakon_rookie",
+                    "characterId": "character_blazion_rookie",
                     "rateUp": false
                 },
                 {
-                    "characterId": "character_drakon_advanced",
+                    "characterId": "character_infernon_advanced",
                     "rateUp": true
                 },
                 {
-                    "characterId": "character_drakon_imperial",
+                    "characterId": "character_solarion_imperial",
                     "rateUp": true
                 }
             ],
@@ -95,10 +95,10 @@
                 "requiredPulls": 80,
                 "guaranteedPool": [
                     {
-                        "characterId": "character_drakon_advanced"
+                        "characterId": "character_infernon_advanced"
                     },
                     {
-                        "characterId": "character_drakon_imperial"
+                        "characterId": "character_solarion_imperial"
                     }
                 ]
             }
@@ -108,7 +108,7 @@
             "title": "Evolution Monster Summon",
             "category": "special",
             "currency": "ruby",
-            "bannerImage": "evolution_drakon_imperial",
+            "bannerImage": "skin_solarion_imperial_default",
             "summons": [
                 {
                     "amount": 1,
@@ -122,15 +122,15 @@
             "maxSummons": 0,
             "pool": [
                 {
-                    "characterId": "character_drakon_rookie",
+                    "characterId": "character_blazion_rookie",
                     "rateUp": false
                 },
                 {
-                    "characterId": "character_drakon_advanced",
+                    "characterId": "character_infernon_advanced",
                     "rateUp": true
                 },
                 {
-                    "characterId": "character_drakon_imperial",
+                    "characterId": "character_solarion_imperial",
                     "rateUp": true
                 }
             ],
@@ -139,10 +139,10 @@
                 "requiredPulls": 80,
                 "guaranteedPool": [
                     {
-                        "characterId": "character_drakon_advanced"
+                        "characterId": "character_infernon_advanced"
                     },
                     {
-                        "characterId": "character_drakon_imperial"
+                        "characterId": "character_solarion_imperial"
                     }
                 ]
             }
@@ -152,7 +152,7 @@
             "title": "Evolution Monster Summon",
             "category": "basic",
             "currency": "coin",
-            "bannerImage": "evolution_drakon_rookie",
+            "bannerImage": "skin_pyro_baby_default",
             "summons": [
                 {
                     "amount": 1,
@@ -166,15 +166,15 @@
             "maxSummons": 0,
             "pool": [
                 {
-                    "characterId": "character_drakon_rookie",
+                    "characterId": "character_blazion_rookie",
                     "rateUp": false
                 },
                 {
-                    "characterId": "character_drakon_advanced",
+                    "characterId": "character_infernon_advanced",
                     "rateUp": true
                 },
                 {
-                    "characterId": "character_drakon_imperial",
+                    "characterId": "character_solarion_imperial",
                     "rateUp": true
                 }
             ],
@@ -183,10 +183,10 @@
                 "requiredPulls": 80,
                 "guaranteedPool": [
                     {
-                        "characterId": "character_drakon_rookie"
+                        "characterId": "character_blazion_rookie"
                     },
                     {
-                        "characterId": "character_drakon_rookie"
+                        "characterId": "character_infernon_advanced"
                     }
                 ]
             }

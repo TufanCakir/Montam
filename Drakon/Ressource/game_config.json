@@ -6,6 +6,136 @@
         "requiredForNewAccount": true,
         "selectionCount": 1
     },
+    "footerItems": [
+        {
+            "tab": "home",
+            "title": "Home",
+            "icon": "icon_house",
+            "color": "gold"
+        },
+        {
+            "tab": "team",
+            "title": "Team",
+            "icon": "icon_team",
+            "color": "cyan"
+        },
+        {
+            "tab": "summon",
+            "title": "Summon",
+            "icon": "icon_summon",
+            "color": "violet"
+        },
+        {
+            "tab": "shop",
+            "title": "Shop",
+            "icon": "icon_shop",
+            "color": "emerald"
+        },
+        {
+            "tab": "exchange",
+            "title": "Trade",
+            "icon": "icon_trade",
+            "color": "crimson"
+        }
+    ],
+    "homeMenuItems": [
+        {
+            "id": "story",
+            "title": "Story Battle",
+            "icon": "skin_pyro_baby_default",
+            "route": "story",
+            "color": "gold",
+            "style": "wide"
+        },
+        {
+            "id": "upgrade",
+            "title": "Upgrade",
+            "icon": "skin_blazion_rookie_default",
+            "route": "upgrade",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "hatchery",
+            "title": "Hatchery",
+            "icon": "egg_baby_pyro",
+            "route": "hatchery",
+            "color": "gold",
+            "style": "small"
+        },
+        {
+            "id": "wardrobe",
+            "title": "Wardrobe",
+            "icon": "skin_solarion_imperial_default",
+            "route": "wardrobe",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "events",
+            "title": "Events",
+            "icon": "skin_solarion_imperial_default",
+            "route": "events",
+            "color": "gold",
+            "style": "small"
+        },
+        {
+            "id": "gifts",
+            "title": "Gifts",
+            "icon": "skin_pyro_baby_default",
+            "route": "gifts",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "passes",
+            "title": "Passes",
+            "icon": "skin_pyro_baby_default",
+            "route": "passes",
+            "color": "gold",
+            "style": "small"
+        },
+        {
+            "id": "news",
+            "title": "News",
+            "icon": "skin_pyro_baby_default",
+            "route": "news",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "settings",
+            "title": "Settings",
+            "icon": "skin_solarion_imperial_default",
+            "route": "settings",
+            "color": "blue",
+            "style": "wide"
+        }
+    ],
+    "eventUI": {
+        "title": "Events",
+        "emptyTitle": "Keine Events",
+        "emptyIcon": "drakon_icon",
+        "battleButtonTitle": "Event Battle",
+        "defaultDescription": "Event Battle",
+        "permanentText": "Permanent",
+        "endedText": "Beendet",
+        "dayLeftSuffix": "left",
+        "hourLeftSuffix": "left",
+        "infoElementPrefix": "Element",
+        "infoElementRules":
+            "Feuer > Pflanze, Pflanze > Wasser, Wasser > Feuer. Licht und Dunkelheit treffen sich stark.",
+        "skinBadgeTitle": "Skin Event",
+        "eggBadgeTitle": "Egg Drop",
+        "rewardIcons": {
+            "coins": "icon_drakon_coin",
+            "gems": "icon_drakon_gem",
+            "ruby": "icon_drakon_ruby",
+            "eventToken": "icon_draken_container",
+            "draken": "icon_draken",
+            "egg": "egg_baby_pyro"
+        }
+    },
     "battleDifficulties": [
         {
             "id": "normal",
@@ -32,8 +162,8 @@
             "title": "Pyro Awakening",
             "description":
                 "Pyro folgt einer Feuer-Spur und stellt sich dem ersten Schatten.",
-            "icon": "evolution_drakon_baby",
-            "enemyImage": "evolution_drakon_rookie",
+            "icon": "skin_pyro_baby_default",
+            "enemyImage": "skin_pyro_baby_default",
             "enemyElement": "nature",
             "storyText":
                 "Pyro spuert eine fremde Energie im alten Krater. Jeder Sieg bringt ihn naeher an seine erste echte Form.",
@@ -52,8 +182,8 @@
             "title": "Blazion Trial",
             "description":
                 "Blazion kaempft gegen Wasserwellen und lernt Kontrolle.",
-            "icon": "evolution_drakon_rookie",
-            "enemyImage": "evolution_drakon_advanced",
+            "icon": "skin_blazion_rookie_default",
+            "enemyImage": "skin_blazion_rookie_default",
             "enemyElement": "water",
             "storyText":
                 "Die Arena kuehlt ab. Blazion muss jeden Angriff sauber setzen, sonst erstickt seine Flamme.",
@@ -70,9 +200,9 @@
         {
             "id": "story_solarion_oath",
             "title": "Solarion Oath",
-            "description": "Solarion prueft die Kraft der ganzen Linie.",
-            "icon": "evolution_drakon_imperial",
-            "enemyImage": "evolution_drakon_imperial",
+            "description": "Solarion prüft die Kraft der ganzen Linie.",
+            "icon": "skin_solarion_imperial_default",
+            "enemyImage": "skin_solarion_imperial_default",
             "enemyElement": "dark",
             "storyText":
                 "Solarion steht vor der letzten Pruefung. Licht und Dunkelheit treffen frontal aufeinander.",

@@ -11,14 +11,32 @@ struct EventView: View {
     @EnvironmentObject private var appModel: AppModel
     @EnvironmentObject private var eventManager: EventManager
 
-    @State private var selectedCategory: EventCategory = .boss
+    @State private var selectedCategoryId = "boss"
     @State private var infoEvent: GameEvent?
     @State private var upgradeConfig = UpgradeConfigLoader.load()
     @State private var gameConfig = GameConfigManager.shared.config
     @State private var selectedDifficultyId = "normal"
 
     private var events: [GameEvent] {
-        eventManager.events(for: selectedCategory, mode: .island)
+        eventManager.events(forCategoryId: selectedCategoryId, mode: .island)
+    }
+
+    private var categories: [EventCategoryInfo] {
+        eventManager.categories.isEmpty
+            ? [
+                EventCategoryInfo(id: "boss", title: "Boss"),
+                EventCategoryInfo(id: "story", title: "Trials"),
+                EventCategoryInfo(id: "special", title: "Special"),
+            ]
+            : eventManager.categories
+    }
+
+    private var eventUI: EventUIConfig {
+        gameConfig.eventUI ?? .fallback
+    }
+
+    private var rewardIcons: EventRewardIconConfig {
+        eventUI.rewardIcons ?? .fallback
     }
 
     var body: some View {
@@ -41,12 +59,15 @@ struct EventView: View {
             .scrollIndicators(.hidden)
         }
         .background(DrakonScreenBackground())
-        .navigationTitle("Events")
+        .navigationTitle(
+            eventUI.title ?? EventUIConfig.fallback.title ?? "Events"
+        )
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             eventManager.load()
             upgradeConfig = UpgradeConfigLoader.load()
             gameConfig = GameConfigManager.shared.config
+            selectedCategoryId = categories.first?.id ?? "boss"
             selectedDifficultyId =
                 gameConfig.battleDifficulties.first?.id ?? "normal"
         }
@@ -58,11 +79,11 @@ struct EventView: View {
     private var categoryBar: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 10) {
-                ForEach(EventCategory.allCases, id: \.self) { category in
+                ForEach(categories) { category in
                     Button {
-                        selectedCategory = category
+                        selectedCategoryId = category.id
                     } label: {
-                        Text(eventManager.title(for: category).uppercased())
+                        Text(category.title.uppercased())
                             .font(
                                 .system(
                                     size: 11,
@@ -71,13 +92,13 @@ struct EventView: View {
                                 )
                             )
                             .foregroundStyle(
-                                selectedCategory == category
+                                selectedCategoryId == category.id
                                     ? DrakonBladePalette.black : .white
                             )
                             .padding(.horizontal, 16)
                             .frame(height: 38)
                             .background(
-                                selectedCategory == category
+                                selectedCategoryId == category.id
                                     ? DrakonBladePalette.gold
                                     : DrakonBladePalette.panel
                             )
@@ -96,12 +117,16 @@ struct EventView: View {
 
     private var emptyState: some View {
         VStack(spacing: 14) {
-            RemoteAssetImage(name: "drakon_icon")
-                .scaledToFit()
-                .frame(width: 82, height: 82)
-                .opacity(0.7)
+            RemoteAssetImage(
+                name: eventUI.emptyIcon
+                    ?? EventUIConfig.fallback.emptyIcon
+                    ?? "drakon_icon"
+            )
+            .scaledToFit()
+            .frame(width: 82, height: 82)
+            .opacity(0.7)
 
-            Text("KEINE EVENTS")
+            Text(eventUI.emptyTitle ?? EventUIConfig.fallback.emptyTitle ?? "")
                 .font(.system(size: 18, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
         }
@@ -121,10 +146,18 @@ struct EventView: View {
                     HStack(spacing: 6) {
                         eventBadge(event.category.rawValue.uppercased())
                         if event.type == "skin" {
-                            eventBadge("SKIN EVENT")
+                            eventBadge(
+                                eventUI.skinBadgeTitle
+                                    ?? EventUIConfig.fallback.skinBadgeTitle
+                                    ?? "SKIN EVENT"
+                            )
                         }
                         if event.rewards?.eggs?.isEmpty == false {
-                            eventBadge("EGG DROP")
+                            eventBadge(
+                                eventUI.eggBadgeTitle
+                                    ?? EventUIConfig.fallback.eggBadgeTitle
+                                    ?? "EGG DROP"
+                            )
                         }
                     }
 
@@ -135,12 +168,17 @@ struct EventView: View {
                         .foregroundStyle(.white)
                         .lineLimit(2)
 
-                    Text((event.description ?? "Event Battle").uppercased())
-                        .font(
-                            .system(size: 10, weight: .bold, design: .rounded)
-                        )
-                        .foregroundStyle(DrakonBladePalette.mutedText)
-                        .lineLimit(2)
+                    Text(
+                        (event.description
+                            ?? eventUI.defaultDescription
+                            ?? EventUIConfig.fallback.defaultDescription
+                            ?? "Event Battle").uppercased()
+                    )
+                    .font(
+                        .system(size: 10, weight: .bold, design: .rounded)
+                    )
+                    .foregroundStyle(DrakonBladePalette.mutedText)
+                    .lineLimit(2)
 
                     Text(countdownText(for: event).uppercased())
                         .font(
@@ -181,13 +219,17 @@ struct EventView: View {
             Button {
                 start(event)
             } label: {
-                Text("EVENT BATTLE")
-                    .font(.system(size: 14, weight: .black, design: .rounded))
-                    .foregroundStyle(DrakonBladePalette.black)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .background(DrakonBladePalette.gold)
-                    .clipShape(DrakonBladeShape(pointDepth: 22, slant: 11))
+                Text(
+                    eventUI.battleButtonTitle
+                        ?? EventUIConfig.fallback.battleButtonTitle
+                        ?? "EVENT BATTLE"
+                )
+                .font(.system(size: 14, weight: .black, design: .rounded))
+                .foregroundStyle(DrakonBladePalette.black)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(DrakonBladePalette.gold)
+                .clipShape(DrakonBladeShape(pointDepth: 22, slant: 11))
             }
             .buttonStyle(.plain)
         }
@@ -256,25 +298,43 @@ struct EventView: View {
             rewardChip(
                 "COINS",
                 event.rewards?.coins,
-                icon: "icon_drakon_coin"
+                icon: rewardIcons.coins
+                    ?? EventRewardIconConfig.fallback.coins
+                    ?? "icon_drakon_coin"
             )
             rewardChip(
                 "GEMS",
                 event.rewards?.gems,
-                icon: "icon_drakon_gem"
+                icon: rewardIcons.gems
+                    ?? EventRewardIconConfig.fallback.gems
+                    ?? "icon_drakon_gem"
             )
-            rewardChip("RUBY", event.rewards?.ruby, icon: "icon_drakon_ruby")
+            rewardChip(
+                "RUBY",
+                event.rewards?.ruby,
+                icon: rewardIcons.ruby
+                    ?? EventRewardIconConfig.fallback.ruby
+                    ?? "icon_drakon_ruby"
+            )
             rewardChip(
                 "EVENT",
                 event.rewards?.eventToken,
-                icon: "icon_drakon_shard"
+                icon: rewardIcons.eventToken
+                    ?? EventRewardIconConfig.fallback.eventToken
+                    ?? "icon_draken_container"
             )
-            rewardChip("DRAKEN", event.rewards?.draken, icon: "icon_draken")
+            rewardChip(
+                "DRAKEN",
+                event.rewards?.draken,
+                icon: rewardIcons.draken
+                    ?? EventRewardIconConfig.fallback.draken
+                    ?? "icon_draken"
+            )
             if let egg = event.rewards?.eggs?.first {
                 DrakonRewardChip(
                     title: "EGG",
                     value: egg.amount,
-                    icon: "egg_drakon_fire"
+                    icon: eggIcon(for: egg.eggId)
                 )
             }
             if let medals = event.rewards?.medals,
@@ -320,7 +380,7 @@ struct EventView: View {
                         .foregroundStyle(.white)
 
                     Text(
-                        "ELEMENT \(DrakonElement.parse(event.enemyElement).title)"
+                        "\(eventUI.infoElementPrefix ?? EventUIConfig.fallback.infoElementPrefix ?? "Element") \(DrakonElement.parse(event.enemyElement).title)"
                     )
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .foregroundStyle(DrakonBladePalette.gold)
@@ -333,9 +393,14 @@ struct EventView: View {
                 }
             }
 
-            Text(event.description ?? "Event Battle")
-                .font(.system(size: 13, weight: .bold, design: .rounded))
-                .foregroundStyle(DrakonBladePalette.mutedText)
+            Text(
+                event.description
+                    ?? eventUI.defaultDescription
+                    ?? EventUIConfig.fallback.defaultDescription
+                    ?? "Event Battle"
+            )
+            .font(.system(size: 13, weight: .bold, design: .rounded))
+            .foregroundStyle(DrakonBladePalette.mutedText)
 
             if let storyText = event.storyText {
                 Text(storyText)
@@ -354,7 +419,9 @@ struct EventView: View {
             }
 
             Text(
-                "Feuer > Pflanze, Pflanze > Wasser, Wasser > Feuer. Licht und Dunkelheit treffen sich stark."
+                eventUI.infoElementRules
+                    ?? EventUIConfig.fallback.infoElementRules
+                    ?? ""
             )
             .font(.system(size: 12, weight: .bold, design: .rounded))
             .foregroundStyle(DrakonBladePalette.mutedText)
@@ -389,21 +456,37 @@ struct EventView: View {
 
     private func countdownText(for event: GameEvent) -> String {
         guard let endDate = date(from: event.endDate) else {
-            return "Permanent"
+            return eventUI.permanentText
+                ?? EventUIConfig.fallback.permanentText
+                ?? "Permanent"
         }
 
         let seconds = max(0, Int(endDate.timeIntervalSinceNow))
-        if seconds == 0 { return "Ended" }
+        if seconds == 0 {
+            return eventUI.endedText ?? EventUIConfig.fallback.endedText
+                ?? "Ended"
+        }
 
         let days = seconds / 86_400
         let hours = (seconds % 86_400) / 3_600
-        if days > 0 { return "\(days)d \(hours)h left" }
+        if days > 0 {
+            return
+                "\(days)d \(hours)h \(eventUI.dayLeftSuffix ?? EventUIConfig.fallback.dayLeftSuffix ?? "left")"
+        }
         let minutes = (seconds % 3_600) / 60
-        return "\(hours)h \(minutes)m left"
+        return
+            "\(hours)h \(minutes)m \(eventUI.hourLeftSuffix ?? EventUIConfig.fallback.hourLeftSuffix ?? "left")"
     }
 
     private func date(from string: String?) -> Date? {
         DrakonDateParser.date(from: string)
+    }
+
+    private func eggIcon(for eggId: String) -> String {
+        EggConfigLoader.load().eggs.first(where: { $0.id == eggId })?.eggImage
+            ?? rewardIcons.egg
+            ?? EventRewardIconConfig.fallback.egg
+            ?? "egg_baby_pyro"
     }
 }
 

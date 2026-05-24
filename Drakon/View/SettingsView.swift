@@ -93,19 +93,19 @@ struct SettingsView: View {
             )
 
             settingsRow(
-                image: "evolution_drakon_baby",
+                image: "skin_pyro_baby_default",
                 title: "Coins",
                 value: CoinManager.shared.coins.formatted()
             )
 
             settingsRow(
-                image: "evolution_drakon_rookie",
+                image: "skin_blazion_rookie_default",
                 title: "Gems",
                 value: GemManager.shared.gems.formatted()
             )
 
             settingsRow(
-                image: "evolution_drakon_advanced",
+                image: "skin_infernon_advanced_default",
                 title: "Team Size",
                 value:
                     "\(GameConfigManager.shared.config.team.maxActiveTeamSize)"
@@ -127,7 +127,7 @@ struct SettingsView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 12) {
-                    RemoteAssetImage(name: "evolution_drakon_rookie")
+                    RemoteAssetImage(name: "skin_blazion_rookie_default")
                         .scaledToFit()
                         .frame(width: 30, height: 30)
 
@@ -168,12 +168,12 @@ struct SettingsView: View {
                 value: appVersion
             )
             settingsRow(
-                image: "evolution_drakon_imperial",
+                image: "skin_solarion_imperial_default",
                 title: "Build",
                 value: buildNumber
             )
             settingsRow(
-                image: "evolution_drakon_baby",
+                image: "skin_pyro_baby_default",
                 title: "iOS",
                 value: UIDevice.current.systemVersion
             )
@@ -197,7 +197,7 @@ struct SettingsView: View {
                         .fill(Color.red.opacity(0.86))
 
                     HStack(spacing: 12) {
-                        RemoteAssetImage(name: "evolution_drakon_imperial")
+                        RemoteAssetImage(name: "skin_solarion_imperial_default")
                             .scaledToFit()
                             .frame(width: 40, height: 40)
 

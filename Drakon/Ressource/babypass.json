@@ -1,0 +1,45 @@
+{
+    "id": "babypass_s1",
+    "title": "Babypass",
+    "icon": "egg_baby_pyro",
+    "backgroundImage": "skin_pyro_baby_default",
+    "infoTitle": "Pyro Babypass",
+    "infoBody":
+        "Sammle Starter XP und hole dir Baby-Drakon Rewards. Dieser Pass hilft neuen Accounts beim Hatchery-Start.",
+    "infoTasks": [
+        "Kaempfe in Story oder Events fuer Starter XP.",
+        "Alle 90 Starter XP wird ein neuer Tier freigeschaltet.",
+        "Nutze Pyro Eier in der Hatchery und bruete sie mit Draken aus."
+    ],
+    "currencyTitle": "Starter XP",
+    "pointsPerTier": 90,
+    "tiers": [
+        {
+            "tier": 1,
+            "free": {
+                "title": "Pyro Egg",
+                "type": "egg",
+                "eggId": "egg_baby_pyro",
+                "amount": 1
+            },
+            "premium": {
+                "title": "250 Draken",
+                "type": "draken",
+                "amount": 250
+            }
+        },
+        {
+            "tier": 2,
+            "free": {
+                "title": "150 Gems",
+                "type": "gems",
+                "amount": 150
+            },
+            "premium": {
+                "title": "Pyro",
+                "type": "drakon",
+                "characterId": "character_drakon_baby_pyro"
+            }
+        }
+    ]
+}

@@ -244,38 +244,25 @@ private struct GlobalGameHeader: View {
 private struct GlobalGameFooter: View {
     @Binding var selectedTab: RootView.Tab
 
-    private let items: [FooterItem] = [
-        FooterItem(
-            tab: .home,
-            title: "Home",
-            icon: "icon_house",
-            tint: DrakonBladePalette.gold
-        ),
-        FooterItem(
-            tab: .team,
-            title: "Team",
-            icon: "icon_team",
-            tint: DrakonBladePalette.cyan
-        ),
-        FooterItem(
-            tab: .summon,
-            title: "Summon",
-            icon: "icon_summon",
-            tint: DrakonBladePalette.violet
-        ),
-        FooterItem(
-            tab: .shop,
-            title: "Shop",
-            icon: "icon_shop",
-            tint: DrakonBladePalette.emerald
-        ),
-        FooterItem(
-            tab: .exchange,
-            title: "Trade",
-            icon: "icon_trade",
-            tint: DrakonBladePalette.crimson
-        ),
-    ]
+    private var items: [FooterItem] {
+        let configItems =
+            GameConfigManager.shared.config.footerItems
+            ?? GameFooterConfigItem.fallback
+
+        return configItems.compactMap { item in
+            guard let tab = RootView.Tab(rawValue: item.tab) else {
+                return nil
+            }
+
+            return FooterItem(
+                tab: tab,
+                title: item.title,
+                icon: item.icon,
+                systemIcon: footerSystemIcon(for: tab),
+                tint: footerTint(for: item.color)
+            )
+        }
+    }
 
     var body: some View {
         HStack(spacing: 7) {
@@ -310,16 +297,7 @@ private struct GlobalGameFooter: View {
         let isSelected = selectedTab == item.tab
 
         return VStack(spacing: 5) {
-            RemoteAssetImage(name: item.icon)
-                .scaledToFit()
-                .frame(
-                    width: isSelected ? 38 : 32,
-                    height: isSelected ? 38 : 32
-                )
-                .shadow(
-                    color: isSelected ? item.tint.opacity(0.45) : .clear,
-                    radius: 8
-                )
+            footerIcon(item, isSelected: isSelected)
 
             Text(item.title)
                 .font(.system(size: 10, weight: .black, design: .rounded))
@@ -365,7 +343,76 @@ private struct FooterItem: Identifiable {
     let tab: RootView.Tab
     let title: String
     let icon: String
+    let systemIcon: String
     let tint: Color
 
     var id: RootView.Tab { tab }
+}
+
+extension GlobalGameFooter {
+    fileprivate func footerIcon(_ item: FooterItem, isSelected: Bool)
+        -> some View
+    {
+        Group {
+            if RemoteAssetManager.shared.localURL(for: item.icon) != nil {
+                RemoteAssetImage(name: item.icon)
+                    .scaledToFit()
+            } else {
+                Image(systemName: item.systemIcon)
+                    .font(
+                        .system(
+                            size: isSelected ? 25 : 22,
+                            weight: .black
+                        )
+                    )
+                    .foregroundStyle(
+                        isSelected ? item.tint : .white.opacity(0.72)
+                    )
+            }
+        }
+        .frame(
+            width: isSelected ? 38 : 32,
+            height: isSelected ? 38 : 32
+        )
+        .shadow(
+            color: isSelected ? item.tint.opacity(0.45) : .clear,
+            radius: 8
+        )
+    }
+}
+
+private func footerSystemIcon(for tab: RootView.Tab) -> String {
+    switch tab {
+    case .home:
+        return "house.fill"
+    case .team:
+        return "person.3.fill"
+    case .summon:
+        return "sparkles"
+    case .shop:
+        return "bag.fill"
+    case .exchange:
+        return "arrow.left.arrow.right"
+    case .upgrade:
+        return "star.circle.fill"
+    }
+}
+
+private func footerTint(for color: String?) -> Color {
+    switch color?.lowercased() {
+    case "gold", "yellow":
+        return DrakonBladePalette.gold
+    case "cyan":
+        return DrakonBladePalette.cyan
+    case "violet", "purple":
+        return DrakonBladePalette.violet
+    case "emerald", "green":
+        return DrakonBladePalette.emerald
+    case "crimson", "red":
+        return DrakonBladePalette.crimson
+    case "blue":
+        return DrakonBladePalette.blue
+    default:
+        return DrakonBladePalette.gold
+    }
 }

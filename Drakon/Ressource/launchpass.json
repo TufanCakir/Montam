@@ -2,6 +2,15 @@
     "id": "launchpass_s1",
     "title": "LaunchPass",
     "icon": "drakon_icon",
+    "backgroundImage": "drakon_icon",
+    "infoTitle": "LaunchPass",
+    "infoBody":
+        "Der LaunchPass gibt dir Startressourcen fuer Summons, Hatchery und fruehe Upgrades.",
+    "infoTasks": [
+        "Spiele normale Battles, Story und Events fuer Launch XP.",
+        "Alle 80 Launch XP wird ein Tier freigeschaltet.",
+        "Claim Coins, Ruby, Shards und Launch-Skins direkt im Pass."
+    ],
     "currencyTitle": "Launch XP",
     "pointsPerTier": 80,
     "tiers": [
@@ -28,7 +37,7 @@
             "premium": {
                 "title": "Solarion Gold",
                 "type": "skin",
-                "skinId": "imperial_gold"
+                "skinId": "solarion_blue"
             }
         }
     ]

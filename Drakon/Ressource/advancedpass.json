@@ -1,7 +1,16 @@
 {
     "id": "advancedpass_s1",
     "title": "AdvancedPass",
-    "icon": "evolution_drakon_advanced",
+    "icon": "skin_infernon_advanced_default",
+    "backgroundImage": "skin_infernon_advanced_default",
+    "infoTitle": "Infernon AdvancedPass",
+    "infoBody":
+        "Sammle Advanced XP durch Story- und Event-Battles. Dieser Pass fokussiert Infernon Rewards, Shards und Advanced Progress.",
+    "infoTasks": [
+        "Spiele Story Battles und Events fuer Advanced XP.",
+        "Alle 130 Advanced XP schaltest du einen Tier frei.",
+        "Claim Free Rewards sofort und bereite Premium Rewards fuer spaetere Freischaltung vor."
+    ],
     "currencyTitle": "Advanced XP",
     "pointsPerTier": 130,
     "tiers": [
@@ -15,7 +24,7 @@
             "premium": {
                 "title": "Infernon",
                 "type": "drakon",
-                "characterId": "character_drakon_advanced"
+                "characterId": "character_drakon_advanced_infernon"
             }
         }
     ]

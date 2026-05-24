@@ -9,36 +9,69 @@ import SwiftUI
 
 struct RootView: View {
 
-    enum Tab: Hashable { case home, team, summon, shop, exchange, upgrade }
+    enum Tab: String, Hashable {
+        case home
+        case team
+        case summon
+        case shop
+        case exchange
+        case upgrade
+    }
+
+    enum HomeRoute: Hashable {
+        case menu
+        case story
+        case hatchery
+        case wardrobe
+        case events
+        case gifts
+        case passes
+        case news
+        case settings
+    }
 
     @EnvironmentObject var appModel: AppModel
     @ObservedObject private var dailyRewardManager = DailyRewardManager.shared
-    @State private var selectedTab: Tab = .home
+    @State private var homeRoute: HomeRoute = .menu
     @State private var showsDailyLogin = false
     @State private var didPresentDailyLoginThisSession = false
 
     var body: some View {
 
-        GameLayout(selectedTab: $selectedTab) {
+        GameLayout(selectedTab: selectedTabBinding) {
             currentView
         }
         .onAppear {
-            selectedTab = appModel.selectedTab
             refreshDailyLogin()
         }
         .sheet(isPresented: $showsDailyLogin) {
             DailyLoginPopupView()
         }
-        .onChange(of: selectedTab) { _, tab in
-            appModel.selectedTab = tab
-            refreshDailyLogin()
-        }
         .onChange(of: appModel.selectedTab) { _, tab in
-            selectedTab = tab
+            if tab == .home {
+                homeRoute = .menu
+            }
+            refreshDailyLogin()
         }
         .onChange(of: appModel.appState) { _, _ in
             refreshDailyLogin()
         }
+    }
+
+    private var selectedTabBinding: Binding<Tab> {
+        Binding(
+            get: {
+                appModel.selectedTab
+            },
+            set: { tab in
+                appModel.navigateWithLoading {
+                    appModel.selectedTab = tab
+                    if tab == .home {
+                        homeRoute = .menu
+                    }
+                }
+            }
+        )
     }
 
     private func refreshDailyLogin() {
@@ -57,12 +90,10 @@ extension RootView {
     @ViewBuilder
     var currentView: some View {
 
-        switch selectedTab {
+        switch appModel.selectedTab {
 
         case .home:
-            NavigationStack {
-                MenuView()
-            }
+            homeContent
 
         case .team:
             TeamView(teamManager: appModel.teamManager)
@@ -78,6 +109,75 @@ extension RootView {
 
         case .upgrade:
             UpgradeView(teamManager: appModel.teamManager)
+        }
+    }
+
+    @ViewBuilder
+    private var homeContent: some View {
+        switch homeRoute {
+        case .menu:
+            MenuView { route in
+                appModel.navigateWithLoading {
+                    homeRoute = route
+                }
+            }
+
+        case .story:
+            routedView { StorySelectionView() }
+
+        case .hatchery:
+            routedView { HatcheryView() }
+
+        case .wardrobe:
+            routedView { WardrobeView(teamManager: appModel.teamManager) }
+
+        case .events:
+            routedView { EventView() }
+
+        case .gifts:
+            routedView { GiftView() }
+
+        case .passes:
+            routedView { PassView() }
+
+        case .news:
+            routedView { NewsView() }
+
+        case .settings:
+            routedView { SettingsView() }
+        }
+    }
+
+    private func routedView<Content: View>(
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(spacing: 0) {
+            HStack {
+                Button {
+                    appModel.navigateWithLoading {
+                        homeRoute = .menu
+                    }
+                } label: {
+                    Text("ZURUECK")
+                        .font(
+                            .system(size: 11, weight: .black, design: .rounded)
+                        )
+                        .foregroundStyle(DrakonBladePalette.black)
+                        .padding(.horizontal, 16)
+                        .frame(height: 34)
+                        .background(DrakonBladePalette.gold)
+                        .clipShape(
+                            DrakonBladeShape(pointDepth: 12, slant: 7)
+                        )
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+            }
+            .padding(.horizontal, 18)
+            .padding(.bottom, 8)
+
+            content()
         }
     }
 }

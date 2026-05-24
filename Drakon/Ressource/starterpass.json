@@ -1,35 +1,44 @@
 {
     "id": "starterpass_s1",
     "title": "StarterPass",
-    "icon": "egg_drakon_fire",
+    "icon": "skin_pyro_baby_default",
+    "backgroundImage": "skin_pyro_baby_default",
+    "infoTitle": "StarterPass",
+    "infoBody":
+        "Sammle Starter XP fuer die ersten wichtigen Ressourcen, Draken und Pyro Progress.",
+    "infoTasks": [
+        "Spiele deine ersten Story- und Event-Battles.",
+        "Alle 75 Starter XP wird ein neuer Tier freigeschaltet.",
+        "Nutze die Rewards fuer Summons, Hatchery und Team-Aufbau."
+    ],
     "currencyTitle": "Starter XP",
-    "pointsPerTier": 90,
+    "pointsPerTier": 75,
     "tiers": [
         {
             "tier": 1,
             "free": {
-                "title": "Pyro Egg",
-                "type": "egg",
-                "eggId": "egg_drakon_baby_fire",
-                "amount": 1
+                "title": "1000 Coins",
+                "type": "coins",
+                "amount": 1000
             },
             "premium": {
-                "title": "250 Draken",
+                "title": "300 Draken",
                 "type": "draken",
-                "amount": 250
+                "amount": 300
             }
         },
         {
             "tier": 2,
             "free": {
-                "title": "150 Gems",
-                "type": "gems",
-                "amount": 150
+                "title": "100 Shards",
+                "type": "shards",
+                "amount": 100
             },
             "premium": {
-                "title": "Pyro",
-                "type": "drakon",
-                "characterId": "character_drakon_baby"
+                "title": "Pyro Egg",
+                "type": "egg",
+                "eggId": "egg_baby_pyro",
+                "amount": 1
             }
         }
     ]

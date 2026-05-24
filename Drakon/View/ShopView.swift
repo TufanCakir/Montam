@@ -9,6 +9,7 @@ import StoreKit
 import SwiftUI
 
 struct ShopView: View {
+    @EnvironmentObject private var appModel: AppModel
     @State private var storeProducts: [StoreProduct] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -49,7 +50,7 @@ struct ShopView: View {
                     } else if let errorMessage {
                         stateView(
                             title: errorMessage,
-                            image: "evolution_drakon_imperial"
+                            image: "skin_solarion_imperial_default"
                         )
                     } else {
                         LazyVGrid(columns: columns, spacing: 14) {
@@ -123,7 +124,10 @@ struct ShopView: View {
 
     private func productCard(_ storeProduct: StoreProduct) -> some View {
         let item = storeProduct.shopItem
-        let price = storeProduct.product?.displayPrice ?? "FREE"
+        let price =
+            storeProduct.product?.displayPrice
+            ?? (item.storeProductId == nil ? "FREE" : "NICHT VERFUEGBAR")
+        let canBuy = item.storeProductId == nil || storeProduct.product != nil
 
         return VStack(spacing: 12) {
             RemoteAssetImage(name: item.rewardIcon)
@@ -139,11 +143,7 @@ struct ShopView: View {
             .foregroundStyle(gold)
             .lineLimit(1)
 
-            Text("\(item.rewardAmount) \(item.rewardTitle)")
-                .font(.system(size: 17, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
+            rewardList(for: item)
 
             Button {
                 Task { await purchase(storeProduct) }
@@ -163,6 +163,8 @@ struct ShopView: View {
                     .clipShape(ShopBladeShape(pointDepth: 16, slant: 9))
             }
             .buttonStyle(.plain)
+            .disabled(!canBuy)
+            .opacity(canBuy ? 1 : 0.55)
         }
         .padding(14)
         .background(panel)
@@ -182,6 +184,35 @@ struct ShopView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 80)
+    }
+
+    private func rewardList(for item: ShopItem) -> some View {
+        VStack(spacing: 6) {
+            ForEach(item.rewardLines.prefix(3), id: \.self) { reward in
+                HStack(spacing: 7) {
+                    RemoteAssetImage(name: reward.icon)
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
+
+                    Text("+\(reward.amount) \(reward.title)")
+                        .font(
+                            .system(size: 13, weight: .black, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+
+                    Spacer(minLength: 0)
+                }
+            }
+
+            if item.rewardLines.count > 3 {
+                Text("+\(item.rewardLines.count - 3) MEHR")
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(gold)
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 46, alignment: .topLeading)
     }
 
     private func loadShop() async {
@@ -204,6 +235,7 @@ struct ShopView: View {
         let item = storeProduct.shopItem
 
         if storeProduct.product == nil {
+            guard item.storeProductId == nil else { return }
             grantItem(item)
             return
         }
@@ -220,12 +252,36 @@ struct ShopView: View {
     }
 
     private func grantItem(_ item: ShopItem) {
+        if let coins = item.coins { CoinManager.shared.add(coins) }
         if let gems = item.gems { GemManager.shared.add(gems) }
         if let rubies = item.rubies { RubyManager.shared.add(rubies) }
         if let draken = item.draken { DrakenManager.shared.add(draken) }
         if let shards = item.shards { ShardManager.shared.add(shards) }
+        if let exp = item.exp { PlayerProgressManager.shared.addEXP(exp) }
         if let eventCurrency = item.eventCurrency {
             EventCurrencyManager.shared.add(eventCurrency)
+        }
+        if let eggId = item.eggId {
+            EggInventoryManager.shared.add(max(1, item.eggs ?? 1), eggId: eggId)
+        }
+        if let skinId = item.skinId {
+            SkinInventoryManager.shared.unlock(skinId)
+        }
+        if let characterId = item.characterId {
+            RewardApplier.apply(
+                type: .drakon,
+                amount: 1,
+                characterId: characterId,
+                eggId: nil,
+                skinId: nil,
+                teamManager: appModel.teamManager
+            )
+        }
+        if let medalId = item.medalId {
+            DrakonMedalManager.shared.add(
+                max(1, item.medals ?? 1),
+                medalId: medalId
+            )
         }
 
         if item.oneTimePurchase == true {
@@ -273,4 +329,5 @@ private struct ShopBladeRectangle: Shape {
 
 #Preview {
     ShopView()
+        .environmentObject(AppModel())
 }

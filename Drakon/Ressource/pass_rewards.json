@@ -1,7 +1,16 @@
 {
     "id": "babypass_s1",
     "title": "BabyPass",
-    "icon": "evolution_drakon_baby",
+    "icon": "skin_pyro_baby_default",
+    "backgroundImage": "skin_pyro_baby_default",
+    "infoTitle": "Legacy BabyPass",
+    "infoBody":
+        "Fallback Pass, falls pass_index.json nicht geladen werden kann.",
+    "infoTasks": [
+        "Sammle BabyPass XP durch Battles.",
+        "Claim Free und Premium Rewards pro Tier.",
+        "Dieser Pass ist nur Fallback fuer Offline/Remote-Fehler."
+    ],
     "currencyTitle": "BabyPass XP",
     "pointsPerTier": 100,
     "tiers": [
@@ -28,7 +37,7 @@
             "premium": {
                 "title": "Blazion",
                 "type": "drakon",
-                "characterId": "character_drakon_rookie"
+                "characterId": "character_drakon_rookie_blazion"
             }
         },
         {
@@ -39,9 +48,9 @@
                 "amount": 150
             },
             "premium": {
-                "title": "Gold Skin",
+                "title": "Blue Skin",
                 "type": "skin",
-                "skinId": "imperial_gold"
+                "skinId": "solarion_blue"
             }
         }
     ]

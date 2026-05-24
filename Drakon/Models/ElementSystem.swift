@@ -23,11 +23,11 @@ enum DrakonElement: String, Codable, CaseIterable, Hashable {
     var icon: String {
         switch self {
         case .fire:
-            "evolution_drakon_baby"
+            "skin_pyro_baby_default"
         case .water:
-            "evolution_drakon_rookie"
+            "skin_blazion_rookie_default"
         case .nature:
-            "evolution_drakon_advanced"
+            "skin_infernon_advanced_default"
         case .light, .dark, .arcane, .lightning, .chaos, .neutral:
             "drakon_icon"
         }

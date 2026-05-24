@@ -113,7 +113,7 @@ struct StartView: View {
         VStack(spacing: 13) {
             actionButton(
                 title: "Spiel starten",
-                image: "evolution_drakon_baby",
+                image: "skin_pyro_baby_default",
                 style: .primary
             ) {
                 appModel.navigateWithLoading {
@@ -123,7 +123,7 @@ struct StartView: View {
 
             actionButton(
                 title: "Summon",
-                image: "evolution_drakon_rookie",
+                image: "skin_blazion_rookie_default",
                 style: .secondary
             ) {
                 appModel.navigateWithLoading {

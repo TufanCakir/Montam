@@ -1,28 +1,28 @@
 {
     "medalDefinitions": [
         {
-            "id": "baby_medal",
+            "id": "pyro_medal",
             "title": "Pyro Medal",
-            "icon": "evolution_drakon_baby",
-            "characterId": "character_drakon_baby"
+            "icon": "skin_pyro_baby_default",
+            "characterId": "character_drakon_baby_pyro"
         },
         {
-            "id": "rookie_medal",
+            "id": "blazion_medal",
             "title": "Blazion Medal",
-            "icon": "evolution_drakon_rookie",
-            "characterId": "character_drakon_rookie"
+            "icon": "skin_blazion_rookie_default",
+            "characterId": "character_drakon_rookie_blazion"
         },
         {
-            "id": "advanced_medal",
+            "id": "infernon_medal",
             "title": "Infernon Medal",
-            "icon": "evolution_drakon_advanced",
-            "characterId": "character_drakon_advanced"
+            "icon": "skin_infernon_advanced_default",
+            "characterId": "character_draken_advanced_infernon"
         },
         {
-            "id": "imperial_medal",
+            "id": "solarion_medal",
             "title": "Solarion Medal",
-            "icon": "evolution_drakon_imperial",
-            "characterId": "character_drakon_imperial"
+            "icon": "skin_solarion_imperial_default",
+            "characterId": "character_drakon_imperial_solarion"
         }
     ],
     "starCosts": [

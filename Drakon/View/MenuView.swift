@@ -9,6 +9,11 @@ import SwiftUI
 
 struct MenuView: View {
     @EnvironmentObject private var appModel: AppModel
+    let navigate: (RootView.HomeRoute) -> Void
+
+    init(navigate: @escaping (RootView.HomeRoute) -> Void = { _ in }) {
+        self.navigate = navigate
+    }
 
     private let black = Color(red: 0.018, green: 0.018, blue: 0.022)
     private let panel = Color(red: 0.055, green: 0.058, blue: 0.068)
@@ -21,109 +26,42 @@ struct MenuView: View {
                 Spacer(minLength: 4)
 
                 VStack(spacing: 9) {
-                    NavigationLink {
-                        StorySelectionView()
-                    } label: {
-                        bladeLink(
-                            title: "Story Battle",
-                            image: "evolution_drakon_baby",
-                            tint: gold
-                        )
+                    ForEach(menuItems) { item in
+                        if item.style == "wide" {
+                            Button {
+                                perform(item)
+                            } label: {
+                                bladeLink(
+                                    title: item.title,
+                                    image: item.icon,
+                                    tint: menuTint(for: item.color)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
-                    .buttonStyle(.plain)
 
-                    smallMenuButton(
-                        title: "Upgrade",
-                        image: "evolution_drakon_rookie",
-                        tint: blue
+                    LazyVGrid(
+                        columns: [
+                            GridItem(.flexible(), spacing: 9),
+                            GridItem(.flexible(), spacing: 9),
+                        ],
+                        spacing: 9
                     ) {
-                        appModel.navigateWithLoading {
-                            appModel.selectedTab = .upgrade
+                        ForEach(menuItems.filter { $0.style != "wide" }) {
+                            item in
+                            Button {
+                                perform(item)
+                            } label: {
+                                smallBladeLink(
+                                    title: item.title,
+                                    image: item.icon,
+                                    tint: menuTint(for: item.color)
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-
-                    HStack(spacing: 9) {
-                        NavigationLink {
-                            HatcheryView()
-                        } label: {
-                            smallBladeLink(
-                                title: "Hatchery",
-                                image: "egg_drakon_fire",
-                                tint: gold
-                            )
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            WardrobeView(teamManager: appModel.teamManager)
-                        } label: {
-                            smallBladeLink(
-                                title: "Wardrobe",
-                                image: "skin_solarion_gold",
-                                tint: blue
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    HStack(spacing: 9) {
-                        NavigationLink {
-                            EventView()
-                        } label: {
-                            smallBladeLink(
-                                title: "Events",
-                                image: "evolution_drakon_imperial",
-                                tint: gold
-                            )
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            GiftView()
-                        } label: {
-                            smallBladeLink(
-                                title: "Gifts",
-                                image: "evolution_drakon_baby",
-                                tint: blue
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    HStack(spacing: 9) {
-                        NavigationLink {
-                            PassView()
-                        } label: {
-                            smallBladeLink(
-                                title: "BabyPass",
-                                image: "evolution_drakon_baby",
-                                tint: gold
-                            )
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            NewsView()
-                        } label: {
-                            smallBladeLink(
-                                title: "News",
-                                image: "evolution_drakon_baby",
-                                tint: blue
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        bladeLink(
-                            title: "Settings",
-                            image: "evolution_drakon_imperial",
-                            tint: blue
-                        )
-                    }
-                    .buttonStyle(.plain)
                 }
 
                 Spacer(minLength: 8)
@@ -153,6 +91,57 @@ struct MenuView: View {
                     .offset(x: -80, y: 72)
             }
             .ignoresSafeArea()
+    }
+
+    private var menuItems: [GameMenuConfigItem] {
+        GameConfigManager.shared.config.homeMenuItems
+            ?? GameMenuConfigItem.fallback
+    }
+
+    private func perform(_ item: GameMenuConfigItem) {
+        switch item.route {
+        case "upgrade":
+            appModel.navigateWithLoading {
+                appModel.selectedTab = .upgrade
+            }
+        case "story":
+            navigate(.story)
+        case "hatchery":
+            navigate(.hatchery)
+        case "wardrobe":
+            navigate(.wardrobe)
+        case "events":
+            navigate(.events)
+        case "gifts":
+            navigate(.gifts)
+        case "passes":
+            navigate(.passes)
+        case "news":
+            navigate(.news)
+        case "settings":
+            navigate(.settings)
+        default:
+            break
+        }
+    }
+
+    private func menuTint(for color: String?) -> Color {
+        switch color?.lowercased() {
+        case "gold", "yellow":
+            return gold
+        case "blue":
+            return blue
+        case "cyan":
+            return DrakonBladePalette.cyan
+        case "violet", "purple":
+            return DrakonBladePalette.violet
+        case "emerald", "green":
+            return DrakonBladePalette.emerald
+        case "crimson", "red":
+            return DrakonBladePalette.crimson
+        default:
+            return gold
+        }
     }
 
     private func menuButton(
@@ -185,7 +174,7 @@ struct MenuView: View {
 
                     Spacer()
 
-                    RemoteAssetImage(name: "evolution_drakon_imperial")
+                    RemoteAssetImage(name: "skin_solarion_imperial_default")
                         .scaledToFit()
                         .frame(width: 22, height: 22)
                         .opacity(0.82)

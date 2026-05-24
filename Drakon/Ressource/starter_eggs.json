@@ -3,19 +3,19 @@
     "subtitle": "Diese Auswahl ist nur einmal pro Account möglich.",
     "eggs": [
         {
-            "id": "starter_baby_egg",
+            "id": "egg_baby_pyro",
             "title": "Baby Core",
-            "characterId": "character_drakon_baby",
-            "eggImage": "evolution_drakon_baby",
-            "previewImage": "evolution_drakon_baby",
+            "characterId": "character_drakon_baby_pyro",
+            "eggImage": "egg_baby_pyro",
+            "previewImage": "skin_pyro_baby_default",
             "accentColor": "gold"
         },
         {
-            "id": "starter_rookie_egg",
+            "id": "egg_rookie_blazion",
             "title": "Blazion Core",
-            "characterId": "character_drakon_rookie",
-            "eggImage": "evolution_drakon_rookie",
-            "previewImage": "evolution_drakon_rookie",
+            "characterId": "character_drakon_baby_pyro",
+            "eggImage": "egg_baby_pyro",
+            "previewImage": "skin_pyro_baby_default",
             "accentColor": "blue"
         }
     ]

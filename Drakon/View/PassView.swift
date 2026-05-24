@@ -13,6 +13,7 @@ struct PassView: View {
 
     @State private var passes = PassLoader.loadAll()
     @State private var selectedPassId: String?
+    @State private var infoPass: PassConfig?
 
     private var selectedPass: PassConfig? {
         passes.first { $0.id == selectedPassId } ?? passes.first
@@ -49,24 +50,73 @@ struct PassView: View {
             passes = PassLoader.loadAll()
             selectedPassId = selectedPassId ?? passes.first?.id
         }
+        .sheet(item: $infoPass) { pass in
+            passInfoSheet(pass)
+        }
     }
 
     private var header: some View {
-        HStack(spacing: 14) {
-            RemoteAssetImage(name: selectedPass?.icon ?? "drakon_icon")
-                .scaledToFit()
-                .frame(width: 70, height: 70)
+        ZStack(alignment: .bottomLeading) {
+            RemoteAssetImage(
+                name: selectedPass?.backgroundImage
+                    ?? selectedPass?.icon
+                    ?? "drakon_icon"
+            )
+            .scaledToFill()
+            .frame(maxWidth: .infinity)
+            .frame(height: 146)
+            .opacity(0.36)
+            .clipped()
 
-            VStack(alignment: .leading, spacing: 5) {
-                Text((selectedPass?.title ?? "PASSES").uppercased())
-                    .font(.system(size: 26, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
+            LinearGradient(
+                colors: [
+                    DrakonBladePalette.black.opacity(0.20),
+                    DrakonBladePalette.black.opacity(0.88),
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
 
-                Text("PROGRESS \(progress.points(for: selectedPass?.id ?? ""))")
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(DrakonBladePalette.gold)
+            HStack(spacing: 14) {
+                RemoteAssetImage(name: selectedPass?.icon ?? "drakon_icon")
+                    .scaledToFit()
+                    .frame(width: 70, height: 70)
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Text((selectedPass?.title ?? "PASSES").uppercased())
+                        .font(.system(size: 26, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    Text("PROGRESS \(progress.points(for: selectedPass?.id ?? ""))")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .foregroundStyle(DrakonBladePalette.gold)
+                }
+
+                Spacer()
+
+                if let selectedPass {
+                    Button {
+                        infoPass = selectedPass
+                    } label: {
+                        RemoteAssetImage(name: "icon_info")
+                            .scaledToFit()
+                            .frame(width: 28, height: 28)
+                            .padding(8)
+                            .background(DrakonBladePalette.gold)
+                            .clipShape(DrakonCutRectangle(cut: 9))
+                    }
+                    .buttonStyle(.plain)
+                }
             }
+            .padding(14)
         }
+        .frame(height: 146)
+        .background(DrakonBladePalette.panel)
+        .clipShape(DrakonBladeShape(pointDepth: 32, slant: 14))
+        .overlay(
+            DrakonBladeShape(pointDepth: 32, slant: 14)
+                .stroke(DrakonBladePalette.gold, lineWidth: 1.8)
+        )
     }
 
     private var passSelector: some View {
@@ -207,6 +257,88 @@ struct PassView: View {
             .clipShape(DrakonCutRectangle(cut: 12))
         }
         .buttonStyle(.plain)
+    }
+
+    private func passInfoSheet(_ pass: PassConfig) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                RemoteAssetImage(name: pass.backgroundImage ?? pass.icon)
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 180)
+                    .clipped()
+                    .clipShape(DrakonBladeShape(pointDepth: 34, slant: 14))
+
+                HStack(spacing: 12) {
+                    RemoteAssetImage(name: pass.icon)
+                        .scaledToFit()
+                        .frame(width: 54, height: 54)
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text((pass.infoTitle ?? pass.title).uppercased())
+                            .font(
+                                .system(
+                                    size: 22,
+                                    weight: .black,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(.white)
+
+                        Text(pass.currencyTitle.uppercased())
+                            .font(
+                                .system(
+                                    size: 11,
+                                    weight: .black,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(DrakonBladePalette.gold)
+                    }
+                }
+
+                Text(
+                    pass.infoBody
+                        ?? "Sammle Pass XP durch Battles und claim deine Rewards pro Tier."
+                )
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .foregroundStyle(DrakonBladePalette.mutedText)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(pass.infoTasks ?? defaultTasks(for: pass), id: \.self) {
+                        task in
+                        HStack(alignment: .top, spacing: 10) {
+                            RemoteAssetImage(name: "icon_info")
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+
+                            Text(task)
+                                .font(
+                                    .system(
+                                        size: 12,
+                                        weight: .black,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(.white)
+                        }
+                    }
+                }
+                .padding(14)
+                .background(DrakonBladePalette.panel)
+                .clipShape(DrakonCutRectangle(cut: 14))
+            }
+            .padding(22)
+        }
+        .background(DrakonScreenBackground())
+    }
+
+    private func defaultTasks(for pass: PassConfig) -> [String] {
+        [
+            "Kaempfe in Story oder Events, um \(pass.currencyTitle) zu sammeln.",
+            "Alle \(pass.pointsPerTier) Punkte wird ein neuer Tier freigeschaltet.",
+            "Free Rewards sind direkt claimbar. Premium Rewards sind fuer spaetere Premium-Pass Freischaltung vorbereitet.",
+        ]
     }
 }
 

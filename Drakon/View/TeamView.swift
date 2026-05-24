@@ -126,7 +126,7 @@ struct TeamView: View {
                     selectedCharacter = owned
                 }
             } else {
-                RemoteAssetImage(name: "evolution_drakon_baby")
+                RemoteAssetImage(name: "skin_pyro_baby_default")
                     .scaledToFit()
                     .padding(18)
                     .opacity(0.28)

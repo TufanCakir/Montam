@@ -20,6 +20,10 @@ struct PassConfig: Codable, Identifiable {
     let id: String
     let title: String
     let icon: String
+    let backgroundImage: String?
+    let infoTitle: String?
+    let infoBody: String?
+    let infoTasks: [String]?
     let currencyTitle: String
     let pointsPerTier: Int
     let tiers: [PassTier]
