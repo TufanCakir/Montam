@@ -11,6 +11,10 @@ struct EventVictoryView: View {
     let result: EventVictoryResult
     let onContinue: () -> Void
 
+    private var rewardIcons: EventRewardIconConfig {
+        GameConfigManager.shared.config.eventUI?.rewardIcons ?? .fallback
+    }
+
     var body: some View {
         VStack(spacing: 18) {
             Spacer()
@@ -32,22 +36,22 @@ struct EventVictoryView: View {
                 DrakonRewardLine(
                     title: "COINS",
                     value: result.coins,
-                    icon: "icon_draken_coin"
+                    icon: rewardIcons.coins
                 )
                 DrakonRewardLine(
                     title: "RUBY",
                     value: result.rubies,
-                    icon: "icon_draken_ruby"
+                    icon: rewardIcons.ruby
                 )
                 DrakonRewardLine(
                     title: "EVENT",
                     value: result.eventTokens,
-                    icon: "icon_draken_container"
+                    icon: rewardIcons.eventToken
                 )
                 DrakonRewardLine(
                     title: "DRAKEN",
                     value: result.draken,
-                    icon: "icon_draken"
+                    icon: rewardIcons.draken
                 )
                 ForEach(result.eggRewards) { reward in
                     let egg = EggConfigLoader.load().eggs.first {

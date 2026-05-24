@@ -8,7 +8,8 @@
         },
         "gems": 100,
         "tag": "starter",
-        "oneTimePurchase": true
+        "oneTimePurchase": true,
+        "purchaseLimit": 1
     },
     {
         "id": "starter_ruby_pack",
@@ -19,7 +20,8 @@
         },
         "rubies": 30,
         "tag": "ruby",
-        "oneTimePurchase": true
+        "oneTimePurchase": true,
+        "purchaseLimit": 1
     },
     {
         "id": "draken_hatch_pack",
@@ -29,7 +31,8 @@
             "color": "blue"
         },
         "draken": 250,
-        "tag": "hatch"
+        "tag": "hatch",
+        "purchaseLimit": 3
     },
     {
         "id": "shard_pack",
@@ -39,7 +42,8 @@
             "color": "yellow"
         },
         "shards": 500,
-        "tag": "summon"
+        "tag": "summon",
+        "purchaseLimit": 3
     },
     {
         "id": "event_token_pack",
@@ -49,7 +53,8 @@
             "color": "yellow"
         },
         "eventCurrency": 500,
-        "tag": "event"
+        "tag": "event",
+        "purchaseLimit": 3
     },
     {
         "id": "gems_pack_small",

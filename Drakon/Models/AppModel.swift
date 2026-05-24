@@ -31,8 +31,6 @@ final class AppModel: ObservableObject {
     let coinManager = CoinManager.shared
     let crystalManager = GemManager.shared
 
-    // MARK: - Persistent Keys
-    private let homeModeKey = "homeMode"
     private let starterKey = "drakon_starter_given"
 
     // MARK: - Published State
@@ -49,24 +47,29 @@ final class AppModel: ObservableObject {
     @Published var currentLoadingImage: String = "loading1"
     @Published var loadingTitle: String = "REMOTE SYNC"
     @Published var loadingSubtitle: String = "Lade Drakon Daten"
-    @Published var homeMode: HomeMode = .island {
-        didSet {
-            UserDefaults.standard.set(homeMode.rawValue, forKey: homeModeKey)
-        }
-    }
 
     func pickLoadingImage() {
-        currentLoadingImage = loadingImages.randomElement() ?? "drakon_icon"
+        currentLoadingImage =
+            availableLoadingImages.randomElement()
+            ?? "drakon_icon"
     }
 
-    /// Zufälliges Loading Bild
-    let loadingImages = [
-        "drakon_icon",
-        "skin_pyro_baby_default",
-        "skin_blazion_rookie_default",
-        "skin_infernon_advanced_default",
-        "skin_solarion_defaul",
-    ]
+    private var availableLoadingImages: [String] {
+        let configured = GameConfigManager.shared.config.loadingImages ?? []
+        if !configured.isEmpty {
+            return configured
+        }
+
+        let manifest = JSONLoader.manifest()
+        let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "webp"]
+        return manifest.assets
+            .filter {
+                imageExtensions.contains(
+                    URL(fileURLWithPath: $0.file).pathExtension.lowercased()
+                )
+            }
+            .map(\.id)
+    }
 
     enum AppState {
         case remoteLoading
@@ -102,17 +105,7 @@ final class AppModel: ObservableObject {
     // MARK: - Game Boot
 
     /// Called on first app launch or after full reset
-    func initializeGameIfNeeded() {
-        loadHomeMode()
-    }
-
-    func loadHomeMode() {
-        if let saved = UserDefaults.standard.string(forKey: homeModeKey),
-            let mode = HomeMode(rawValue: saved)
-        {
-            homeMode = mode
-        }
-    }
+    func initializeGameIfNeeded() {}
 
     // MARK: - Navigation mit Loading
 
@@ -223,31 +216,7 @@ final class AppModel: ObservableObject {
     }
 
     private var remoteBootFiles: [String] {
-        [
-            "game_config",
-            "starter_eggs",
-            "characters",
-            "summons",
-            "shop",
-            "events",
-            "event_attacks",
-            "gifts",
-            "pass_index",
-            "pass_rewards",
-            "launchpass",
-            "starterpass",
-            "babypass",
-            "rookiepass",
-            "advancedpass",
-            "imperialpass",
-            "daily_rewards",
-            "service_status",
-            "news",
-            "upgrade_config",
-            "eggs",
-            "skins",
-            "tutorials",
-        ]
+        Array(Set(JSONLoader.manifest().jsonFiles + ["remote_manifest"]))
     }
 
     func chooseStarter(characterId: String) {

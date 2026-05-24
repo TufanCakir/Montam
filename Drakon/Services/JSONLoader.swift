@@ -59,6 +59,7 @@ final class JSONLoader {
             ?? RemoteManifest(
                 jsonFiles: [],
                 assetBaseURL: nil,
+                musicBaseURL: nil,
                 assets: []
             )
     }

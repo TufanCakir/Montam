@@ -127,7 +127,9 @@ struct ShopView: View {
         let price =
             storeProduct.product?.displayPrice
             ?? (item.storeProductId == nil ? "FREE" : "NICHT VERFUEGBAR")
-        let canBuy = item.storeProductId == nil || storeProduct.product != nil
+        let hasValidProduct =
+            item.storeProductId == nil || storeProduct.product != nil
+        let canBuy = hasValidProduct && ShopManager.canPurchase(item)
 
         return VStack(spacing: 12) {
             RemoteAssetImage(name: item.rewardIcon)
@@ -143,12 +145,19 @@ struct ShopView: View {
             .foregroundStyle(gold)
             .lineLimit(1)
 
+            if let limitText = purchaseLimitText(for: item) {
+                Text(limitText)
+                    .font(.system(size: 9, weight: .black, design: .rounded))
+                    .foregroundStyle(mutedText)
+                    .lineLimit(1)
+            }
+
             rewardList(for: item)
 
             Button {
                 Task { await purchase(storeProduct) }
             } label: {
-                Text(price.uppercased())
+                Text((canBuy ? price : "LIMIT ERREICHT").uppercased())
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -233,6 +242,7 @@ struct ShopView: View {
 
     private func purchase(_ storeProduct: StoreProduct) async {
         let item = storeProduct.shopItem
+        guard ShopManager.canPurchase(item) else { return }
 
         if storeProduct.product == nil {
             guard item.storeProductId == nil else { return }
@@ -285,9 +295,25 @@ struct ShopView: View {
         }
 
         if item.oneTimePurchase == true {
-            UserDefaults.standard.set(true, forKey: "shop_bought_\(item.id)")
+            ShopManager.recordPurchase(item)
+            storeProducts.removeAll { $0.shopItem.id == item.id }
+            return
+        }
+
+        ShopManager.recordPurchase(item)
+        if !ShopManager.canPurchase(item) {
             storeProducts.removeAll { $0.shopItem.id == item.id }
         }
+    }
+
+    private func purchaseLimitText(for item: ShopItem) -> String? {
+        guard let limit = ShopManager.effectiveLimit(for: item),
+            let remaining = ShopManager.remainingPurchases(for: item)
+        else {
+            return nil
+        }
+
+        return "\(remaining)/\(limit) verfuegbar"
     }
 }
 

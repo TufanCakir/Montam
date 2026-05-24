@@ -14,6 +14,7 @@ final class RemoteDownloadManager: ObservableObject {
     @Published private(set) var manifest = RemoteManifest(
         jsonFiles: [],
         assetBaseURL: nil,
+        musicBaseURL: nil,
         assets: []
     )
     @Published private(set) var progress: Double = 0
@@ -27,7 +28,9 @@ final class RemoteDownloadManager: ObservableObject {
 
     func refreshManifest() {
         manifest = JSONLoader.manifest()
-        totalItems = Set(manifest.jsonFiles).count + manifest.assets.count
+        totalItems =
+            Set(manifest.jsonFiles).count + manifest.assets.count
+            + manifest.music.count
         completedItems = cachedItemCount()
         progress =
             totalItems == 0 ? 0 : Double(completedItems) / Double(totalItems)
@@ -72,8 +75,11 @@ final class RemoteDownloadManager: ObservableObject {
         DispatchQueue.global(qos: .userInitiated).async {
             let manifest = JSONLoader.manifest()
             let jsonFiles = Array(Set(manifest.jsonFiles + ["remote_manifest"]))
-            let assetCount = downloadAssets ? manifest.assets.count : 0
-            let total = max(1, jsonFiles.count + assetCount)
+            let remoteFileCount =
+                downloadAssets
+                ? manifest.assets.count + manifest.music.count
+                : 0
+            let total = max(1, jsonFiles.count + remoteFileCount)
             var completed = 0
             var bytes = 0
 
@@ -96,19 +102,31 @@ final class RemoteDownloadManager: ObservableObject {
             if downloadAssets,
                 let baseURL = manifest.assetBaseURL.flatMap(URL.init(string:))
             {
-                for asset in manifest.assets {
-                    bytes += RemoteAssetManager.shared.download(
-                        asset: asset,
-                        baseURL: baseURL
-                    )
-                    completed += 1
-                    self.publish(
-                        completed: completed,
-                        total: total,
-                        bytes: bytes,
-                        status: asset.file
-                    )
-                }
+                let result = self.download(
+                    manifest.assets,
+                    baseURL: baseURL,
+                    completed: completed,
+                    total: total,
+                    bytes: bytes
+                )
+                completed = result.completed
+                bytes = result.bytes
+            }
+
+            if downloadAssets,
+                let musicBaseURL = manifest.musicBaseURL.flatMap(
+                    URL.init(string:)
+                )
+            {
+                let result = self.download(
+                    manifest.music,
+                    baseURL: musicBaseURL,
+                    completed: completed,
+                    total: total,
+                    bytes: bytes
+                )
+                completed = result.completed
+                bytes = result.bytes
             }
 
             DispatchQueue.main.async {
@@ -138,6 +156,33 @@ final class RemoteDownloadManager: ObservableObject {
             self.progress = Double(completed) / Double(total)
             self.statusText = status
         }
+    }
+
+    private func download(
+        _ assets: [RemoteAsset],
+        baseURL: URL,
+        completed: Int,
+        total: Int,
+        bytes: Int
+    ) -> (completed: Int, bytes: Int) {
+        var completed = completed
+        var bytes = bytes
+
+        for asset in assets {
+            bytes += RemoteAssetManager.shared.download(
+                asset: asset,
+                baseURL: baseURL
+            )
+            completed += 1
+            publish(
+                completed: completed,
+                total: total,
+                bytes: bytes,
+                status: asset.file
+            )
+        }
+
+        return (completed, bytes)
     }
 
     func formattedBytes(_ bytes: Int) -> String {

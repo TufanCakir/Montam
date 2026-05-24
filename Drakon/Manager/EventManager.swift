@@ -63,11 +63,11 @@ class EventManager: ObservableObject {
         }
     }
 
-    func events(for category: EventCategory, mode: HomeMode) -> [GameEvent] {
+    func events(for category: EventCategory, mode: EventMode) -> [GameEvent] {
 
         let filtered = activeEvents()
             .filter {
-                $0.category == category && $0.mode.rawValue == mode.rawValue  // ⭐ KEY FIX
+                $0.category == category && $0.mode == mode
             }
 
         let shuffled = seededShuffle(filtered)
@@ -83,7 +83,8 @@ class EventManager: ObservableObject {
         return rotatedEvents(from: shuffled, count: 3)
     }
 
-    func events(forCategoryId categoryId: String, mode: HomeMode) -> [GameEvent]
+    func events(forCategoryId categoryId: String, mode: EventMode)
+        -> [GameEvent]
     {
         guard let category = EventCategory(rawValue: categoryId) else {
             return []
@@ -93,19 +94,19 @@ class EventManager: ObservableObject {
     }
 
     var bossEvents: [GameEvent] {
-        events(for: .boss, mode: .island)
+        events(for: .boss, mode: .main)
     }
 
     var storyEvents: [GameEvent] {
-        events(for: .story, mode: .island)
+        events(for: .story, mode: .main)
     }
 
     var specialEvents: [GameEvent] {
-        events(for: .special, mode: .island)
+        events(for: .special, mode: .main)
     }
 
     var buffEvents: [GameEvent] {
-        events(for: .buff, mode: .island)
+        events(for: .buff, mode: .main)
     }
 
     func expMultiplier() -> Double {

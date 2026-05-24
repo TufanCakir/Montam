@@ -11,30 +11,22 @@ final class RemoteAssetManager {
     static let shared = RemoteAssetManager()
 
     private let folderName = "RemoteDrakonAssets"
+    private let timeout: TimeInterval = 8
 
     private init() {
         migrateLegacyCacheIfNeeded()
     }
 
     func preload(manifest: RemoteManifest, completion: @escaping () -> Void) {
-        guard let baseURL = manifest.assetBaseURL.flatMap(URL.init(string:))
-        else {
-            completion()
-            return
-        }
-
         DispatchQueue.global(qos: .userInitiated).async {
-            for asset in manifest.assets {
-                guard self.localURL(for: asset.id) == nil else { continue }
-                let remoteURL = baseURL.appendingPathComponent(asset.file)
-                guard let data = try? Data(contentsOf: remoteURL) else {
-                    continue
-                }
-                self.save(
-                    data,
-                    id: asset.id,
-                    fileExtension: remoteURL.pathExtension
-                )
+            if let baseURL = manifest.assetBaseURL.flatMap(URL.init(string:)) {
+                self.preload(assets: manifest.assets, baseURL: baseURL)
+            }
+
+            if let musicBaseURL = manifest.musicBaseURL.flatMap(
+                URL.init(string:)
+            ) {
+                self.preload(assets: manifest.music, baseURL: musicBaseURL)
             }
 
             DispatchQueue.main.async {
@@ -64,13 +56,30 @@ final class RemoteAssetManager {
         }
 
         let remoteURL = baseURL.appendingPathComponent(asset.file)
-        guard let data = try? Data(contentsOf: remoteURL) else { return 0 }
+        guard let data = fetchData(from: remoteURL) else { return 0 }
         save(data, id: asset.id, fileExtension: remoteURL.pathExtension)
         return data.count
     }
 
     func cachedAssetCount(in manifest: RemoteManifest) -> Int {
-        manifest.assets.filter { localURL(for: $0.id) != nil }.count
+        (manifest.assets + manifest.music).filter {
+            localURL(for: $0.id) != nil
+        }.count
+    }
+
+    private func preload(assets: [RemoteAsset], baseURL: URL) {
+        for asset in assets {
+            guard localURL(for: asset.id) == nil else { continue }
+            let remoteURL = baseURL.appendingPathComponent(asset.file)
+            guard let data = fetchData(from: remoteURL) else {
+                continue
+            }
+            save(
+                data,
+                id: asset.id,
+                fileExtension: remoteURL.pathExtension
+            )
+        }
     }
 
     private func save(_ data: Data, id: String, fileExtension: String) {
@@ -83,6 +92,33 @@ final class RemoteAssetManager {
             fileExtension.isEmpty ? "png" : fileExtension
         )
         try? data.write(to: url, options: .atomic)
+    }
+
+    private func fetchData(from url: URL) -> Data? {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: Data?
+
+        var request = URLRequest(url: url, timeoutInterval: timeout)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            defer { semaphore.signal() }
+
+            guard error == nil,
+                let httpResponse = response as? HTTPURLResponse,
+                200..<300 ~= httpResponse.statusCode,
+                let data,
+                !data.isEmpty
+            else {
+                return
+            }
+
+            result = data
+        }
+        .resume()
+
+        _ = semaphore.wait(timeout: .now() + timeout)
+        return result
     }
 
     private func remoteDirectory() -> URL {

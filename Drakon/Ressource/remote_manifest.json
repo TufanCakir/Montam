@@ -8,6 +8,7 @@
         "events",
         "event_attacks",
         "gifts",
+        "music",
         "pass_index",
         "pass_rewards",
         "launchpass",
@@ -25,6 +26,7 @@
         "tutorials"
     ],
     "assetBaseURL": "https://remotedrakon.tufancakir.com/assets",
+    "musicBaseURL": "https://remotedrakon.tufancakir.com/music",
     "assets": [
         {
             "id": "icon_house",
@@ -117,6 +119,16 @@
         {
             "id": "loading1",
             "file": "skin_solarion_imperial_default.png"
+        }
+    ],
+    "music": [
+        {
+            "id": "drakon_evolution_1",
+            "file": "drakon_evolution_1.mp3"
+        },
+        {
+            "id": "drakon_evolution_2",
+            "file": "drakon_evolution_2.mp3"
         }
     ]
 }

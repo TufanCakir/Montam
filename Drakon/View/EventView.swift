@@ -18,7 +18,7 @@ struct EventView: View {
     @State private var selectedDifficultyId = "normal"
 
     private var events: [GameEvent] {
-        eventManager.events(forCategoryId: selectedCategoryId, mode: .island)
+        eventManager.events(forCategoryId: selectedCategoryId, mode: .main)
     }
 
     private var categories: [EventCategoryInfo] {
@@ -299,36 +299,26 @@ struct EventView: View {
                 "COINS",
                 event.rewards?.coins,
                 icon: rewardIcons.coins
-                    ?? EventRewardIconConfig.fallback.coins
-                    ?? "icon_drakon_coin"
             )
             rewardChip(
                 "GEMS",
                 event.rewards?.gems,
                 icon: rewardIcons.gems
-                    ?? EventRewardIconConfig.fallback.gems
-                    ?? "icon_drakon_gem"
             )
             rewardChip(
                 "RUBY",
                 event.rewards?.ruby,
                 icon: rewardIcons.ruby
-                    ?? EventRewardIconConfig.fallback.ruby
-                    ?? "icon_drakon_ruby"
             )
             rewardChip(
                 "EVENT",
                 event.rewards?.eventToken,
                 icon: rewardIcons.eventToken
-                    ?? EventRewardIconConfig.fallback.eventToken
-                    ?? "icon_draken_container"
             )
             rewardChip(
                 "DRAKEN",
                 event.rewards?.draken,
                 icon: rewardIcons.draken
-                    ?? EventRewardIconConfig.fallback.draken
-                    ?? "icon_draken"
             )
             if let egg = event.rewards?.eggs?.first {
                 DrakonRewardChip(
@@ -485,8 +475,6 @@ struct EventView: View {
     private func eggIcon(for eggId: String) -> String {
         EggConfigLoader.load().eggs.first(where: { $0.id == eggId })?.eggImage
             ?? rewardIcons.egg
-            ?? EventRewardIconConfig.fallback.egg
-            ?? "egg_baby_pyro"
     }
 }
 

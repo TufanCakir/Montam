@@ -14,6 +14,7 @@ struct GameConfig: Codable {
     let storyChapters: [StoryChapter]
     let footerItems: [GameFooterConfigItem]?
     let homeMenuItems: [GameMenuConfigItem]?
+    let loadingImages: [String]?
     let eventUI: EventUIConfig?
 
     static let fallback = GameConfig(
@@ -33,6 +34,7 @@ struct GameConfig: Codable {
         storyChapters: [],
         footerItems: GameFooterConfigItem.fallback,
         homeMenuItems: GameMenuConfigItem.fallback,
+        loadingImages: [],
         eventUI: .fallback
     )
 }
@@ -227,12 +229,12 @@ struct EventUIConfig: Codable, Hashable {
 }
 
 struct EventRewardIconConfig: Codable, Hashable {
-    let coins: String?
-    let gems: String?
-    let ruby: String?
-    let eventToken: String?
-    let draken: String?
-    let egg: String?
+    let coins: String
+    let gems: String
+    let ruby: String
+    let eventToken: String
+    let draken: String
+    let egg: String
 
     static let fallback = EventRewardIconConfig(
         coins: "icon_drakon_coin",

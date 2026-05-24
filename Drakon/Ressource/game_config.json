@@ -112,6 +112,17 @@
             "style": "wide"
         }
     ],
+    "loadingImages": [
+        "drakon_icon",
+        "skin_pyro_baby_default",
+        "skin_blazion_rookie_default",
+        "skin_infernon_advanced_default",
+        "skin_solarion_imperial_default",
+        "skin_pyro_baby_blue",
+        "skin_blazion_rookie_blue",
+        "skin_infernon_advanced_blue",
+        "skin_solarion_imperial_blue"
+    ],
     "eventUI": {
         "title": "Events",
         "emptyTitle": "Keine Events",

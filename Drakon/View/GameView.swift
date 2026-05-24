@@ -429,7 +429,7 @@ struct GameView: View {
         .buttonStyle(.plain)
     }
 
-    private func summonCard(for form: BattleViewModel.EvolutionForm)
+    private func summonCard(for form: BattleEvolutionForm)
         -> some View
     {
         VStack(spacing: 12) {
@@ -459,72 +459,64 @@ struct GameView: View {
     }
 }
 
-@MainActor
-final class BattleViewModel: ObservableObject {
-    enum EvolutionForm: CaseIterable, Equatable {
-        case baby
-        case rookie
-        case advanced
-        case imperial
+struct BattleEvolutionForm: Identifiable, Equatable, Hashable {
+    let characterId: String
+    let title: String
+    let assetName: String
+    let attackPower: Int
+    let energyGain: Double
+    let element: DrakonElement
+    let isBaby: Bool
 
-        var assetName: String {
-            switch self {
-            case .baby: "evolution_drakon_baby"
-            case .rookie: "evolution_drakon_rookie"
-            case .advanced: "evolution_drakon_advanced"
-            case .imperial: "evolution_drakon_imperial"
-            }
-        }
+    var id: String { characterId }
 
-        var title: String {
-            switch self {
-            case .baby: "PYRO"
-            case .rookie: "BLAZION"
-            case .advanced: "INFERNON"
-            case .imperial: "SOLARION"
-            }
-        }
-
-        var attackPower: Int {
-            switch self {
-            case .baby: 12
-            case .rookie: 20
-            case .advanced: 34
-            case .imperial: 55
-            }
-        }
-
-        var energyGain: Double {
-            switch self {
-            case .baby: 12
-            case .rookie: 10
-            case .advanced: 8
-            case .imperial: 6
-            }
-        }
-
-        var element: DrakonElement {
-            switch self {
-            case .baby: .fire
-            case .rookie: .water
-            case .advanced: .nature
-            case .imperial: .fire
-            }
-        }
-
-        var characterId: String {
-            switch self {
-            case .baby: "character_drakon_baby_pyro"
-            case .rookie: "character_drakon_rookie_blazion"
-            case .advanced: "character_drakon_advanced_infernon"
-            case .imperial: "character_drakon_imperial_solarion"
-            }
-        }
+    init(character: Character) {
+        characterId = character.id
+        title = character.name.uppercased()
+        assetName = character.sprite
+        attackPower = max(8, character.stats.attack / 7)
+        energyGain = min(14, max(5, Double(character.stats.energyPower) / 10))
+        element = DrakonElement.parse(character.energyType)
+        isBaby =
+            character.id.localizedCaseInsensitiveContains("baby")
+            || character.rarity == .common
     }
 
-    @Published var currentForm: EvolutionForm = .baby
-    @Published var nextEvolutionForm: EvolutionForm = .rookie
-    @Published var drawnForm: EvolutionForm?
+    private init(
+        characterId: String,
+        title: String,
+        assetName: String,
+        attackPower: Int,
+        energyGain: Double,
+        element: DrakonElement,
+        isBaby: Bool
+    ) {
+        self.characterId = characterId
+        self.title = title
+        self.assetName = assetName
+        self.attackPower = attackPower
+        self.energyGain = energyGain
+        self.element = element
+        self.isBaby = isBaby
+    }
+
+    static let fallbackBaby = BattleEvolutionForm(
+        characterId: "character_drakon_baby_pyro",
+        title: "PYRO",
+        assetName: "skin_pyro_baby_default",
+        attackPower: 12,
+        energyGain: 12,
+        element: .fire,
+        isBaby: true
+    )
+}
+
+@MainActor
+final class BattleViewModel: ObservableObject {
+
+    @Published var currentForm: BattleEvolutionForm = .fallbackBaby
+    @Published var nextEvolutionForm: BattleEvolutionForm = .fallbackBaby
+    @Published var drawnForm: BattleEvolutionForm?
     @Published var evolutionEnergy = 0.0
     @Published var enemyHP = 150
     @Published var enemyMaxHP = 150
@@ -538,6 +530,9 @@ final class BattleViewModel: ObservableObject {
     @Published var gems = 0
     @Published var battleTitle: String?
     @Published var storyText: String?
+    @Published private var battleForms: [BattleEvolutionForm] = [
+        .fallbackBaby
+    ]
 
     private weak var appModel: AppModel?
     private var onEventVictory: ((EventVictoryResult) -> Void)?
@@ -585,6 +580,8 @@ final class BattleViewModel: ObservableObject {
         configured = true
 
         loadIdleProgress()
+        loadBattleForms()
+        configureStartingForm()
         eventAttacks = EventAttackLoader.load()
         battleTitle =
             EventRuntime.shared.activeEvent?.title
@@ -858,16 +855,49 @@ final class BattleViewModel: ObservableObject {
     }
 
     private func rollNextEvolutionForm() {
-        nextEvolutionForm = availableEvolutionForms.randomElement() ?? .baby
+        nextEvolutionForm = availableEvolutionForms.randomElement()
+            ?? currentForm
     }
 
-    private var availableEvolutionForms: [EvolutionForm] {
+    private var availableEvolutionForms: [BattleEvolutionForm] {
         let ownedIds = Set(
             appModel?.teamManager.ownedCharacters.map(\.baseId) ?? []
         )
-        return EvolutionForm.allCases.filter { form in
-            form != .baby && ownedIds.contains(form.characterId)
+        return battleForms.filter { form in
+            !form.isBaby && ownedIds.contains(form.characterId)
         }
+    }
+
+    private func loadBattleForms() {
+        do {
+            let characters: [Character] = try JSONLoader.load("characters")
+            let forms = characters.map(BattleEvolutionForm.init(character:))
+            battleForms = forms.isEmpty ? [.fallbackBaby] : forms
+        } catch {
+            print("Battle forms load failed:", error)
+            battleForms = [.fallbackBaby]
+        }
+    }
+
+    private func configureStartingForm() {
+        let ownedIds = Set(
+            appModel?.teamManager.ownedCharacters.map(\.baseId) ?? []
+        )
+
+        currentForm =
+            battleForms.first {
+                $0.isBaby && ownedIds.contains($0.characterId)
+            }
+            ?? battleForms.first {
+                ownedIds.contains($0.characterId)
+            }
+            ?? battleForms.first {
+                $0.isBaby
+            }
+            ?? .fallbackBaby
+
+        nextEvolutionForm = availableEvolutionForms.randomElement()
+            ?? currentForm
     }
 
     private var attackDamage: Int {

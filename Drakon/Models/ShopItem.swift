@@ -26,6 +26,7 @@ struct ShopItem: Codable, Identifiable {
     let medals: Int?
 
     let oneTimePurchase: Bool?
+    let purchaseLimit: Int?
     let tag: String?
 }
 

@@ -30,6 +30,7 @@ final class MusicManager: NSObject, ObservableObject {
     }
 
     struct Track: Codable {
+        let id: String?
         let file: String
         let volume: Double?  // optional per-track volume
     }
@@ -117,14 +118,7 @@ final class MusicManager: NSObject, ObservableObject {
 extension MusicManager {
 
     fileprivate func loadMusicConfig() {
-        guard
-            let url = Bundle.main.url(
-                forResource: "music",
-                withExtension: "json"
-            ),
-            let data = try? Data(contentsOf: url),
-            let config = try? JSONDecoder().decode(MusicConfig.self, from: data)
-        else {
+        guard let config: MusicConfig = try? JSONLoader.load("music") else {
             print("❌ music.json load failed")
             return
         }
@@ -145,8 +139,9 @@ extension MusicManager {
 
         let track = playlist[index]
         let name = track.file.replacingOccurrences(of: ".mp3", with: "")
+        let assetId = track.id ?? name
 
-        guard let url = Bundle.main.url(forResource: name, withExtension: "mp3")
+        guard let url = audioURL(for: track, assetId: assetId, name: name)
         else {
             print("❌ Missing file:", track.file)
             return
@@ -166,6 +161,22 @@ extension MusicManager {
         } catch {
             print("❌ Audio error:", error)
         }
+    }
+
+    fileprivate func audioURL(
+        for track: Track,
+        assetId: String,
+        name: String
+    ) -> URL? {
+        if let remoteURL = RemoteAssetManager.shared.localURL(for: assetId) {
+            return remoteURL
+        }
+
+        let fileExtension = URL(fileURLWithPath: track.file).pathExtension
+        return Bundle.main.url(
+            forResource: name,
+            withExtension: fileExtension.isEmpty ? "mp3" : fileExtension
+        )
     }
 
     fileprivate func updatePlayerVolume() {
