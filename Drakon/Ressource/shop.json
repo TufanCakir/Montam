@@ -121,8 +121,7 @@
             "icon": "skin_solarion_imperial_blue",
             "color": "yellow"
         },
-        "rubies": 25,
-        "skinId": "skin_solarion_imperial_blue",
+        "skinId": "solarion_blue",
         "tag": "skin pack"
     },
     {
@@ -130,7 +129,7 @@
         "storeProductId": "com.drakon.pack.launch.mixed",
         "category": {
             "id": "special_packs",
-            "icon": "drakon_icon",
+            "icon": "icon_drakon_gem",
             "color": "green"
         },
         "coins": 5000,

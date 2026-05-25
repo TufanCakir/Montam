@@ -473,7 +473,7 @@ struct BattleEvolutionForm: Identifiable, Equatable, Hashable {
     init(character: Character) {
         characterId = character.id
         title = character.name.uppercased()
-        assetName = character.sprite
+        assetName = SkinInventoryManager.shared.activeImage(for: character)
         attackPower = max(8, character.stats.attack / 7)
         energyGain = min(14, max(5, Double(character.stats.energyPower) / 10))
         element = DrakonElement.parse(character.energyType)

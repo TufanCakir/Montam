@@ -235,6 +235,7 @@ struct EventRewardIconConfig: Codable, Hashable {
     let eventToken: String
     let draken: String
     let egg: String
+    let skin: String
 
     static let fallback = EventRewardIconConfig(
         coins: "icon_drakon_coin",
@@ -242,6 +243,7 @@ struct EventRewardIconConfig: Codable, Hashable {
         ruby: "icon_drakon_ruby",
         eventToken: "icon_draken_container",
         draken: "icon_draken",
-        egg: "egg_baby_pyro"
+        egg: "egg_baby_pyro",
+        skin: "skin_solarion_imperial_blue"
     )
 }

@@ -144,7 +144,8 @@
             "ruby": "icon_drakon_ruby",
             "eventToken": "icon_draken_container",
             "draken": "icon_draken",
-            "egg": "egg_baby_pyro"
+            "egg": "egg_baby_pyro",
+            "skin": "skin_solarion_imperial_blue"
         }
     },
     "battleDifficulties": [
