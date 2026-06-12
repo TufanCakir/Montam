@@ -43,9 +43,6 @@ struct PassView: View {
             .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("Passes")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

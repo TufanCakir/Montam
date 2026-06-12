@@ -111,9 +111,6 @@ struct TutorialView: View {
             Spacer()
         }
         .padding(.horizontal, 22)
-        .background {
-            MontamBackground()
-        }
         .onAppear {
             tutorial = TutorialConfigLoader.load()
         }

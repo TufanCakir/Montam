@@ -34,9 +34,6 @@ struct HatcheryView: View {
             .padding(18)
         }
         .scrollIndicators(.hidden)
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("Hatchery")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

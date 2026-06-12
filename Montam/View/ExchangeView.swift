@@ -30,9 +30,6 @@ struct ExchangeView: View {
             }
         }
         .padding(.top, 18)
-        .background {
-            MontamBackground()
-        }
         .alert("Nicht genug MontamCoins", isPresented: $showFail) {
             Button("OK", role: .cancel) {}
         }

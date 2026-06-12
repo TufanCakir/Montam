@@ -54,9 +54,6 @@ struct WardrobeView: View {
             .scrollIndicators(.hidden)
         }
         .padding(.top, 18)
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("Wardrobe")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $selectedSkinInfo) { skin in

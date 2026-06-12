@@ -65,9 +65,6 @@ struct ShopView: View {
             }
         }
         .padding(.top, 18)
-        .background {
-            MontamBackground()
-        }
         .task { await loadShop() }
     }
 

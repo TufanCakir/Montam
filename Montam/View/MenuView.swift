@@ -48,9 +48,6 @@ struct MenuView: View {
                         )
                 }
             }
-            .background {
-                MontamBackground()
-            }
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .animation(.easeOut(duration: 0.18), value: showsMenu)

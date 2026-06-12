@@ -81,9 +81,6 @@ struct DailyLoginPopupView: View {
             .padding(24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            MontamBackground()
-        }
     }
 
     private func rewardPanel(

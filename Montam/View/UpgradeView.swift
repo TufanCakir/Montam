@@ -31,9 +31,6 @@ struct UpgradeView: View {
             .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("Upgrade")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

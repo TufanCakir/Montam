@@ -54,9 +54,6 @@ struct StarterSelectionView: View {
         .padding(.top, 24)
         .padding(.bottom, 26)
         .onAppear(perform: loadConfig)
-        .background {
-            MontamBackground()
-        }
     }
 
     private var header: some View {

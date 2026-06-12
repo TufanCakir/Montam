@@ -51,9 +51,6 @@ struct SummonView: View {
             }
         }
         .padding(.top, 8)
-        .background {
-            MontamBackground()
-        }
         .fullScreenCover(isPresented: $showResults) {
             SummonResultView(characters: summonResults)
         }

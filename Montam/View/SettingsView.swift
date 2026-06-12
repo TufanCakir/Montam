@@ -32,9 +32,6 @@ struct SettingsView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
         }
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Account zurücksetzen?", isPresented: $showConfirm) {

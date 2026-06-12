@@ -77,7 +77,6 @@ struct StartView: View {
                     appModel.startGame()
                 }
             }
-
             actionButton(
                 title: "Summon",
                 image: "skin_crygon_tamed_default",

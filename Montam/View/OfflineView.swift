@@ -40,9 +40,6 @@ struct OfflineView: View {
             Spacer()
         }
         .padding(24)
-        .background {
-            MontamBackground()
-        }
     }
 
     private var statusMark: some View {

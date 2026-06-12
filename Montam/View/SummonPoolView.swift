@@ -29,9 +29,6 @@ struct SummonPoolView: View {
                 .padding(.bottom, 24)
             }
             .scrollIndicators(.hidden)
-            .background {
-                MontamBackground()
-            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

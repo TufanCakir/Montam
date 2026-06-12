@@ -32,9 +32,6 @@ struct TeamView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
         }
-        .background {
-            MontamBackground()
-        }
         .sheet(item: $selectedCharacter) { CharacterDetailView(owned: $0) }
         .alert("Team braucht 1 Montam", isPresented: $showTeamWarning) {
             Button("OK", role: .cancel) {}

@@ -60,9 +60,6 @@ struct MaintenanceView: View {
             Spacer()
         }
         .padding(24)
-        .background {
-            MontamBackground()
-        }
         .onAppear {
             service.refresh()
         }

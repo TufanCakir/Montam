@@ -38,9 +38,6 @@ struct StorySelectionView: View {
                 .padding(.bottom, 24)
             }
         }
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("Story")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

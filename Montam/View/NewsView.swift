@@ -44,9 +44,6 @@ struct NewsView: View {
                 .padding(.bottom, 24)
             }
         }
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("News")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

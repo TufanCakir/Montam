@@ -31,9 +31,6 @@ struct CharacterDetailView: View {
             .padding(.bottom, 28)
         }
         .scrollIndicators(.hidden)
-        .background {
-            MontamBackground()
-        }
     }
 
     private var heroSection: some View {

@@ -34,9 +34,6 @@ struct GiftView: View {
             .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
-        .background {
-            MontamBackground()
-        }
         .navigationTitle("Gifts")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
