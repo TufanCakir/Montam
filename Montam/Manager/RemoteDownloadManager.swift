@@ -1,0 +1,194 @@
+//
+//  RemoteDownloadManager.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 11.06.26.
+//
+
+import Combine
+import Foundation
+
+final class RemoteDownloadManager: ObservableObject {
+    static let shared = RemoteDownloadManager()
+
+    @Published private(set) var manifest = RemoteManifest(
+        jsonFiles: [],
+        assetBaseURL: nil,
+        musicBaseURL: nil,
+        assets: []
+    )
+    @Published private(set) var progress: Double = 0
+    @Published private(set) var downloadedBytes: Int = 0
+    @Published private(set) var totalItems: Int = 0
+    @Published private(set) var completedItems: Int = 0
+    @Published private(set) var statusText: String = "Bereit"
+    @Published private(set) var isLoading = false
+
+    private init() {}
+
+    func refreshManifest() {
+        manifest = JSONLoader.manifest()
+        totalItems =
+            Set(manifest.jsonFiles).count + manifest.assets.count
+            + manifest.music.count
+        completedItems = cachedItemCount()
+        progress =
+            totalItems == 0 ? 0 : Double(completedItems) / Double(totalItems)
+        downloadedBytes = 0
+        statusText =
+            hasCompleteCache
+            ? "Remote Daten bereit" : "Remote Paket: \(totalItems) Dateien"
+    }
+
+    var hasCompleteCache: Bool {
+        totalItems > 0 && completedItems >= totalItems
+    }
+
+    func preload(completion: @escaping () -> Void) {
+        run(downloadAssets: true, completion: completion)
+    }
+
+    func downloadAll(completion: @escaping () -> Void) {
+        run(downloadAssets: true, completion: completion)
+    }
+
+    func preloadForNavigation(files: [String], completion: @escaping () -> Void)
+    {
+        isLoading = true
+        statusText = "Pruefe Navigation Assets"
+        JSONLoader.preload(files) {
+            self.refreshManifest()
+            self.isLoading = false
+            completion()
+        }
+    }
+
+    private func run(downloadAssets: Bool, completion: @escaping () -> Void) {
+        isLoading = true
+        downloadedBytes = 0
+        completedItems = 0
+        progress = 0
+        statusText =
+            downloadAssets
+            ? "Lade komplette Remote Daten" : "Preload JSON Daten"
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            let manifest = JSONLoader.manifest()
+            let jsonFiles = Array(Set(manifest.jsonFiles + ["remote_manifest"]))
+            let remoteFileCount =
+                downloadAssets
+                ? manifest.assets.count + manifest.music.count
+                : 0
+            let total = max(1, jsonFiles.count + remoteFileCount)
+            var completed = 0
+            var bytes = 0
+
+            DispatchQueue.main.async {
+                self.manifest = manifest
+                self.totalItems = total
+            }
+
+            for file in jsonFiles {
+                bytes += JSONLoader.cacheRemoteFile(file)
+                completed += 1
+                self.publish(
+                    completed: completed,
+                    total: total,
+                    bytes: bytes,
+                    status: "\(file).json"
+                )
+            }
+
+            if downloadAssets,
+                let baseURL = manifest.assetBaseURL.flatMap(URL.init(string:))
+            {
+                let result = self.download(
+                    manifest.assets,
+                    baseURL: baseURL,
+                    completed: completed,
+                    total: total,
+                    bytes: bytes
+                )
+                completed = result.completed
+                bytes = result.bytes
+            }
+
+            if downloadAssets,
+                let musicBaseURL = manifest.musicBaseURL.flatMap(
+                    URL.init(string:)
+                )
+            {
+                let result = self.download(
+                    manifest.music,
+                    baseURL: musicBaseURL,
+                    completed: completed,
+                    total: total,
+                    bytes: bytes
+                )
+                completed = result.completed
+                bytes = result.bytes
+            }
+
+            DispatchQueue.main.async {
+                self.isLoading = false
+                self.statusText = "Fertig: \(self.formattedBytes(bytes))"
+                completion()
+            }
+        }
+    }
+
+    private func cachedItemCount() -> Int {
+        let cachedJSON = manifest.jsonFiles.filter {
+            JSONLoader.hasCachedData(for: $0)
+        }.count
+        let cachedAssets = RemoteAssetManager.shared.cachedAssetCount(
+            in: manifest
+        )
+        return cachedJSON + cachedAssets
+    }
+
+    private func publish(completed: Int, total: Int, bytes: Int, status: String)
+    {
+        DispatchQueue.main.async {
+            self.completedItems = completed
+            self.totalItems = total
+            self.downloadedBytes = bytes
+            self.progress = Double(completed) / Double(total)
+            self.statusText = status
+        }
+    }
+
+    private func download(
+        _ assets: [RemoteAsset],
+        baseURL: URL,
+        completed: Int,
+        total: Int,
+        bytes: Int
+    ) -> (completed: Int, bytes: Int) {
+        var completed = completed
+        var bytes = bytes
+
+        for asset in assets {
+            bytes += RemoteAssetManager.shared.download(
+                asset: asset,
+                baseURL: baseURL
+            )
+            completed += 1
+            publish(
+                completed: completed,
+                total: total,
+                bytes: bytes,
+                status: asset.file
+            )
+        }
+
+        return (completed, bytes)
+    }
+
+    func formattedBytes(_ bytes: Int) -> String {
+        ByteCountFormatter.string(
+            fromByteCount: Int64(bytes),
+            countStyle: .file
+        )
+    }
+}

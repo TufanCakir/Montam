@@ -1,0 +1,222 @@
+[
+    {
+        "id": "character_montam_feral_pyro",
+        "name": "Pyro",
+        "rarity": "common",
+        "role": "dps",
+        "stats": {
+            "hp": 900,
+            "attack": 85,
+            "energyPower": 45,
+            "attackSpeed": 1.6
+        },
+        "energyType": "fire",
+        "sprite": "skin_pyro_feral_default",
+        "skins": [
+            {
+                "id": "pyro_blue",
+                "sprite": "skin_pyro_feral_blue"
+            }
+        ],
+        "skills": [
+            {
+                "id": "feral_flame",
+                "name": "Pyro Flame",
+                "type": "damage",
+                "multiplier": 1.2,
+                "cooldown": 4,
+                "color": "fire"
+            }
+        ]
+    },
+    {
+        "id": "character_montam_tamed_blazion",
+        "name": "Blazion",
+        "rarity": "rare",
+        "role": "dps",
+        "stats": {
+            "hp": 1250,
+            "attack": 135,
+            "energyPower": 70,
+            "attackSpeed": 1.45
+        },
+        "energyType": "arcane",
+        "sprite": "skin_blazion_tamed_default",
+        "skins": [
+            {
+                "id": "blazion_blue",
+                "sprite": "skin_blazion_tamed_blue"
+            }
+        ],
+        "skills": [
+            {
+                "id": "tamed_claw",
+                "name": "Blazion Claw",
+                "type": "damage",
+                "multiplier": 1.55,
+                "cooldown": 5,
+                "color": "arcane"
+            }
+        ]
+    },
+    {
+        "id": "character_montam_mastered_infernon",
+        "name": "Infernon",
+        "rarity": "epic",
+        "role": "dps",
+        "stats": {
+            "hp": 1700,
+            "attack": 205,
+            "energyPower": 105,
+            "attackSpeed": 1.28
+        },
+        "energyType": "lightning",
+        "sprite": "skin_infernon_mastered_default",
+        "skins": [
+            {
+                "id": "infernon_blue",
+                "sprite": "skin_infernon_mastered_blue"
+            }
+        ],
+        "skills": [
+            {
+                "id": "mastered_surge",
+                "name": "Infernon Surge",
+                "type": "damage",
+                "multiplier": 2.05,
+                "cooldown": 6,
+                "color": "lightning"
+            }
+        ]
+    },
+    {
+        "id": "character_montam_exalted_solarion",
+        "name": "Solarion",
+        "rarity": "legendary",
+        "role": "dps",
+        "stats": {
+            "hp": 2400,
+            "attack": 320,
+            "energyPower": 160,
+            "attackSpeed": 1.12
+        },
+        "energyType": "chaos",
+        "sprite": "skin_solarion_exalted_default",
+        "skins": [
+            {
+                "id": "solarion_blue",
+                "sprite": "skin_solarion_exalted_blue"
+            }
+        ],
+        "skills": [
+            {
+                "id": "exalted_breaker",
+                "name": "Solarion Breaker",
+                "type": "damage",
+                "multiplier": 2.8,
+                "cooldown": 7,
+                "color": "chaos"
+            }
+        ]
+    },
+    {
+        "id": "character_montam_feral_cryon",
+        "name": "Cryon",
+        "rarity": "common",
+        "role": "support",
+        "stats": {
+            "hp": 980,
+            "attack": 72,
+            "energyPower": 58,
+            "attackSpeed": 1.52
+        },
+        "energyType": "water",
+        "sprite": "skin_cryon_feral_default",
+        "skins": [],
+        "skills": [
+            {
+                "id": "feral_frost",
+                "name": "Cryon Frost",
+                "type": "damage",
+                "multiplier": 1.15,
+                "cooldown": 4,
+                "color": "water"
+            }
+        ]
+    },
+    {
+        "id": "character_montam_tamed_crygon",
+        "name": "Crygon",
+        "rarity": "rare",
+        "role": "support",
+        "stats": {
+            "hp": 1360,
+            "attack": 118,
+            "energyPower": 84,
+            "attackSpeed": 1.38
+        },
+        "energyType": "water",
+        "sprite": "skin_crygon_tamed_default",
+        "skins": [],
+        "skills": [
+            {
+                "id": "tamed_glacier",
+                "name": "Crygon Glacier",
+                "type": "damage",
+                "multiplier": 1.50,
+                "cooldown": 5,
+                "color": "water"
+            }
+        ]
+    },
+    {
+        "id": "character_montam_mastered_stormeon",
+        "name": "Stormeon",
+        "rarity": "epic",
+        "role": "dps",
+        "stats": {
+            "hp": 1820,
+            "attack": 190,
+            "energyPower": 122,
+            "attackSpeed": 1.20
+        },
+        "energyType": "lightning",
+        "sprite": "skin_stormeon_mastered_default",
+        "skins": [],
+        "skills": [
+            {
+                "id": "mastered_tempest",
+                "name": "Stormeon Tempest",
+                "type": "damage",
+                "multiplier": 2.10,
+                "cooldown": 6,
+                "color": "lightning"
+            }
+        ]
+    },
+    {
+        "id": "character_montam_exalted_imperion",
+        "name": "Imperion",
+        "rarity": "legendary",
+        "role": "dps",
+        "stats": {
+            "hp": 2520,
+            "attack": 300,
+            "energyPower": 178,
+            "attackSpeed": 1.08
+        },
+        "energyType": "light",
+        "sprite": "skin_imperion_exalted_default",
+        "skins": [],
+        "skills": [
+            {
+                "id": "exalted_empire",
+                "name": "Imperion Empire",
+                "type": "damage",
+                "multiplier": 2.75,
+                "cooldown": 7,
+                "color": "light"
+            }
+        ]
+    }
+]

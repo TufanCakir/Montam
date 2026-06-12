@@ -1,0 +1,238 @@
+{
+    "team": {
+        "maxActiveTeamSize": 4
+    },
+    "starterSelection": {
+        "requiredForNewAccount": true,
+        "selectionCount": 1
+    },
+    "footerItems": [
+        {
+            "tab": "home",
+            "title": "Home",
+            "icon": "icon_house",
+            "color": "gold"
+        },
+        {
+            "tab": "team",
+            "title": "Team",
+            "icon": "icon_team",
+            "color": "cyan"
+        },
+        {
+            "tab": "summon",
+            "title": "Summon",
+            "icon": "icon_summon",
+            "color": "violet"
+        },
+        {
+            "tab": "shop",
+            "title": "Shop",
+            "icon": "icon_shop",
+            "color": "emerald"
+        },
+        {
+            "tab": "exchange",
+            "title": "Trade",
+            "icon": "icon_trade",
+            "color": "crimson"
+        }
+    ],
+    "homeMenuItems": [
+        {
+            "id": "story",
+            "title": "Story Battle",
+            "icon": "skin_pyro_feral_default",
+            "route": "story",
+            "color": "gold",
+            "style": "wide"
+        },
+        {
+            "id": "upgrade",
+            "title": "Upgrade",
+            "icon": "skin_blazion_tamed_default",
+            "route": "upgrade",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "hatchery",
+            "title": "Hatchery",
+            "icon": "egg_feral_pyro",
+            "route": "hatchery",
+            "color": "gold",
+            "style": "small"
+        },
+        {
+            "id": "wardrobe",
+            "title": "Wardrobe",
+            "icon": "skin_solarion_exalted_default",
+            "route": "wardrobe",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "events",
+            "title": "Events",
+            "icon": "skin_solarion_exalted_default",
+            "route": "events",
+            "color": "gold",
+            "style": "small"
+        },
+        {
+            "id": "gifts",
+            "title": "Gifts",
+            "icon": "skin_pyro_feral_default",
+            "route": "gifts",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "passes",
+            "title": "Passes",
+            "icon": "skin_pyro_feral_default",
+            "route": "passes",
+            "color": "gold",
+            "style": "small"
+        },
+        {
+            "id": "news",
+            "title": "News",
+            "icon": "skin_pyro_feral_default",
+            "route": "news",
+            "color": "blue",
+            "style": "small"
+        },
+        {
+            "id": "settings",
+            "title": "Settings",
+            "icon": "skin_solarion_exalted_default",
+            "route": "settings",
+            "color": "blue",
+            "style": "wide"
+        }
+    ],
+    "loadingImages": [
+        "montam_icon",
+        "skin_pyro_feral_default",
+        "skin_blazion_tamed_default",
+        "skin_infernon_mastered_default",
+        "skin_solarion_exalted_default",
+        "skin_cryon_feral_default",
+        "skin_crygon_tamed_default",
+        "skin_stormeon_mastered_default",
+        "skin_imperion_exalted_default",
+        "skin_pyro_feral_blue",
+        "skin_blazion_tamed_blue",
+        "skin_infernon_mastered_blue",
+        "skin_solarion_exalted_blue"
+    ],
+    "eventUI": {
+        "title": "Events",
+        "emptyTitle": "Keine Events",
+        "emptyIcon": "montam_icon",
+        "battleButtonTitle": "Event Battle",
+        "defaultDescription": "Event Battle",
+        "permanentText": "Permanent",
+        "endedText": "Beendet",
+        "dayLeftSuffix": "left",
+        "hourLeftSuffix": "left",
+        "infoElementPrefix": "Element",
+        "infoElementRules":
+            "Feuer > Pflanze, Pflanze > Wasser, Wasser > Feuer. Licht und Dunkelheit treffen sich stark.",
+        "skinBadgeTitle": "Skin Event",
+        "eggBadgeTitle": "Egg Drop",
+        "rewardIcons": {
+            "montamCoins": "icon_montam_coins",
+            "montamSaphirs": "icon_montam_saphir",
+            "montamRubys": "icon_montam_rubys",
+            "montamShards": "icon_montam_shards",
+            "montamContainers": "icon_montam_containers",
+            "montamLiquid": "icon_montam_liquid",
+            "egg": "egg_feral_pyro",
+            "skin": "skin_solarion_exalted_blue"
+        }
+    },
+    "battleDifficulties": [
+        {
+            "id": "normal",
+            "title": "Normal",
+            "enemyHpMultiplier": 1.0,
+            "rewardMultiplier": 1.0
+        },
+        {
+            "id": "hard",
+            "title": "Hard",
+            "enemyHpMultiplier": 1.45,
+            "rewardMultiplier": 1.35
+        },
+        {
+            "id": "legend",
+            "title": "Legend",
+            "enemyHpMultiplier": 2.1,
+            "rewardMultiplier": 1.8
+        }
+    ],
+    "storyChapters": [
+        {
+            "id": "story_pyro_awakening",
+            "title": "Pyro Awakening",
+            "description":
+                "Pyro folgt einer Feuer-Spur und stellt sich dem ersten Schatten.",
+            "icon": "skin_pyro_feral_default",
+            "enemyImage": "skin_pyro_feral_default",
+            "enemyElement": "nature",
+            "storyText":
+                "Pyro spuert eine fremde Energie im alten Krater. Jeder Sieg bringt ihn naeher an seine erste echte Form.",
+            "targetStages": 5,
+            "rewards": {
+                "montamCoins": 500,
+                "montamSaphirs": 5,
+                "exp": 180,
+                "montamLiquid": 120,
+                "medalId": "feral_medal",
+                "medals": 20
+            }
+        },
+        {
+            "id": "story_blazion_trial",
+            "title": "Blazion Trial",
+            "description":
+                "Blazion kaempft gegen Wasserwellen und lernt Kontrolle.",
+            "icon": "skin_blazion_tamed_default",
+            "enemyImage": "skin_blazion_tamed_default",
+            "enemyElement": "water",
+            "storyText":
+                "Die Arena kuehlt ab. Blazion muss jeden Angriff sauber setzen, sonst erstickt seine Flamme.",
+            "targetStages": 6,
+            "rewards": {
+                "montamCoins": 850,
+                "montamSaphirs": 8,
+                "exp": 260,
+                "montamLiquid": 180,
+                "medalId": "tamed_medal",
+                "medals": 24
+            }
+        },
+        {
+            "id": "story_solarion_oath",
+            "title": "Solarion Oath",
+            "description": "Solarion prüft die Kraft der ganzen Linie.",
+            "icon": "skin_solarion_exalted_default",
+            "enemyImage": "skin_solarion_exalted_default",
+            "enemyElement": "dark",
+            "storyText":
+                "Solarion steht vor der letzten Pruefung. Licht und Dunkelheit treffen frontal aufeinander.",
+            "targetStages": 7,
+            "rewards": {
+                "montamCoins": 1400,
+                "montamSaphirs": 12,
+                "montamRubys": 5,
+                "exp": 420,
+                "montamLiquid": 260,
+                "medalId": "exalted_medal",
+                "medals": 30
+            }
+        }
+    ]
+}

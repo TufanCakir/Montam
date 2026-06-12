@@ -1,0 +1,45 @@
+{
+    "id": "starterpass_s1",
+    "title": "StarterPass",
+    "icon": "skin_pyro_feral_default",
+    "backgroundImage": "skin_pyro_feral_default",
+    "infoTitle": "StarterPass",
+    "infoBody":
+        "Sammle Starter XP fuer die ersten wichtigen Ressourcen, MontamLiquid und Pyro Progress.",
+    "infoTasks": [
+        "Spiele deine ersten Story- und Event-Battles.",
+        "Alle 75 Starter XP wird ein neuer Tier freigeschaltet.",
+        "Nutze die Rewards fuer Summons, Hatchery und Team-Aufbau."
+    ],
+    "currencyTitle": "Starter XP",
+    "pointsPerTier": 75,
+    "tiers": [
+        {
+            "tier": 1,
+            "free": {
+                "title": "1000 MontamCoins",
+                "type": "montamCoins",
+                "amount": 1000
+            },
+            "premium": {
+                "title": "300 MontamLiquid",
+                "type": "montamLiquid",
+                "amount": 300
+            }
+        },
+        {
+            "tier": 2,
+            "free": {
+                "title": "100 MontamShards",
+                "type": "montamShards",
+                "amount": 100
+            },
+            "premium": {
+                "title": "Pyro Egg",
+                "type": "egg",
+                "eggId": "egg_feral_pyro",
+                "amount": 1
+            }
+        }
+    ]
+}

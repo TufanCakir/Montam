@@ -1,0 +1,28 @@
+{
+    "passes": [
+        {
+            "id": "launchpass_s1",
+            "file": "launchpass"
+        },
+        {
+            "id": "starterpass_s1",
+            "file": "starterpass"
+        },
+        {
+            "id": "feralpass_s1",
+            "file": "feralpass"
+        },
+        {
+            "id": "tamedpass_s1",
+            "file": "tamedpass"
+        },
+        {
+            "id": "masteredpass_s1",
+            "file": "masteredpass"
+        },
+        {
+            "id": "exaltedpass_s1",
+            "file": "exaltedpass"
+        }
+    ]
+}

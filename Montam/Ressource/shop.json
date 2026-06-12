@@ -1,0 +1,142 @@
+[
+    {
+        "id": "starter_gems_pack",
+        "category": {
+            "id": "starter",
+            "icon": "icon_montam_saphir",
+            "color": "blue"
+        },
+        "montamSaphirs": 100,
+        "tag": "starter",
+        "oneTimePurchase": true,
+        "purchaseLimit": 1
+    },
+    {
+        "id": "starter_ruby_pack",
+        "category": {
+            "id": "starter",
+            "icon": "icon_montam_rubys",
+            "color": "red"
+        },
+        "montamRubys": 30,
+        "tag": "montamRubys",
+        "oneTimePurchase": true,
+        "purchaseLimit": 1
+    },
+    {
+        "id": "montam_liquid_hatch_pack",
+        "category": {
+            "id": "hatchery",
+            "icon": "icon_montam_liquid",
+            "color": "blue"
+        },
+        "montamLiquid": 250,
+        "tag": "hatch",
+        "purchaseLimit": 3
+    },
+    {
+        "id": "shard_pack",
+        "category": {
+            "id": "montamShards",
+            "icon": "icon_montam_shards",
+            "color": "yellow"
+        },
+        "montamShards": 500,
+        "tag": "summon",
+        "purchaseLimit": 3
+    },
+    {
+        "id": "event_token_pack",
+        "category": {
+            "id": "event",
+            "icon": "icon_montam_shards",
+            "color": "yellow"
+        },
+        "montamContainers": 500,
+        "tag": "event",
+        "purchaseLimit": 3
+    },
+    {
+        "id": "gems_pack_small",
+        "storeProductId": "com.montam.montamSaphirs.50",
+        "category": {
+            "id": "real_money",
+            "icon": "icon_montam_saphir",
+            "color": "blue"
+        },
+        "montamSaphirs": 50,
+        "tag": "montamSaphirs"
+    },
+    {
+        "id": "ruby_pack_small",
+        "storeProductId": "com.montam.montamRubys.50",
+        "category": {
+            "id": "real_money",
+            "icon": "icon_montam_rubys",
+            "color": "red"
+        },
+        "montamRubys": 50,
+        "tag": "montamRubys"
+    },
+    {
+        "id": "montam_liquid_pack_small",
+        "storeProductId": "com.montam.montamLiquid.small",
+        "category": {
+            "id": "real_money",
+            "icon": "icon_montam_liquid",
+            "color": "yellow"
+        },
+        "montamLiquid": 600,
+        "tag": "hatch"
+    },
+    {
+        "id": "summon_shard_pack_small",
+        "storeProductId": "com.montam.montamShards.50",
+        "category": {
+            "id": "real_money",
+            "icon": "icon_montam_shards",
+            "color": "purple"
+        },
+        "montamShards": 50,
+        "tag": "summon"
+    },
+    {
+        "id": "pyro_egg_special_pack",
+        "storeProductId": "com.montam.pack.pyroegg.special",
+        "category": {
+            "id": "special_packs",
+            "icon": "egg_feral_pyro",
+            "color": "orange"
+        },
+        "montamLiquid": 300,
+        "eggId": "egg_feral_pyro",
+        "eggs": 3,
+        "tag": "egg pack"
+    },
+    {
+        "id": "solarion_skin_pack",
+        "storeProductId": "com.montam.pack.solarion.skin",
+        "category": {
+            "id": "skin_packs",
+            "icon": "skin_solarion_exalted_blue",
+            "color": "yellow"
+        },
+        "skinId": "solarion_blue",
+        "tag": "skin pack"
+    },
+    {
+        "id": "launch_mixed_pack",
+        "storeProductId": "com.montam.pack.launch.mixed",
+        "category": {
+            "id": "special_packs",
+            "icon": "icon_montam_saphir",
+            "color": "green"
+        },
+        "montamCoins": 5000,
+        "montamSaphirs": 80,
+        "montamRubys": 20,
+        "montamLiquid": 500,
+        "montamShards": 1000,
+        "tag": "launch"
+    }
+]

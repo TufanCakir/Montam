@@ -1,0 +1,44 @@
+{
+    "id": "launchpass_s1",
+    "title": "LaunchPass",
+    "icon": "montam_icon",
+    "backgroundImage": "montam_icon",
+    "infoTitle": "LaunchPass",
+    "infoBody":
+        "Der LaunchPass gibt dir Startressourcen fuer Summons, Hatchery und fruehe Upgrades.",
+    "infoTasks": [
+        "Spiele normale Battles, Story und Events fuer Launch XP.",
+        "Alle 80 Launch XP wird ein Tier freigeschaltet.",
+        "Claim MontamCoins, MontamRubys, MontamShards und Launch-Skins direkt im Pass."
+    ],
+    "currencyTitle": "Launch XP",
+    "pointsPerTier": 80,
+    "tiers": [
+        {
+            "tier": 1,
+            "free": {
+                "title": "500 MontamCoins",
+                "type": "montamCoins",
+                "amount": 500
+            },
+            "premium": {
+                "title": "50 MontamRubys",
+                "type": "montamRubys",
+                "amount": 50
+            }
+        },
+        {
+            "tier": 2,
+            "free": {
+                "title": "100 MontamShards",
+                "type": "montamShards",
+                "amount": 100
+            },
+            "premium": {
+                "title": "Solarion Gold",
+                "type": "skin",
+                "skinId": "solarion_blue"
+            }
+        }
+    ]
+}

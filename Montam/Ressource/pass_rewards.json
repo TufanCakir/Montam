@@ -1,0 +1,57 @@
+{
+    "id": "feralpass_s1",
+    "title": "FeralPass",
+    "icon": "skin_pyro_feral_default",
+    "backgroundImage": "skin_pyro_feral_default",
+    "infoTitle": "Legacy FeralPass",
+    "infoBody":
+        "Fallback Pass, falls pass_index.json nicht geladen werden kann.",
+    "infoTasks": [
+        "Sammle FeralPass XP durch Battles.",
+        "Claim Free und Premium Rewards pro Tier.",
+        "Dieser Pass ist nur Fallback fuer Offline/Remote-Fehler."
+    ],
+    "currencyTitle": "FeralPass XP",
+    "pointsPerTier": 100,
+    "tiers": [
+        {
+            "tier": 1,
+            "free": {
+                "title": "100 MontamCoins",
+                "type": "montamCoins",
+                "amount": 100
+            },
+            "premium": {
+                "title": "20 MontamRubys",
+                "type": "montamRubys",
+                "amount": 20
+            }
+        },
+        {
+            "tier": 2,
+            "free": {
+                "title": "80 Event",
+                "type": "montamContainers",
+                "amount": 80
+            },
+            "premium": {
+                "title": "Blazion",
+                "type": "montam",
+                "characterId": "character_montam_tamed_blazion"
+            }
+        },
+        {
+            "tier": 3,
+            "free": {
+                "title": "Feral EXP",
+                "type": "exp",
+                "amount": 150
+            },
+            "premium": {
+                "title": "Blue Skin",
+                "type": "skin",
+                "skinId": "solarion_blue"
+            }
+        }
+    ]
+}

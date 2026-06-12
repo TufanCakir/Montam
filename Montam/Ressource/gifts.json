@@ -1,0 +1,50 @@
+[
+    {
+        "id": "launch_ruby_pack",
+        "title": "Launch MontamRubys Pack",
+        "icon": "montam_icon",
+        "type": "montamRubys",
+        "amount": 25,
+        "note": "Premium MontamRubys für Summons und Shop."
+    },
+    {
+        "id": "launch_shards",
+        "title": "Summon MontamShards",
+        "icon": "icon_montam_shards",
+        "type": "montamShards",
+        "amount": 120,
+        "note": "Shard Waehrung fuer Shard Summon Banner."
+    },
+    {
+        "id": "launch_event_tokens",
+        "title": "Event Token Pack",
+        "icon": "skin_blazion_tamed_default",
+        "type": "montamContainers",
+        "amount": 150,
+        "note": "Event Waehrung fuer Montam Skins."
+    },
+    {
+        "id": "launch_coins",
+        "title": "Blade MontamCoins",
+        "icon": "skin_pyro_feral_default",
+        "type": "montamCoins",
+        "amount": 500,
+        "note": "Upgrade MontamCoins für den Idle Battle."
+    },
+    {
+        "id": "launch_skin_exalted_gold",
+        "title": "Solarion Gold Skin",
+        "icon": "skin_solarion_exalted_default",
+        "type": "skin",
+        "skinId": "solarion_blue",
+        "note": "Skin unlock für Solarion."
+    },
+    {
+        "id": "launch_tamed_montam",
+        "title": "Blazion",
+        "icon": "skin_blazion_tamed_default",
+        "type": "montam",
+        "characterId": "character_montam_tamed_blazion",
+        "note": "Direkter Montam fuer dein Team."
+    }
+]

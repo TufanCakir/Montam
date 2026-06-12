@@ -1,0 +1,31 @@
+{
+    "id": "blazionpass_s1",
+    "title": "Tamed Pass",
+    "icon": "skin_blazion_tamed_default",
+    "backgroundImage": "skin_blazion_tamed_default",
+    "infoTitle": "Blazion Tamed Pass",
+    "infoBody":
+        "Sammle Tamed XP fuer Tamed-Form Rewards und Blazion Progress.",
+    "infoTasks": [
+        "Kaempfe mit deinem Team, um Tamed XP zu sammeln.",
+        "Alle 110 Tamed XP wird ein Tier freigeschaltet.",
+        "Tamed Rewards helfen dir beim Aufbau der Blazion Form."
+    ],
+    "currencyTitle": "Tamed XP",
+    "pointsPerTier": 110,
+    "tiers": [
+        {
+            "tier": 1,
+            "free": {
+                "title": "Blazion Medals",
+                "type": "montamContainers",
+                "amount": 120
+            },
+            "premium": {
+                "title": "Blazion",
+                "type": "montam",
+                "characterId": "character_montam_tamed_blazion"
+            }
+        }
+    ]
+}

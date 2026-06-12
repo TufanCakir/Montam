@@ -1,0 +1,31 @@
+{
+    "id": "exaltedpass_s1",
+    "title": "Exalted Pass",
+    "icon": "skin_solarion_exalted_default",
+    "backgroundImage": "skin_solarion_exalted_default",
+    "infoTitle": "Solarion Exalted Pass",
+    "infoBody":
+        "Sammle Exalted XP fuer Solarion Rewards. Dieser Pass ist fuer spaete Progression und seltene Exalted Items gedacht.",
+    "infoTasks": [
+        "Farm schwere Story- und Event-Battles fuer Exalted XP.",
+        "Alle 160 Exalted XP wird ein Tier aktiv.",
+        "Exalted Rewards sind fuer starke Montam-Teams und Skin-Ziele."
+    ],
+    "currencyTitle": "Exalted XP",
+    "pointsPerTier": 160,
+    "tiers": [
+        {
+            "tier": 1,
+            "free": {
+                "title": "250 MontamRubys",
+                "type": "montamRubys",
+                "amount": 250
+            },
+            "premium": {
+                "title": "Solarion",
+                "type": "montam",
+                "characterId": "character_montam_exalted_solarion"
+            }
+        }
+    ]
+}

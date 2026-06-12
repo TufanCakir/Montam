@@ -1,0 +1,22 @@
+{
+    "title": "Wähle dein Montam Ei",
+    "subtitle": "Diese Auswahl ist nur einmal pro Account möglich.",
+    "eggs": [
+        {
+            "id": "egg_feral_pyro",
+            "title": "Pyro Egg",
+            "characterId": "character_montam_feral_pyro",
+            "eggImage": "egg_feral_pyro",
+            "previewImage": "skin_pyro_feral_default",
+            "accentColor": "gold"
+        },
+        {
+            "id": "egg_feral_cryon",
+            "title": "Cryon Egg",
+            "characterId": "character_montam_feral_cryon",
+            "eggImage": "egg_feral_cryon",
+            "previewImage": "skin_cryon_feral_default",
+            "accentColor": "cyan"
+        }
+    ]
+}

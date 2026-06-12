@@ -1,0 +1,32 @@
+{
+    "eggs": [
+        {
+            "id": "egg_feral_pyro",
+            "title": "Pyro Egg",
+            "eggImage": "egg_feral_pyro",
+            "feralImage": "skin_pyro_feral_default",
+            "characterId": "character_montam_feral_pyro",
+            "hatchCostMontamLiquid": 100,
+            "rarity": "common",
+            "element": "fire",
+            "isLimited": true,
+            "startDate": "24.05.2026 00:00",
+            "endDate": "21.06.2026 23:59",
+            "description": "Schlüpft zu Pyro."
+        },
+        {
+            "id": "egg_feral_cryon",
+            "title": "Cryon Egg",
+            "eggImage": "egg_feral_cryon",
+            "feralImage": "skin_cryon_feral_default",
+            "characterId": "character_montam_feral_cryon",
+            "hatchCostMontamLiquid": 100,
+            "rarity": "common",
+            "element": "water",
+            "isLimited": true,
+            "startDate": "24.05.2026 00:00",
+            "endDate": "21.06.2026 23:59",
+            "description": "Schlüpft zu Cryon."
+        }
+    ]
+}

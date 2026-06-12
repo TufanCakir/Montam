@@ -1,0 +1,31 @@
+{
+    "id": "masteredpass_s1",
+    "title": "Mastered Pass",
+    "icon": "skin_infernon_mastered_default",
+    "backgroundImage": "skin_infernon_mastered_default",
+    "infoTitle": "Infernon Mastered Pass",
+    "infoBody":
+        "Sammle Mastered XP durch Story- und Event-Battles. Dieser Pass fokussiert Infernon Rewards, MontamShards und Mastered Progress.",
+    "infoTasks": [
+        "Spiele Story Battles und Events fuer Mastered XP.",
+        "Alle 130 Mastered XP schaltest du einen Tier frei.",
+        "Claim Free Rewards sofort und bereite Premium Rewards fuer spaetere Freischaltung vor."
+    ],
+    "currencyTitle": "Mastered XP",
+    "pointsPerTier": 130,
+    "tiers": [
+        {
+            "tier": 1,
+            "free": {
+                "title": "150 MontamShards",
+                "type": "montamShards",
+                "amount": 150
+            },
+            "premium": {
+                "title": "Infernon",
+                "type": "montam",
+                "characterId": "character_montam_mastered_infernon"
+            }
+        }
+    ]
+}

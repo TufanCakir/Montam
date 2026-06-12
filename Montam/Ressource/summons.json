@@ -1,0 +1,264 @@
+{
+    "categories": [
+        {
+            "id": "standard",
+            "title": "Standard"
+        },
+        {
+            "id": "basic",
+            "title": "Basic"
+        },
+        {
+            "id": "evolution",
+            "title": "Evolution"
+        },
+        {
+            "id": "special",
+            "title": "Special"
+        }
+    ],
+    "banners": [
+        {
+            "id": "montam_liquid_pyro_banner",
+            "title": "Pyro Summon",
+            "category": "standard",
+            "currency": "montamSaphirs",
+            "bannerImage": "skin_pyro_feral_default",
+            "summons": [
+                {
+                    "amount": 1,
+                    "cost": 5
+                },
+                {
+                    "amount": 10,
+                    "cost": 50
+                }
+            ],
+            "maxSummons": 0,
+            "pool": [
+                {
+                    "characterId": "character_montam_tamed_blazion",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_mastered_infernon",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_exalted_solarion",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_tamed_crygon",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_mastered_stormeon",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_exalted_imperion",
+                    "rateUp": false
+                }
+            ],
+            "pity": {
+                "enabled": true,
+                "requiredPulls": 100,
+                "guaranteedPool": [
+                    {
+                        "characterId": "character_montam_exalted_solarion"
+                    },
+                    {
+                        "characterId": "character_montam_exalted_imperion"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "montam_evolution_banner",
+            "title": "Evolution Monster Summon",
+            "category": "evolution",
+            "currency": "montamShards",
+            "bannerImage": "skin_infernon_mastered_default",
+            "summons": [
+                {
+                    "amount": 1,
+                    "cost": 8
+                },
+                {
+                    "amount": 10,
+                    "cost": 80
+                }
+            ],
+            "maxSummons": 0,
+            "pool": [
+                {
+                    "characterId": "character_montam_tamed_blazion",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_mastered_infernon",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_exalted_solarion",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_tamed_crygon",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_mastered_stormeon",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_exalted_imperion",
+                    "rateUp": true
+                }
+            ],
+            "pity": {
+                "enabled": true,
+                "requiredPulls": 80,
+                "guaranteedPool": [
+                    {
+                        "characterId": "character_montam_mastered_infernon"
+                    },
+                    {
+                        "characterId": "character_montam_exalted_solarion"
+                    },
+                    {
+                        "characterId": "character_montam_mastered_stormeon"
+                    },
+                    {
+                        "characterId": "character_montam_exalted_imperion"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "montam_special_banner",
+            "title": "Evolution Monster Summon",
+            "category": "special",
+            "currency": "montamRubys",
+            "bannerImage": "skin_solarion_exalted_default",
+            "summons": [
+                {
+                    "amount": 1,
+                    "cost": 8
+                },
+                {
+                    "amount": 10,
+                    "cost": 80
+                }
+            ],
+            "maxSummons": 0,
+            "pool": [
+                {
+                    "characterId": "character_montam_tamed_blazion",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_mastered_infernon",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_exalted_solarion",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_tamed_crygon",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_mastered_stormeon",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_exalted_imperion",
+                    "rateUp": true
+                }
+            ],
+            "pity": {
+                "enabled": true,
+                "requiredPulls": 80,
+                "guaranteedPool": [
+                    {
+                        "characterId": "character_montam_mastered_infernon"
+                    },
+                    {
+                        "characterId": "character_montam_exalted_solarion"
+                    },
+                    {
+                        "characterId": "character_montam_mastered_stormeon"
+                    },
+                    {
+                        "characterId": "character_montam_exalted_imperion"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "montam_basic_banner",
+            "title": "Evolution Monster Summon",
+            "category": "basic",
+            "currency": "montamCoins",
+            "bannerImage": "skin_pyro_feral_default",
+            "summons": [
+                {
+                    "amount": 1,
+                    "cost": 8
+                },
+                {
+                    "amount": 10,
+                    "cost": 80
+                }
+            ],
+            "maxSummons": 0,
+            "pool": [
+                {
+                    "characterId": "character_montam_tamed_blazion",
+                    "rateUp": false
+                },
+                {
+                    "characterId": "character_montam_mastered_infernon",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_exalted_solarion",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_tamed_crygon",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_mastered_stormeon",
+                    "rateUp": true
+                },
+                {
+                    "characterId": "character_montam_exalted_imperion",
+                    "rateUp": false
+                }
+            ],
+            "pity": {
+                "enabled": true,
+                "requiredPulls": 80,
+                "guaranteedPool": [
+                    {
+                        "characterId": "character_montam_tamed_blazion"
+                    },
+                    {
+                        "characterId": "character_montam_mastered_infernon"
+                    },
+                    {
+                        "characterId": "character_montam_tamed_crygon"
+                    },
+                    {
+                        "characterId": "character_montam_mastered_stormeon"
+                    }
+                ]
+            }
+        }
+    ]
+}

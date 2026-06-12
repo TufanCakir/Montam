@@ -1,0 +1,154 @@
+{
+    "jsonFiles": [
+        "game_config",
+        "starter_eggs",
+        "characters",
+        "summons",
+        "shop",
+        "events",
+        "event_attacks",
+        "gifts",
+        "music",
+        "pass_index",
+        "pass_rewards",
+        "launchpass",
+        "starterpass",
+        "feralpass",
+        "tamedpass",
+        "masteredpass",
+        "exaltedpass",
+        "daily_rewards",
+        "service_status",
+        "news",
+        "upgrade_config",
+        "eggs",
+        "skins",
+        "tutorials"
+    ],
+    "assetBaseURL": "https://remotemontam.tufancakir.com/assets",
+    "musicBaseURL": "https://remotemontam.tufancakir.com/music",
+    "assets": [
+        {
+            "id": "icon_house",
+            "file": "icon_house.png"
+        },
+        {
+            "id": "icon_team",
+            "file": "icon_team.png"
+        },
+        {
+            "id": "icon_summon",
+            "file": "icon_summon.png"
+        },
+        {
+            "id": "icon_shop",
+            "file": "icon_shop.png"
+        },
+        {
+            "id": "icon_trade",
+            "file": "icon_trade.png"
+        },
+        {
+            "id": "montam_icon",
+            "file": "montam_icon.png"
+        },
+        {
+            "id": "skin_pyro_feral_default",
+            "file": "skin_pyro_feral_default.png"
+        },
+        {
+            "id": "skin_blazion_tamed_default",
+            "file": "skin_blazion_tamed_default.png"
+        },
+        {
+            "id": "skin_infernon_mastered_default",
+            "file": "skin_infernon_mastered_default.png"
+        },
+        {
+            "id": "skin_solarion_exalted_default",
+            "file": "skin_solarion_exalted_default.png"
+        },
+        {
+            "id": "skin_cryon_feral_default",
+            "file": "skin_cryon_feral_default.png"
+        },
+        {
+            "id": "skin_crygon_tamed_default",
+            "file": "skin_crygon_tamed_default.png"
+        },
+        {
+            "id": "skin_stormeon_mastered_default",
+            "file": "skin_stormeon_mastered_default.png"
+        },
+        {
+            "id": "skin_imperion_exalted_default",
+            "file": "skin_imperion_exalted_default.png"
+        },
+        {
+            "id": "skin_pyro_feral_blue",
+            "file": "skin_pyro_feral_blue.png"
+        },
+        {
+            "id": "skin_blazion_tamed_blue",
+            "file": "skin_blazion_tamed_blue.png"
+        },
+        {
+            "id": "skin_infernon_mastered_blue",
+            "file": "skin_infernon_mastered_blue.png"
+        },
+        {
+            "id": "skin_solarion_exalted_blue",
+            "file": "skin_solarion_exalted_blue.png"
+        },
+        {
+            "id": "icon_montam_coins",
+            "file": "icon_montam_coins.png"
+        },
+        {
+            "id": "icon_montam_saphir",
+            "file": "icon_montam_saphir.png"
+        },
+        {
+            "id": "icon_montam_rubys",
+            "file": "icon_montam_rubys.png"
+        },
+        {
+            "id": "icon_montam_shards",
+            "file": "icon_montam_shards.png"
+        },
+        {
+            "id": "icon_montam_containers",
+            "file": "icon_montam_containers.png"
+        },
+        {
+            "id": "icon_montam_liquid",
+            "file": "icon_montam_liquid.png"
+        },
+        {
+            "id": "icon_info",
+            "file": "icon_info.png"
+        },
+        {
+            "id": "egg_feral_pyro",
+            "file": "egg_feral_pyro.png"
+        },
+        {
+            "id": "egg_feral_cryon",
+            "file": "egg_feral_cryon.png"
+        },
+        {
+            "id": "loading1",
+            "file": "skin_solarion_exalted_default.png"
+        }
+    ],
+    "music": [
+        {
+            "id": "montam_evolution_1",
+            "file": "montam_evolution_1.mp3"
+        },
+        {
+            "id": "montam_evolution_2",
+            "file": "montam_evolution_2.mp3"
+        }
+    ]
+}

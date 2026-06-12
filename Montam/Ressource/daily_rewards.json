@@ -1,0 +1,107 @@
+[
+    {
+        "day": 1,
+        "montamCoins": 200,
+        "montamSaphirs": 5,
+        "montamLiquid": 25,
+        "exp": 50
+    },
+    {
+        "day": 2,
+        "montamCoins": 300,
+        "montamSaphirs": 5,
+        "montamContainers": 50,
+        "exp": 70
+    },
+    {
+        "day": 3,
+        "montamCoins": 400,
+        "montamRubys": 5,
+        "montamShards": 30,
+        "montamLiquid": 35,
+        "exp": 90
+    },
+    {
+        "day": 4,
+        "montamCoins": 500,
+        "montamSaphirs": 10,
+        "montamContainers": 70,
+        "exp": 120
+    },
+    {
+        "day": 5,
+        "montamCoins": 600,
+        "montamRubys": 8,
+        "montamLiquid": 45,
+        "exp": 150
+    },
+    {
+        "day": 6,
+        "montamCoins": 750,
+        "montamSaphirs": 20,
+        "montamContainers": 100,
+        "exp": 200
+    },
+    {
+        "day": 7,
+        "montamCoins": 1200,
+        "montamSaphirs": 40,
+        "montamRubys": 15,
+        "montamLiquid": 100,
+        "montamContainers": 160,
+        "exp": 400
+    },
+    {
+        "day": 8,
+        "montamCoins": 900,
+        "montamSaphirs": 25,
+        "montamLiquid": 55,
+        "exp": 250
+    },
+    {
+        "day": 9,
+        "montamCoins": 1100,
+        "montamRubys": 10,
+        "montamContainers": 120,
+        "exp": 280
+    },
+    {
+        "day": 10,
+        "montamCoins": 1300,
+        "montamSaphirs": 35,
+        "montamShards": 80,
+        "montamLiquid": 80,
+        "exp": 320
+    },
+    {
+        "day": 11,
+        "montamCoins": 1500,
+        "montamRubys": 12,
+        "montamContainers": 150,
+        "exp": 360
+    },
+    {
+        "day": 12,
+        "montamCoins": 1700,
+        "montamSaphirs": 45,
+        "montamLiquid": 95,
+        "exp": 420
+    },
+    {
+        "day": 13,
+        "montamCoins": 2000,
+        "montamRubys": 15,
+        "montamContainers": 190,
+        "exp": 500
+    },
+    {
+        "day": 14,
+        "montamCoins": 2800,
+        "montamSaphirs": 80,
+        "montamRubys": 25,
+        "montamShards": 180,
+        "montamLiquid": 180,
+        "montamContainers": 260,
+        "exp": 700
+    }
+]
