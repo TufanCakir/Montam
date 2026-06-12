@@ -60,7 +60,7 @@ struct EventVictoryView: View {
                     MontamRewardLine(
                         title: (egg?.title ?? reward.eggId).uppercased(),
                         value: reward.amount,
-                        icon: egg?.eggImage ?? "egg_feral_pyro"
+                        icon: egg?.eggImage ?? "egg_feral_cryon"
                     )
                 }
                 if let medalId = result.medalId {
@@ -95,7 +95,8 @@ struct EventVictoryView: View {
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
     }
-
 }

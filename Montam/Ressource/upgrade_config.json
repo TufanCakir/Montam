@@ -1,10 +1,10 @@
 {
     "medalDefinitions": [
         {
-            "id": "pyro_medal",
-            "title": "Pyro Medal",
-            "icon": "skin_pyro_feral_default",
-            "characterId": "character_montam_feral_pyro"
+            "id": "pyron_medal",
+            "title": "pyron Medal",
+            "icon": "skin_pyron_feral_default",
+            "characterId": "character_montam_feral_pyron"
         },
         {
             "id": "blazion_medal",

@@ -34,7 +34,9 @@ struct GiftView: View {
             .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .navigationTitle("Gifts")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -108,7 +110,8 @@ struct GiftView: View {
             .overlay(
                 MontamEvolutionShape()
                     .stroke(
-                        gift.type == .montamContainers || gift.type == .montamShards
+                        gift.type == .montamContainers
+                            || gift.type == .montamShards
                             ? MontamPalette.blue : MontamPalette.gold,
                         lineWidth: 1.7
                     )

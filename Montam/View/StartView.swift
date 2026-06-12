@@ -16,56 +16,20 @@ struct StartView: View {
     private let blue = MontamPalette.blue
 
     var body: some View {
-        ZStack {
-            MontamScreenBackground()
+        VStack(spacing: 0) {
+            Spacer(minLength: 42)
 
-            backgroundGeometry
+            logoSection
 
-            VStack(spacing: 0) {
-                Spacer(minLength: 42)
+            Spacer(minLength: 44)
 
-                logoSection
-
-                Spacer(minLength: 44)
-
-                actionStack
-                    .padding(.bottom, 34)
-            }
-            .padding(.horizontal, 22)
+            actionStack
+                .padding(.bottom, 34)
         }
-    }
-
-    private var backgroundGeometry: some View {
-        GeometryReader { proxy in
-            let width = proxy.size.width
-            let height = proxy.size.height
-
-            ZStack {
-                MontamEvolutionShape()
-                    .fill(blue.opacity(0.12))
-                    .frame(width: width * 0.82, height: height * 0.46)
-                    .offset(x: width * 0.30, y: -height * 0.22)
-
-                MontamEvolutionShape()
-                    .stroke(gold.opacity(0.18), lineWidth: 2)
-                    .frame(width: width * 0.70, height: height * 0.38)
-                    .offset(x: -width * 0.34, y: height * 0.22)
-
-                VStack(spacing: 0) {
-                    accentLine(color: gold.opacity(0.64), leadingWidth: 82)
-                        .frame(height: 2)
-                        .padding(.top, 84)
-
-                    Spacer()
-
-                    accentLine(color: blue.opacity(0.70), leadingWidth: 44)
-                        .frame(height: 2)
-                        .padding(.bottom, 132)
-                }
-                .padding(.horizontal, 20)
-            }
+        .padding(.horizontal, 22)
+        .background {
+            MontamBackground()
         }
-        .ignoresSafeArea()
     }
 
     private var logoSection: some View {
@@ -106,7 +70,7 @@ struct StartView: View {
         VStack(spacing: 13) {
             actionButton(
                 title: "Spiel starten",
-                image: "skin_pyro_feral_default",
+                image: "skin_cryon_feral_default",
                 style: .primary
             ) {
                 appModel.navigateWithLoading {
@@ -116,7 +80,7 @@ struct StartView: View {
 
             actionButton(
                 title: "Summon",
-                image: "skin_blazion_tamed_default",
+                image: "skin_crygon_tamed_default",
                 style: .secondary
             ) {
                 appModel.navigateWithLoading {
@@ -147,7 +111,10 @@ struct StartView: View {
                         LinearGradient(
                             colors: isPrimary
                                 ? [gold, gold.opacity(0.78)]
-                                : [panel, blue.opacity(0.42), black.opacity(0.88)],
+                                : [
+                                    panel, blue.opacity(0.42),
+                                    black.opacity(0.88),
+                                ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -183,7 +150,7 @@ struct StartView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 18, weight: .black))
                         .foregroundStyle(isPrimary ? black : gold)
-                    .padding(.trailing, isPrimary ? 12 : 9)
+                        .padding(.trailing, isPrimary ? 12 : 9)
                 }
                 .padding(.leading, 16)
                 .padding(.trailing, 28)

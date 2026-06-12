@@ -32,7 +32,9 @@ struct SettingsView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
         }
-        .background(background)
+        .background {
+            MontamBackground()
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Account zurücksetzen?", isPresented: $showConfirm) {
@@ -45,25 +47,6 @@ struct SettingsView: View {
                 "Alle Montams, MontamCoins, Saphirs, Upgrades und Fortschritte werden gelöscht."
             )
         }
-    }
-
-    private var background: some View {
-        black
-            .overlay(alignment: .topTrailing) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 230, height: 230)
-                    .opacity(0.055)
-                    .offset(x: 60, y: -40)
-            }
-            .overlay(alignment: .bottomLeading) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 260, height: 260)
-                    .opacity(0.045)
-                    .offset(x: -90, y: 80)
-            }
-            .ignoresSafeArea()
     }
 
     private var header: some View {
@@ -93,19 +76,19 @@ struct SettingsView: View {
             )
 
             settingsRow(
-                image: "skin_pyro_feral_default",
+                image: "skin_cryon_feral_default",
                 title: "MontamCoins",
                 value: MontamCoinsManager.shared.montamCoins.formatted()
             )
 
             settingsRow(
-                image: "skin_blazion_tamed_default",
+                image: "skin_crygon_tamed_default",
                 title: "Saphirs",
                 value: MontamSaphirsManager.shared.montamSaphirs.formatted()
             )
 
             settingsRow(
-                image: "skin_infernon_mastered_default",
+                image: "skin_stormeon_mastered_default",
                 title: "Team Size",
                 value:
                     "\(GameConfigManager.shared.config.team.maxActiveTeamSize)"
@@ -127,7 +110,7 @@ struct SettingsView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 12) {
-                    RemoteAssetImage(name: "skin_blazion_tamed_default")
+                    RemoteAssetImage(name: "skin_crygon_tamed_default")
                         .scaledToFit()
                         .frame(width: 30, height: 30)
 
@@ -168,12 +151,12 @@ struct SettingsView: View {
                 value: appVersion
             )
             settingsRow(
-                image: "skin_solarion_exalted_default",
+                image: "skin_imperion_exalted_default",
                 title: "Build",
                 value: buildNumber
             )
             settingsRow(
-                image: "skin_pyro_feral_default",
+                image: "skin_cryon_feral_default",
                 title: "iOS",
                 value: UIDevice.current.systemVersion
             )
@@ -197,7 +180,7 @@ struct SettingsView: View {
                         .fill(Color.red.opacity(0.86))
 
                     HStack(spacing: 12) {
-                        RemoteAssetImage(name: "skin_solarion_exalted_default")
+                        RemoteAssetImage(name: "skin_imperion_exalted_default")
                             .scaledToFit()
                             .frame(width: 40, height: 40)
 

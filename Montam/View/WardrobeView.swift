@@ -54,7 +54,9 @@ struct WardrobeView: View {
             .scrollIndicators(.hidden)
         }
         .padding(.top, 18)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .navigationTitle("Wardrobe")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $selectedSkinInfo) { skin in
@@ -83,9 +85,9 @@ struct WardrobeView: View {
                     } label: {
                         VStack(spacing: 5) {
                             RemoteAssetImage(name: image)
-                            .scaledToFit()
-                            .frame(width: 54, height: 54)
-                            .opacity(owned ? 1 : 0.45)
+                                .scaledToFit()
+                                .frame(width: 54, height: 54)
+                                .opacity(owned ? 1 : 0.45)
 
                             Text((character?.name ?? characterId).uppercased())
                                 .font(
@@ -186,9 +188,12 @@ struct WardrobeView: View {
                     Button {
                         selectedSkinInfo = skin
                     } label: {
-                        RemoteAssetImage(name: "icon_info", fallbackSystemName: "info.circle.fill")
-                            .scaledToFit()
-                            .frame(width: 22, height: 22)
+                        RemoteAssetImage(
+                            name: "icon_info",
+                            fallbackSystemName: "info.circle.fill"
+                        )
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
                     }
                     .buttonStyle(.plain)
                 }
@@ -214,24 +219,27 @@ struct WardrobeView: View {
                             ? "EQUIPPED"
                             : characterOwned && unlocked
                                 ? "EQUIP"
-                                : unlockLabel(for: skin, characterOwned: characterOwned)
+                                : unlockLabel(
+                                    for: skin,
+                                    characterOwned: characterOwned
+                                )
                     )
-                        .font(
-                            .system(size: 11, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(
-                            characterOwned && unlocked
-                                ? MontamPalette.black
-                                : MontamPalette.mutedText
-                        )
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 36)
-                        .background(
-                            characterOwned && unlocked
-                                ? MontamPalette.gold
-                                : MontamPalette.black
-                        )
-                        .clipShape(MontamEvolutionShape())
+                    .font(
+                        .system(size: 11, weight: .black, design: .rounded)
+                    )
+                    .foregroundStyle(
+                        characterOwned && unlocked
+                            ? MontamPalette.black
+                            : MontamPalette.mutedText
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 36)
+                    .background(
+                        characterOwned && unlocked
+                            ? MontamPalette.gold
+                            : MontamPalette.black
+                    )
+                    .clipShape(MontamEvolutionShape())
                 }
                 .buttonStyle(.plain)
                 .disabled(!characterOwned || !unlocked || equipped)
@@ -283,20 +291,45 @@ struct WardrobeView: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text(skin.title.uppercased())
-                            .font(.system(size: 22, weight: .black, design: .rounded))
+                            .font(
+                                .system(
+                                    size: 22,
+                                    weight: .black,
+                                    design: .rounded
+                                )
+                            )
                             .foregroundStyle(.white)
 
                         Text((character?.name ?? skin.characterId).uppercased())
-                            .font(.system(size: 12, weight: .black, design: .rounded))
+                            .font(
+                                .system(
+                                    size: 12,
+                                    weight: .black,
+                                    design: .rounded
+                                )
+                            )
                             .foregroundStyle(MontamPalette.gold)
 
                         Text(skin.rarity.evolutionStageTitle.uppercased())
-                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .font(
+                                .system(
+                                    size: 11,
+                                    weight: .black,
+                                    design: .rounded
+                                )
+                            )
                             .foregroundStyle(skin.rarity.color)
                     }
                 }
 
-                infoRow("STATUS", value: skinStatusText(skin, characterOwned: characterOwned, unlocked: unlocked))
+                infoRow(
+                    "STATUS",
+                    value: skinStatusText(
+                        skin,
+                        characterOwned: characterOwned,
+                        unlocked: unlocked
+                    )
+                )
                 infoRow("QUELLE", value: skin.source ?? "Rewards")
 
                 if let description = skin.description {
@@ -306,7 +339,10 @@ struct WardrobeView: View {
                 if skin.isEventLimited == true {
                     infoRow("START", value: skin.startDate ?? "Unbekannt")
                     infoRow("ENDE", value: skin.endDate ?? "Unbekannt")
-                    infoRow("COUNTDOWN", value: countdownText(endDate: skin.endDate))
+                    infoRow(
+                        "COUNTDOWN",
+                        value: countdownText(endDate: skin.endDate)
+                    )
                 }
             }
             .padding(22)
@@ -362,7 +398,8 @@ struct WardrobeView: View {
         characterOwned: Bool
     ) -> String {
         let source = skin.source ?? "Rewards"
-        let ownership = characterOwned ? source : "Montam noch nicht freigeschaltet"
+        let ownership =
+            characterOwned ? source : "Montam noch nicht freigeschaltet"
         let description = skin.description ?? source
         return "\(description) • \(ownership)".uppercased()
     }

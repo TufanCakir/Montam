@@ -31,7 +31,9 @@ struct CharacterDetailView: View {
             .padding(.bottom, 28)
         }
         .scrollIndicators(.hidden)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
     }
 
     private var heroSection: some View {
@@ -238,7 +240,7 @@ struct CharacterDetailView: View {
         owned: OwnedCharacter(
             base: Character(
                 id: "preview",
-                name: "Pyro",
+                name: "Cryon",
                 rarity: .common,
                 role: "dps",
                 skills: [],
@@ -249,7 +251,7 @@ struct CharacterDetailView: View {
                     attackSpeed: 1.6
                 ),
                 energyType: "fire",
-                sprite: "skin_pyro_feral_default",
+                sprite: "skin_cryon_feral_default",
                 skins: []
             )
         )

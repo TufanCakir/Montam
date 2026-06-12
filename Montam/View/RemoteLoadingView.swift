@@ -88,7 +88,9 @@ struct RemoteLoadingView: View {
             Spacer()
         }
         .padding(22)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .onAppear {
             remote.refreshManifest()
             continueIfCached()
@@ -96,7 +98,7 @@ struct RemoteLoadingView: View {
     }
 
     private func continueIfCached() {
-        guard remote.hasCompleteCache else { return }
+        guard remote.hasBootCache else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             continueAfterServiceCheck()

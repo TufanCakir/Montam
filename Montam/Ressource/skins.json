@@ -3,11 +3,11 @@
         {
             "id": "default",
             "title": "Default",
-            "characterId": "character_montam_feral_pyro",
-            "image": "skin_pyro_feral_default",
+            "characterId": "character_montam_feral_pyron",
+            "image": "skin_pyron_feral_default",
             "rarity": "common",
             "source": "Base",
-            "description": "Pyro Standard Skin."
+            "description": "pyron Standard Skin."
         },
         {
             "id": "default",
@@ -37,16 +37,16 @@
             "description": "Solarion Standard Skin."
         },
         {
-            "id": "pyro_blue",
-            "title": "Pyro Blue",
-            "characterId": "character_montam_feral_pyro",
-            "image": "skin_pyro_feral_blue",
+            "id": "pyron_blue",
+            "title": "pyron Blue",
+            "characterId": "character_montam_feral_pyron",
+            "image": "skin_pyron_feral_blue",
             "rarity": "common",
             "source": "Events, Gifts, FeralPass",
             "isEventLimited": true,
             "startDate": "24.05.2026 00:00",
             "endDate": "21.06.2026 23:59",
-            "description": "Blauer Pyro Skin aus Live-Service Rewards."
+            "description": "Blauer pyron Skin aus Live-Service Rewards."
         },
         {
             "id": "blazion_blue",

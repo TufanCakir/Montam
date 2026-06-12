@@ -44,23 +44,20 @@ final class RemoteDownloadManager: ObservableObject {
         totalItems > 0 && completedItems >= totalItems
     }
 
+    var hasBootCache: Bool {
+        !manifest.jsonFiles.isEmpty
+            && manifest.jsonFiles.allSatisfy {
+                JSONLoader.hasCachedData(for: $0)
+            }
+            && JSONLoader.hasCachedData(for: "remote_manifest")
+    }
+
     func preload(completion: @escaping () -> Void) {
-        run(downloadAssets: true, completion: completion)
+        run(downloadAssets: false, completion: completion)
     }
 
     func downloadAll(completion: @escaping () -> Void) {
         run(downloadAssets: true, completion: completion)
-    }
-
-    func preloadForNavigation(files: [String], completion: @escaping () -> Void)
-    {
-        isLoading = true
-        statusText = "Pruefe Navigation Assets"
-        JSONLoader.preload(files) {
-            self.refreshManifest()
-            self.isLoading = false
-            completion()
-        }
     }
 
     private func run(downloadAssets: Bool, completion: @escaping () -> Void) {

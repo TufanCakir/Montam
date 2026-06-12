@@ -1,8 +1,8 @@
 {
     "id": "feralpass_s1",
     "title": "FeralPass",
-    "icon": "skin_pyro_feral_default",
-    "backgroundImage": "skin_pyro_feral_default",
+    "icon": "skin_pyron_feral_default",
+    "backgroundImage": "skin_pyron_feral_default",
     "infoTitle": "Legacy FeralPass",
     "infoBody":
         "Fallback Pass, falls pass_index.json nicht geladen werden kann.",

@@ -19,11 +19,11 @@
     ],
     "banners": [
         {
-            "id": "montam_liquid_pyro_banner",
-            "title": "Pyro Summon",
+            "id": "montam_liquid_cryon_banner",
+            "title": "Cryon Summon",
             "category": "standard",
             "currency": "montamSaphirs",
-            "bannerImage": "skin_pyro_feral_default",
+            "bannerImage": "skin_cryon_feral_default",
             "summons": [
                 {
                     "amount": 1,
@@ -79,7 +79,7 @@
             "title": "Evolution Monster Summon",
             "category": "evolution",
             "currency": "montamShards",
-            "bannerImage": "skin_infernon_mastered_default",
+            "bannerImage": "skin_stormeon_mastered_default",
             "summons": [
                 {
                     "amount": 1,
@@ -141,7 +141,7 @@
             "title": "Evolution Monster Summon",
             "category": "special",
             "currency": "montamRubys",
-            "bannerImage": "skin_solarion_exalted_default",
+            "bannerImage": "skin_imperion_exalted_default",
             "summons": [
                 {
                     "amount": 1,
@@ -203,7 +203,7 @@
             "title": "Evolution Monster Summon",
             "category": "basic",
             "currency": "montamCoins",
-            "bannerImage": "skin_pyro_feral_default",
+            "bannerImage": "skin_cryon_feral_default",
             "summons": [
                 {
                     "amount": 1,

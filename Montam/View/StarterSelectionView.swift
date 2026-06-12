@@ -54,26 +54,9 @@ struct StarterSelectionView: View {
         .padding(.top, 24)
         .padding(.bottom, 26)
         .onAppear(perform: loadConfig)
-        .background(background)
-    }
-
-    private var background: some View {
-        ZStack {
-            black
-
-            RemoteAssetImage(name: "montam_icon")
-                .scaledToFill()
-                .opacity(0.10)
-                .scaleEffect(1.5)
-                .ignoresSafeArea()
-
-            LinearGradient(
-                colors: [black.opacity(0.68), black.opacity(0.96)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+        .background {
+            MontamBackground()
         }
-        .ignoresSafeArea()
     }
 
     private var header: some View {

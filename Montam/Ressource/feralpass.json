@@ -1,15 +1,15 @@
 {
     "id": "feralpass_s1",
     "title": "Feral Pass",
-    "icon": "egg_feral_pyro",
-    "backgroundImage": "skin_pyro_feral_default",
-    "infoTitle": "Pyro Feral Pass",
+    "icon": "egg_feral_pyron",
+    "backgroundImage": "skin_pyron_feral_default",
+    "infoTitle": "pyron Feral Pass",
     "infoBody":
         "Sammle Feral XP und hole dir Feral-Montam Rewards. Dieser Pass hilft neuen Accounts beim Hatchery-Start.",
     "infoTasks": [
         "Kaempfe in Story oder Events fuer Feral XP.",
         "Alle 90 Feral XP wird ein neuer Tier freigeschaltet.",
-        "Nutze Pyro Eier in der Hatchery und bruete sie mit MontamLiquid aus."
+        "Nutze pyron Eier in der Hatchery und bruete sie mit MontamLiquid aus."
     ],
     "currencyTitle": "Feral XP",
     "pointsPerTier": 90,
@@ -17,9 +17,9 @@
         {
             "tier": 1,
             "free": {
-                "title": "Pyro Egg",
+                "title": "pyron Egg",
                 "type": "egg",
-                "eggId": "egg_feral_pyro",
+                "eggId": "egg_feral_pyron",
                 "amount": 1
             },
             "premium": {
@@ -36,9 +36,9 @@
                 "amount": 150
             },
             "premium": {
-                "title": "Pyro",
+                "title": "pyron",
                 "type": "montam",
-                "characterId": "character_montam_feral_pyro"
+                "characterId": "character_montam_feral_pyron"
             }
         }
     ]

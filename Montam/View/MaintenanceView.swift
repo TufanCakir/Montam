@@ -12,57 +12,56 @@ struct MaintenanceView: View {
     @ObservedObject private var service = ServiceStatusManager.shared
 
     var body: some View {
-        ZStack {
-            MontamScreenBackground()
+        VStack(spacing: 22) {
+            Spacer()
 
-            VStack(spacing: 22) {
-                Spacer()
+            RemoteAssetImage(name: maintenance?.icon ?? "montam_icon")
+                .scaledToFit()
+                .frame(width: 112, height: 112)
 
-                RemoteAssetImage(name: maintenance?.icon ?? "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 112, height: 112)
+            VStack(spacing: 8) {
+                Text(
+                    (maintenance?.title ?? "WARTUNGSARBEITEN").uppercased()
+                )
+                .font(.system(size: 27, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
 
-                VStack(spacing: 8) {
-                    Text(
-                        (maintenance?.title ?? "WARTUNGSARBEITEN").uppercased()
-                    )
-                    .font(.system(size: 27, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.center)
-
-                    Text(
-                        maintenance?.message
-                            ?? "Montam wird gerade aktualisiert."
-                    )
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(MontamPalette.mutedText)
-                    .multilineTextAlignment(.center)
-                }
-
-                if let endDate = maintenance?.endDate {
-                    infoPanel(title: "ENDET", value: endDate)
-                }
-
-                Button {
-                    service.refresh()
-                    appModel.appState =
-                        service.activeMaintenance == nil ? .start : .maintenance
-                } label: {
-                    Text("ERNEUT PRUEFEN")
-                        .font(
-                            .system(size: 15, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(MontamPalette.black)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 58)
-                        .background(MontamPalette.gold)
-                        .clipShape(MontamEvolutionShape())
-                }
-                .buttonStyle(.plain)
-
-                Spacer()
+                Text(
+                    maintenance?.message
+                        ?? "Montam wird gerade aktualisiert."
+                )
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .foregroundStyle(MontamPalette.mutedText)
+                .multilineTextAlignment(.center)
             }
-            .padding(24)
+
+            if let endDate = maintenance?.endDate {
+                infoPanel(title: "ENDET", value: endDate)
+            }
+
+            Button {
+                service.refresh()
+                appModel.appState =
+                    service.activeMaintenance == nil ? .start : .maintenance
+            } label: {
+                Text("ERNEUT PRUEFEN")
+                    .font(
+                        .system(size: 15, weight: .black, design: .rounded)
+                    )
+                    .foregroundStyle(MontamPalette.black)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 58)
+                    .background(MontamPalette.gold)
+                    .clipShape(MontamEvolutionShape())
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+        }
+        .padding(24)
+        .background {
+            MontamBackground()
         }
         .onAppear {
             service.refresh()

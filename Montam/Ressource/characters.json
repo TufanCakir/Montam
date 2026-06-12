@@ -1,7 +1,7 @@
 [
     {
-        "id": "character_montam_feral_pyro",
-        "name": "Pyro",
+        "id": "character_montam_feral_pyron",
+        "name": "Pyron",
         "rarity": "common",
         "role": "dps",
         "stats": {
@@ -11,17 +11,17 @@
             "attackSpeed": 1.6
         },
         "energyType": "fire",
-        "sprite": "skin_pyro_feral_default",
+        "sprite": "skin_pyron_feral_default",
         "skins": [
             {
                 "id": "pyro_blue",
-                "sprite": "skin_pyro_feral_blue"
+                "sprite": "skin_pyron_feral_blue"
             }
         ],
         "skills": [
             {
                 "id": "feral_flame",
-                "name": "Pyro Flame",
+                "name": "Pyron Flame",
                 "type": "damage",
                 "multiplier": 1.2,
                 "cooldown": 4,

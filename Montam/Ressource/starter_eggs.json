@@ -3,11 +3,11 @@
     "subtitle": "Diese Auswahl ist nur einmal pro Account möglich.",
     "eggs": [
         {
-            "id": "egg_feral_pyro",
-            "title": "Pyro Egg",
-            "characterId": "character_montam_feral_pyro",
-            "eggImage": "egg_feral_pyro",
-            "previewImage": "skin_pyro_feral_default",
+            "id": "egg_feral_pyron",
+            "title": "pyron Egg",
+            "characterId": "character_montam_feral_pyron",
+            "eggImage": "egg_feral_pyron",
+            "previewImage": "skin_pyron_feral_default",
             "accentColor": "gold"
         },
         {

@@ -53,7 +53,9 @@ struct SummonResultView: View {
             .padding(.bottom, 22)
         }
         .padding(.top, 18)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .navigationBarBackButtonHidden(true)
     }
 

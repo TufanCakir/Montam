@@ -58,7 +58,7 @@
     },
     {
         "id": "gems_pack_small",
-        "storeProductId": "com.montam.montamSaphirs.50",
+        "storeProductId": "com.montam.montamSaphir.50",
         "category": {
             "id": "real_money",
             "icon": "icon_montam_saphir",
@@ -69,7 +69,7 @@
     },
     {
         "id": "ruby_pack_small",
-        "storeProductId": "com.montam.montamRubys.50",
+        "storeProductId": "com.montam.montamRuby.50",
         "category": {
             "id": "real_money",
             "icon": "icon_montam_rubys",
@@ -80,7 +80,7 @@
     },
     {
         "id": "montam_liquid_pack_small",
-        "storeProductId": "com.montam.montamLiquid.small",
+        "storeProductId": "com.montam.montamLiquid.600",
         "category": {
             "id": "real_money",
             "icon": "icon_montam_liquid",
@@ -91,7 +91,7 @@
     },
     {
         "id": "summon_shard_pack_small",
-        "storeProductId": "com.montam.montamShards.50",
+        "storeProductId": "com.montam.montamShard.50",
         "category": {
             "id": "real_money",
             "icon": "icon_montam_shards",
@@ -101,15 +101,15 @@
         "tag": "summon"
     },
     {
-        "id": "pyro_egg_special_pack",
-        "storeProductId": "com.montam.pack.pyroegg.special",
+        "id": "pyron_egg_special_pack",
+        "storeProductId": "com.montam.pack.pyronegg.special",
         "category": {
             "id": "special_packs",
-            "icon": "egg_feral_pyro",
+            "icon": "egg_feral_pyron",
             "color": "orange"
         },
         "montamLiquid": 300,
-        "eggId": "egg_feral_pyro",
+        "eggId": "egg_feral_pyron",
         "eggs": 3,
         "tag": "egg pack"
     },
@@ -128,15 +128,15 @@
         "id": "launch_mixed_pack",
         "storeProductId": "com.montam.pack.launch.mixed",
         "category": {
-            "id": "special_packs",
+            "id": "launch",
             "icon": "icon_montam_saphir",
             "color": "green"
         },
-        "montamCoins": 5000,
-        "montamSaphirs": 80,
-        "montamRubys": 20,
-        "montamLiquid": 500,
-        "montamShards": 1000,
+        "montamCoins": 1000,
+        "montamSaphirs": 100,
+        "montamRubys": 100,
+        "montamLiquid": 100,
+        "montamShards": 100,
         "tag": "launch"
     }
 ]

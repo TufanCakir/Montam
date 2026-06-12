@@ -34,7 +34,9 @@ struct HatcheryView: View {
             .padding(18)
         }
         .scrollIndicators(.hidden)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .navigationTitle("Hatchery")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -50,7 +52,7 @@ struct HatcheryView: View {
 
     private var header: some View {
         VStack(spacing: 10) {
-            RemoteAssetImage(name: "egg_feral_pyro")
+            RemoteAssetImage(name: "egg_feral_cryon")
                 .scaledToFit()
                 .frame(width: 92, height: 92)
 
@@ -93,7 +95,9 @@ struct HatcheryView: View {
 
     private func eggRow(_ egg: MontamEgg) -> some View {
         let owned = eggInventory.count(for: egg.id)
-        let canHatch = owned > 0 && montamLiquidManager.montamLiquid >= egg.hatchCostMontamLiquid
+        let canHatch =
+            owned > 0
+            && montamLiquidManager.montamLiquid >= egg.hatchCostMontamLiquid
 
         return VStack(spacing: 12) {
             HStack(spacing: 14) {
@@ -225,7 +229,8 @@ struct HatcheryView: View {
         do {
             let characters: [Character] = try JSONLoader.load("characters")
             guard
-                let feral = characters.first(where: { $0.id == egg.characterId })
+                let feral = characters.first(where: { $0.id == egg.characterId }
+                )
             else {
                 EggInventoryManager.shared.add(1, eggId: egg.id)
                 MontamLiquidManager.shared.add(egg.hatchCostMontamLiquid)

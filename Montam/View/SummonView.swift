@@ -36,22 +36,24 @@ struct SummonView: View {
     private let mutedText = Color.white.opacity(0.62)
 
     var body: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 10) {
             categoryBar
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 16) {
+                VStack(spacing: 14) {
                     ForEach(summonManager.banners(for: selectedCategory)) {
                         banner in
                         bannerCard(banner)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
+                .padding(.horizontal, 12)
+                .padding(.bottom, 14)
             }
         }
-        .padding(.top, 18)
-        .background(background)
+        .padding(.top, 8)
+        .background {
+            MontamBackground()
+        }
         .fullScreenCover(isPresented: $showResults) {
             SummonResultView(characters: summonResults)
         }
@@ -79,26 +81,14 @@ struct SummonView: View {
         }
     }
 
-    private var background: some View {
-        black
-            .overlay(alignment: .topTrailing) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 230, height: 230)
-                    .opacity(0.055)
-                    .offset(x: 62, y: -40)
-            }
-            .ignoresSafeArea()
-    }
-
     private var categoryBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
+            HStack(spacing: 7) {
                 ForEach(summonManager.categories) { category in
                     categoryButton(category)
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 12)
         }
     }
 
@@ -109,72 +99,94 @@ struct SummonView: View {
             selectedCategory = category.id
         } label: {
             Text(category.title.uppercased())
-                .font(.system(size: 12, weight: .black, design: .rounded))
+                .font(.system(size: 11, weight: .black, design: .rounded))
                 .foregroundStyle(selected ? black : .white)
-                .padding(.horizontal, 18)
-                .frame(height: 38)
+                .padding(.horizontal, 14)
+                .frame(height: 32)
                 .background(selected ? gold : panel)
                 .overlay(
-                    SummonBladeRectangle(cut: 10).stroke(
+                    SummonBladeRectangle(cut: 8).stroke(
                         selected ? blue : gold.opacity(0.55),
                         lineWidth: 1.4
                     )
                 )
-                .clipShape(SummonBladeRectangle(cut: 10))
+                .clipShape(SummonBladeRectangle(cut: 8))
         }
         .buttonStyle(.plain)
     }
 
     private func bannerCard(_ banner: SummonBanner) -> some View {
-        VStack(spacing: 14) {
-            HStack(spacing: 16) {
+        VStack(spacing: 0) {
+            ZStack(alignment: .bottomLeading) {
                 RemoteAssetImage(name: banner.bannerImage)
                     .scaledToFit()
-                    .frame(width: 112, height: 112)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 188)
+                    .clipped()
+                    .overlay {
+                        LinearGradient(
+                            colors: [
+                                black.opacity(0.15),
+                                black.opacity(0.18),
+                                black.opacity(0.90),
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(banner.title.uppercased())
-                        .font(
-                            .system(size: 18, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.68)
+                    HStack(spacing: 7) {
+                        tag("FEATURED")
 
-                    HStack(spacing: 8) {
                         if let pity = banner.pity, pity.enabled {
                             tag(
                                 "PITY \(PityManager.shared.pulls(for: banner.id))/\(pity.requiredPulls)"
                             )
                         }
-                        currencyTag(banner.currency)
+
+                        Spacer()
+
                         infoButton(for: banner)
                     }
-                }
 
-                Spacer(minLength: 0)
+                    Spacer()
+
+                    Text(banner.title.uppercased())
+                        .font(
+                            .system(size: 21, weight: .black, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.68)
+                        .shadow(color: .black.opacity(0.9), radius: 4, y: 2)
+
+                    currencyTag(banner.currency)
+                }
+                .padding(12)
             }
 
-            HStack(spacing: 10) {
+            HStack(spacing: 8) {
                 ForEach(currentOptions(for: banner)) { option in
                     summonButton(option: option, banner: banner)
                 }
             }
+            .padding(10)
+            .background(black.opacity(0.86))
         }
-        .padding(16)
         .background(panel)
         .opacity(summonManager.canSummon(banner) ? 1 : 0.42)
-        .overlay(SummonBladeRectangle(cut: 20).stroke(gold, lineWidth: 1.8))
-        .clipShape(SummonBladeRectangle(cut: 20))
+        .overlay(SummonBladeRectangle(cut: 18).stroke(gold, lineWidth: 1.8))
+        .clipShape(SummonBladeRectangle(cut: 18))
         .disabled(!summonManager.canSummon(banner))
     }
 
     private func tag(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 10, weight: .black, design: .rounded))
+            .font(.system(size: 9, weight: .black, design: .rounded))
             .foregroundStyle(black)
-            .padding(.horizontal, 9)
-            .frame(height: 24)
+            .padding(.horizontal, 8)
+            .frame(height: 22)
             .background(gold)
             .clipShape(SummonBladeRectangle(cut: 6))
     }
@@ -183,14 +195,14 @@ struct SummonView: View {
         HStack(spacing: 5) {
             RemoteAssetImage(name: currencyInfo(for: currency).icon)
                 .scaledToFit()
-                .frame(width: 18, height: 18)
+                .frame(width: 16, height: 16)
 
             Text(currencyInfo(for: currency).title)
-                .font(.system(size: 10, weight: .black, design: .rounded))
+                .font(.system(size: 9, weight: .black, design: .rounded))
                 .foregroundStyle(black)
         }
-        .padding(.horizontal, 9)
-        .frame(height: 24)
+        .padding(.horizontal, 8)
+        .frame(height: 22)
         .background(gold)
         .clipShape(SummonBladeRectangle(cut: 6))
     }
@@ -202,10 +214,10 @@ struct SummonView: View {
             HStack(spacing: 7) {
                 RemoteAssetImage(name: "icon_info")
                     .scaledToFit()
-                    .frame(width: 30, height: 30)
+                    .frame(width: 24, height: 24)
             }
-            .padding(.horizontal, 10)
-            .frame(height: 32)
+            .padding(.horizontal, 8)
+            .frame(height: 28)
             .background(black)
             .clipShape(SummonBladeShape(pointDepth: 10, slant: 6))
             .overlay(
@@ -229,23 +241,23 @@ struct SummonView: View {
             pendingAmount = option.amount
             showSummonConfirm = true
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 RemoteAssetImage(name: currencyInfo(for: banner.currency).icon)
                     .scaledToFit()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 20)
 
                 Text(isTutorial ? "FREE" : "\(option.amount)x / \(option.cost)")
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .foregroundStyle(black)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 46)
-            .background(blue)
+            .frame(height: 40)
+            .background(gold)
             .overlay(
                 SummonBladeShape(pointDepth: 18, slant: 10).stroke(
-                    gold,
+                    blue,
                     lineWidth: 1.4
                 )
             )

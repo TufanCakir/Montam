@@ -48,6 +48,17 @@ final class RemoteAssetManager {
     }
 
     func download(asset: RemoteAsset, baseURL: URL) -> Int {
+        if let localURL = localURL(for: asset.id),
+            let size = try? localURL.resourceValues(forKeys: [.fileSizeKey])
+                .fileSize
+        {
+            return size
+        }
+
+        return refresh(asset: asset, baseURL: baseURL)
+    }
+
+    func refresh(asset: RemoteAsset, baseURL: URL) -> Int {
         let remoteURL = baseURL.appendingPathComponent(asset.file)
         guard let data = fetchData(from: remoteURL) else { return 0 }
         removeCachedAsset(id: asset.id)

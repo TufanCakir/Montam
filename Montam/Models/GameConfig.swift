@@ -14,6 +14,8 @@ struct GameConfig: Codable {
     let storyChapters: [StoryChapter]
     let footerItems: [GameFooterConfigItem]?
     let homeMenuItems: [GameMenuConfigItem]?
+    let homeBackgroundImage: String?
+    let homeFeaturedImage: String?
     let loadingImages: [String]?
     let eventUI: EventUIConfig?
 
@@ -34,6 +36,8 @@ struct GameConfig: Codable {
         storyChapters: [],
         footerItems: GameFooterConfigItem.fallback,
         homeMenuItems: GameMenuConfigItem.fallback,
+        homeBackgroundImage: nil,
+        homeFeaturedImage: nil,
         loadingImages: [],
         eventUI: .fallback
     )
@@ -61,6 +65,7 @@ struct StoryChapter: Codable, Identifiable, Hashable {
     let description: String
     let icon: String
     let enemyImage: String
+    let battleBackground: String?
     let enemyElement: String
     let storyText: String
     let targetStages: Int
@@ -121,7 +126,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "story",
             title: "Story Battle",
-            icon: "skin_pyro_feral_default",
+            icon: "skin_cryon_feral_default",
             route: "story",
             color: "gold",
             style: "wide"
@@ -129,7 +134,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "upgrade",
             title: "Upgrade",
-            icon: "skin_blazion_tamed_default",
+            icon: "skin_crygon_tamed_default",
             route: "upgrade",
             color: "blue",
             style: "small"
@@ -137,7 +142,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "hatchery",
             title: "Hatchery",
-            icon: "egg_feral_pyro",
+            icon: "egg_feral_cryon",
             route: "hatchery",
             color: "gold",
             style: "small"
@@ -145,7 +150,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "wardrobe",
             title: "Wardrobe",
-            icon: "skin_solarion_exalted_default",
+            icon: "skin_stormeon_mastered_default",
             route: "wardrobe",
             color: "blue",
             style: "small"
@@ -153,7 +158,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "events",
             title: "Events",
-            icon: "skin_solarion_exalted_default",
+            icon: "skin_imperion_exalted_default",
             route: "events",
             color: "gold",
             style: "small"
@@ -161,7 +166,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "gifts",
             title: "Gifts",
-            icon: "skin_pyro_feral_default",
+            icon: "skin_cryon_feral_default",
             route: "gifts",
             color: "blue",
             style: "small"
@@ -169,7 +174,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "passes",
             title: "Passes",
-            icon: "skin_pyro_feral_default",
+            icon: "skin_crygon_tamed_default",
             route: "passes",
             color: "gold",
             style: "small"
@@ -177,7 +182,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "news",
             title: "News",
-            icon: "skin_pyro_feral_default",
+            icon: "skin_stormeon_mastered_default",
             route: "news",
             color: "blue",
             style: "small"
@@ -185,7 +190,7 @@ struct GameMenuConfigItem: Codable, Identifiable, Hashable {
         GameMenuConfigItem(
             id: "settings",
             title: "Settings",
-            icon: "skin_solarion_exalted_default",
+            icon: "skin_imperion_exalted_default",
             route: "settings",
             color: "blue",
             style: "wide"
@@ -245,7 +250,7 @@ struct EventRewardIconConfig: Codable, Hashable {
         montamShards: "icon_montam_shards",
         montamContainers: "icon_montam_containers",
         montamLiquid: "icon_montam_liquid",
-        egg: "egg_feral_pyro",
-        skin: "skin_solarion_exalted_blue"
+        egg: "egg_feral_cryon",
+        skin: "skin_imperion_exalted_default"
     )
 }

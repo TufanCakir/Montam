@@ -12,12 +12,12 @@
             "featured": true
         },
         {
-            "id": "pyro_egg_event_preview",
-            "title": "Pyro Egg Drops",
+            "id": "pyron_egg_event_preview",
+            "title": "pyron Egg Drops",
             "body":
                 "Special Events koennen zeitlich limitierte Eier als Reward enthalten.",
             "category": "event",
-            "icon": "egg_feral_pyro",
+            "icon": "egg_feral_pyron",
             "startDate": "24.05.2026 00:00",
             "endDate": "21.06.2026 23:59",
             "featured": false
@@ -28,7 +28,7 @@
             "body":
                 "Story Battles sind jetzt eigener Modus mit Kapitel-Auswahl und Difficulty.",
             "category": "story",
-            "icon": "skin_pyro_feral_default",
+            "icon": "skin_pyron_feral_default",
             "startDate": "24.05.2026 00:00",
             "endDate": "30.06.2026 23:59",
             "featured": false

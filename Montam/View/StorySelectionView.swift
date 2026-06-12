@@ -38,7 +38,9 @@ struct StorySelectionView: View {
                 .padding(.bottom, 24)
             }
         }
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .navigationTitle("Story")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -165,10 +167,26 @@ struct StorySelectionView: View {
 
     private func rewardStrip(_ rewards: EventRewards?) -> some View {
         HStack(spacing: 7) {
-            rewardChip("montamCoins", rewards?.montamCoins, icon: "icon_montam_coins")
-            rewardChip("montamSaphirs", rewards?.montamSaphirs, icon: "icon_montam_saphir")
-            rewardChip("montamRubys", rewards?.montamRubys, icon: "icon_montam_rubys")
-            rewardChip("montamLiquid", rewards?.montamLiquid, icon: "icon_montam_liquid")
+            rewardChip(
+                "montamCoins",
+                rewards?.montamCoins,
+                icon: "icon_montam_coins"
+            )
+            rewardChip(
+                "montamSaphirs",
+                rewards?.montamSaphirs,
+                icon: "icon_montam_saphir"
+            )
+            rewardChip(
+                "montamRubys",
+                rewards?.montamRubys,
+                icon: "icon_montam_rubys"
+            )
+            rewardChip(
+                "montamLiquid",
+                rewards?.montamLiquid,
+                icon: "icon_montam_liquid"
+            )
             Spacer(minLength: 0)
         }
     }

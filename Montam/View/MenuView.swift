@@ -10,6 +10,7 @@ import SwiftUI
 struct MenuView: View {
     @EnvironmentObject private var appModel: AppModel
     let navigate: (RootView.HomeRoute) -> Void
+    @State private var showsMenu = false
 
     init(navigate: @escaping (RootView.HomeRoute) -> Void = { _ in }) {
         self.navigate = navigate
@@ -21,84 +22,122 @@ struct MenuView: View {
     private let blue = Color(red: 0.08, green: 0.24, blue: 0.62)
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 8) {
-                Spacer(minLength: 2)
+        GeometryReader { proxy in
+            ZStack(alignment: .bottomTrailing) {
+                featuredMontam(in: proxy.size)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: .infinity
+                    )
 
-                VStack(spacing: 7) {
-                    ForEach(menuItems) { item in
-                        if item.style == "wide" {
-                            Button {
-                                perform(item)
-                            } label: {
-                                evolutionLink(
-                                    title: item.title,
-                                    image: item.icon,
-                                    tint: menuTint(for: item.color)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
+                RemoteAssetImage(name: "montam_icon")
+                    .scaledToFit()
+                    .frame(width: 82, height: 54)
+                    .position(x: 62, y: 64)
 
-                    LazyVGrid(
-                        columns: [
-                            GridItem(.flexible(), spacing: 9),
-                            GridItem(.flexible(), spacing: 9),
-                        ],
-                        spacing: 7
-                    ) {
-                        ForEach(menuItems.filter { $0.style != "wide" }) {
-                            item in
-                            Button {
-                                perform(item)
-                            } label: {
-                                smallEvolutionLink(
-                                    title: item.title,
-                                    image: item.icon,
-                                    tint: menuTint(for: item.color)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
+                openMenuButton
+                    .position(
+                        x: max(proxy.size.width - 88, 88),
+                        y: max(proxy.size.height - 45, 45)
+                    )
+
+                if showsMenu {
+                    menuOverlay
+                        .transition(
+                            .move(edge: .bottom).combined(with: .opacity)
+                        )
                 }
-
-                Spacer(minLength: 8)
             }
-            .padding(.horizontal, 14)
-            .frame(maxWidth: .infinity)
+            .background {
+                MontamBackground()
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
         }
-        .scrollIndicators(.hidden)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(menuBackground)
+        .animation(.easeOut(duration: 0.18), value: showsMenu)
     }
 
-    private var menuBackground: some View {
-        LinearGradient(
-            colors: [
-                black,
-                Color(red: 0.018, green: 0.038, blue: 0.082),
-                black,
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-            .overlay(alignment: .topTrailing) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 220, height: 220)
-                    .opacity(0.055)
-                    .offset(x: 54, y: -34)
+    private func featuredMontam(in size: CGSize) -> some View {
+        let imageHeight = min(max(size.height * 0.38, 220), 390)
+        let imageWidth = min(size.width * 0.68, 500)
+
+        return RemoteAssetImage(name: homeFeaturedImage)
+            .scaledToFill()
+            .frame(width: imageWidth, height: imageHeight)
+    }
+
+    private var openMenuButton: some View {
+        Button {
+            showsMenu = true
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "square.grid.3x3.fill")
+                    .font(.system(size: 17, weight: .black))
+
+                Text("MENU")
+                    .font(.system(size: 16, weight: .black, design: .rounded))
             }
-            .overlay(alignment: .bottomLeading) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 240, height: 240)
-                    .opacity(0.045)
-                    .offset(x: -80, y: 72)
+            .foregroundStyle(black)
+            .padding()
+            .background(gold)
+            .clipShape(MontamCutRectangle(cut: 12))
+            .overlay(
+                MontamCutRectangle(cut: 12)
+                    .stroke(blue, lineWidth: 2)
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.bottom, 100)
+    }
+
+    private var menuOverlay: some View {
+        ZStack {
+            black.opacity(0.68)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    showsMenu = false
+                }
+
+            GeometryReader { proxy in
+                VStack {
+                    HStack {
+
+                        Spacer()
+
+                        Button {
+                            showsMenu = false
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 15, weight: .black))
+                                .foregroundStyle(.white)
+                                .frame(width: 34, height: 34)
+                                .background(MontamPalette.black.opacity(0.78))
+                                .clipShape(MontamCutRectangle(cut: 8))
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    VStack {
+                        LazyVGrid(
+                            columns: gridColumns(for: proxy.size.width),
+                            spacing: 14
+                        ) {
+                            ForEach(menuItems) { item in
+                                Button {
+                                    showsMenu = false
+                                    perform(item)
+                                } label: {
+                                    menuGridButton(item)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.top, 6)
+                    }
+                }
+                .padding()
             }
-            .ignoresSafeArea()
+        }
     }
 
     private var menuItems: [GameMenuConfigItem] {
@@ -133,6 +172,11 @@ struct MenuView: View {
         }
     }
 
+    private var homeFeaturedImage: String {
+        GameConfigManager.shared.config.homeFeaturedImage
+            ?? "skin_imperion_exalted_default"
+    }
+
     private func menuTint(for color: String?) -> Color {
         switch color?.lowercased() {
         case "gold", "yellow":
@@ -152,82 +196,66 @@ struct MenuView: View {
         }
     }
 
-    private func evolutionLink(title: String, image: String, tint: Color)
-        -> some View
-    {
-        ZStack(alignment: .leading) {
-            Capsule()
-                .fill(matteFill(tint: tint))
-                .overlay(
-                    Capsule()
-                        .stroke(tint.opacity(0.88), lineWidth: 1.6)
-                )
-                .shadow(color: tint.opacity(0.16), radius: 10, y: 4)
+    private func menuGridButton(_ item: GameMenuConfigItem) -> some View {
+        let tint = menuTint(for: item.color)
 
-            HStack(spacing: 11) {
-                evolutionIcon(image: image, tint: tint, size: 40)
+        return VStack(spacing: 10) {
+            evolutionIcon(image: item.icon, tint: tint, size: 100)
 
-                Text(title)
-                    .font(.system(size: 14, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
-
-                Spacer()
-            }
-            .padding(.horizontal, 14)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 50)
-    }
-
-    private func smallEvolutionLink(title: String, image: String, tint: Color)
-        -> some View
-    {
-        VStack(spacing: 4) {
-            evolutionIcon(image: image, tint: tint, size: 42)
-
-            Text(title.uppercased())
-                .font(.system(size: 9, weight: .black, design: .rounded))
+            Text(item.title.uppercased())
+                .font(.system(size: 9.5, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(1)
-                .minimumScaleFactor(0.72)
+                .minimumScaleFactor(0.68)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 82)
-        .background(matteFill(tint: tint))
+        .frame(height: 130)
+        .background(menuTileFill(tint: tint))
         .overlay(
-            MontamEvolutionShape()
-                .stroke(tint.opacity(0.90), lineWidth: 1.7)
+            MontamCutRectangle(cut: 13)
+                .stroke(tint.opacity(0.90), lineWidth: 1.5)
         )
-        .clipShape(MontamEvolutionShape())
-        .shadow(color: tint.opacity(0.14), radius: 8, y: 4)
+        .clipShape(MontamCutRectangle(cut: 13))
     }
 
-    private func evolutionIcon(image: String, tint: Color, size: CGFloat) -> some View {
+    private func evolutionIcon(image: String, tint: Color, size: CGFloat)
+        -> some View
+    {
         RemoteAssetImage(name: image)
             .scaledToFit()
             .padding(size * 0.16)
             .frame(width: size, height: size)
             .background(
-                MontamEvolutionShape()
+                MontamCutRectangle(cut: 9)
                     .fill(MontamPalette.black.opacity(0.58))
             )
             .overlay(
-                MontamEvolutionShape()
+                MontamCutRectangle(cut: 9)
                     .stroke(tint.opacity(0.75), lineWidth: 1.2)
             )
     }
 
-    private func matteFill(tint: Color) -> LinearGradient {
+    private func menuTileFill(tint: Color) -> LinearGradient {
         LinearGradient(
             colors: [
-                panel.opacity(0.98),
-                tint.opacity(0.18),
+                tint.opacity(0.70),
+                panel.opacity(0.96),
                 MontamPalette.black.opacity(0.88),
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
+        )
+    }
+
+    private func gridColumns(for width: CGFloat) -> [GridItem] {
+        let count = width > 700 ? 4 : 3
+
+        return Array(
+            repeating: GridItem(
+                .flexible(minimum: 95, maximum: 140),
+                spacing: 20
+            ),
+            count: count
         )
     }
 }

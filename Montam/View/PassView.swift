@@ -43,7 +43,9 @@ struct PassView: View {
             .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .navigationTitle("Passes")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -84,12 +86,16 @@ struct PassView: View {
 
                 VStack(alignment: .leading, spacing: 5) {
                     Text((selectedPass?.title ?? "PASSES").uppercased())
-                        .font(.system(size: 26, weight: .black, design: .rounded))
+                        .font(
+                            .system(size: 26, weight: .black, design: .rounded)
+                        )
                         .foregroundStyle(.white)
 
-                    Text("PROGRESS \(progress.points(for: selectedPass?.id ?? ""))")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(MontamPalette.gold)
+                    Text(
+                        "PROGRESS \(progress.points(for: selectedPass?.id ?? ""))"
+                    )
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(MontamPalette.gold)
                 }
 
                 Spacer()
@@ -305,7 +311,10 @@ struct PassView: View {
                 .foregroundStyle(MontamPalette.mutedText)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    ForEach(pass.infoTasks ?? defaultTasks(for: pass), id: \.self) {
+                    ForEach(
+                        pass.infoTasks ?? defaultTasks(for: pass),
+                        id: \.self
+                    ) {
                         task in
                         HStack(alignment: .top, spacing: 10) {
                             RemoteAssetImage(name: "icon_info")

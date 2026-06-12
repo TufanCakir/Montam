@@ -17,7 +17,8 @@ enum MontamPalette {
     static let gold = Color(red: 0.95, green: 0.72, blue: 0.18)
     static let blue = Color(red: 0.08, green: 0.24, blue: 0.62)
     static let red = Color(red: 0.82, green: 0.16, blue: 0.22)
-
+    static let white = Color(red: 1.0, green: 1.0, blue: 1.0)
+    
     // Added resource colors
     static let emerald = Color(red: 0.10, green: 0.78, blue: 0.48)
     static let violet = Color(red: 0.55, green: 0.34, blue: 0.92)
@@ -65,31 +66,32 @@ struct MontamEvolutionShape: Shape {
     }
 }
 
+struct MontamBackground: View {
+    private var backgroundImage: String {
+        GameConfigManager.shared.config.homeBackgroundImage ?? "montam_bg_dark"
+    }
+
+    var body: some View {
+        RemoteAssetImage(name: backgroundImage)
+            .scaledToFill()
+            .ignoresSafeArea()
+    }
+}
+
 struct MontamScreenBackground: View {
     var body: some View {
-        LinearGradient(
-            colors: [
-                MontamPalette.black,
-                Color(red: 0.018, green: 0.035, blue: 0.075),
-                MontamPalette.black,
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-            .overlay(alignment: .topTrailing) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 240, height: 240)
-                    .opacity(0.045)
-                    .offset(x: 62, y: -44)
-            }
-            .overlay(alignment: .bottomLeading) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 260, height: 260)
-                    .opacity(0.035)
-                    .offset(x: -92, y: 76)
-            }
+        MontamBackground()
+            .overlay(
+                LinearGradient(
+                    colors: [
+                        MontamPalette.black.opacity(0.18),
+                        MontamPalette.black.opacity(0.08),
+                        MontamPalette.black.opacity(0.30),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
             .ignoresSafeArea()
     }
 }

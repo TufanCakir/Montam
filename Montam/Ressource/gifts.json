@@ -26,7 +26,7 @@
     {
         "id": "launch_coins",
         "title": "Blade MontamCoins",
-        "icon": "skin_pyro_feral_default",
+        "icon": "skin_pyron_feral_default",
         "type": "montamCoins",
         "amount": 500,
         "note": "Upgrade MontamCoins für den Idle Battle."

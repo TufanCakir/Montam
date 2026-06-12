@@ -30,22 +30,12 @@ struct ExchangeView: View {
             }
         }
         .padding(.top, 18)
-        .background(background)
+        .background {
+            MontamBackground()
+        }
         .alert("Nicht genug MontamCoins", isPresented: $showFail) {
             Button("OK", role: .cancel) {}
         }
-    }
-
-    private var background: some View {
-        black
-            .overlay(alignment: .topTrailing) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 230, height: 230)
-                    .opacity(0.055)
-                    .offset(x: 62, y: -40)
-            }
-            .ignoresSafeArea()
     }
 
     private var visibleOffers: [ExchangeOffer] {

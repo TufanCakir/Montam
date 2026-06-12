@@ -21,24 +21,20 @@ struct GameLayout<Content: View>: View {
     }
 
     var body: some View {
-        ZStack {
-            MontamScreenBackground()
+        VStack(spacing: 5) {
+            GlobalGameHeader()
 
-            VStack(spacing: 6) {
-                GlobalGameHeader()
-                    .padding(.horizontal, 10)
-                    .padding(.top, 6)
+            content
 
-                content
+                .id(selectedTab)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
 
-                    .id(selectedTab)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-
-                GlobalGameFooter(selectedTab: $selectedTab)
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, 6)
-            }
+            GlobalGameFooter(selectedTab: $selectedTab)
+                .padding(.horizontal, 10)
+        }
+        .background {
+            MontamBackground()
         }
         .ignoresSafeArea(.keyboard)
     }
@@ -48,7 +44,8 @@ private struct GlobalGameHeader: View {
     @ObservedObject private var montamCoins = MontamCoinsManager.shared
     @ObservedObject private var montamSaphirs = MontamSaphirsManager.shared
     @ObservedObject private var montamRubys = MontamRubysManager.shared
-    @ObservedObject private var montamContainers = MontamContainersManager.shared
+    @ObservedObject private var montamContainers = MontamContainersManager
+        .shared
     @ObservedObject private var montamLiquid = MontamLiquidManager.shared
     @ObservedObject private var montamShards = MontamShardsManager.shared
     @ObservedObject private var progress = PlayerProgressManager.shared
@@ -67,11 +64,11 @@ private struct GlobalGameHeader: View {
     }
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 7) {
             HStack(spacing: 9) {
                 RemoteAssetImage(name: "montam_icon")
                     .scaledToFit()
-                    .frame(width: 32, height: 32)
+                    .frame(width: 28, height: 28)
 
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
@@ -97,7 +94,7 @@ private struct GlobalGameHeader: View {
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
                             .background(MontamPalette.gold)
-                            .clipShape(Capsule())
+                            .clipShape(MontamCutRectangle(cut: 5))
                     }
 
                     ProgressView(value: expRatio)
@@ -111,87 +108,48 @@ private struct GlobalGameHeader: View {
                 montamLiquidPill
             }
 
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible(), spacing: 1),
-                    GridItem(.flexible(), spacing: 1),
-                    GridItem(.flexible(), spacing: 3),
-                ],
-                spacing: 6
-            ) {
-                resourceCell(
-                    title: "montamCoins",
-                    value: montamCoins.montamCoins,
-                    icon: rewardIcons.montamCoins,
-                    tint: MontamPalette.gold
-                )
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 7) {
+                    resourceCell(
+                        title: "montamCoins",
+                        value: montamCoins.montamCoins,
+                        icon: rewardIcons.montamCoins,
+                        tint: MontamPalette.gold
+                    )
 
-                resourceCell(
-                    title: "montamSaphirs",
-                    value: montamSaphirs.montamSaphirs,
-                    icon: rewardIcons.montamSaphirs,
-                    tint: MontamPalette.cyan
-                )
+                    resourceCell(
+                        title: "montamSaphirs",
+                        value: montamSaphirs.montamSaphirs,
+                        icon: rewardIcons.montamSaphirs,
+                        tint: MontamPalette.cyan
+                    )
 
-                resourceCell(
-                    title: "montamRubys",
-                    value: montamRubys.montamRubys,
-                    icon: rewardIcons.montamRubys,
-                    tint: MontamPalette.crimson
-                )
+                    resourceCell(
+                        title: "montamRubys",
+                        value: montamRubys.montamRubys,
+                        icon: rewardIcons.montamRubys,
+                        tint: MontamPalette.crimson
+                    )
 
-                resourceCell(
-                    title: "montamShards",
-                    value: montamShards.montamShards,
-                    icon: rewardIcons.montamShards,
-                    tint: MontamPalette.violet
-                )
+                    resourceCell(
+                        title: "montamShards",
+                        value: montamShards.montamShards,
+                        icon: rewardIcons.montamShards,
+                        tint: MontamPalette.violet
+                    )
 
-                resourceCell(
-                    title: "montamContainers",
-                    value: montamContainers.tokens,
-                    icon: rewardIcons.montamContainers,
-                    tint: MontamPalette.emerald
-                )
+                    resourceCell(
+                        title: "montamContainers",
+                        value: montamContainers.tokens,
+                        icon: rewardIcons.montamContainers,
+                        tint: MontamPalette.emerald
+                    )
+                }
             }
         }
-        .padding(30)
-        .background(
-            Capsule()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            MontamPalette.panel.opacity(0.98),
-                            MontamPalette.blue.opacity(0.20),
-                            MontamPalette.black.opacity(0.94),
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .overlay(alignment: .trailing) {
-                    RemoteAssetImage(name: "montam_icon")
-                        .scaledToFit()
-                        .frame(width: 108, height: 108)
-                        .opacity(0.07)
-                        .offset(x: 24)
-                }
-        )
-        .clipShape(Capsule())
-        .overlay(
-            Capsule()
-                .stroke(
-                    LinearGradient(
-                        colors: [
-                            MontamPalette.gold.opacity(0.92),
-                            MontamPalette.blue.opacity(0.92),
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ),
-                    lineWidth: 2
-                )
-        )
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
+
     }
 
     private var montamLiquidPill: some View {
@@ -213,11 +171,11 @@ private struct GlobalGameHeader: View {
             }
         }
         .padding(.horizontal, 8)
-        .frame(height: 32)
+        .frame(height: 30)
         .background(MontamPalette.black.opacity(0.82))
-        .clipShape(Capsule())
+        .clipShape(MontamCutRectangle(cut: 8))
         .overlay(
-            Capsule()
+            MontamCutRectangle(cut: 8)
                 .stroke(MontamPalette.blue, lineWidth: 1.4)
         )
     }
@@ -248,12 +206,12 @@ private struct GlobalGameHeader: View {
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 7)
-        .frame(height: 30)
+        .padding(.horizontal, 8)
+        .frame(width: 128, height: 30)
         .background(MontamPalette.black.opacity(0.75))
-        .clipShape(Capsule())
+        .clipShape(MontamCutRectangle(cut: 8))
         .overlay(
-            Capsule()
+            MontamCutRectangle(cut: 8)
                 .stroke(tint.opacity(0.85), lineWidth: 1)
         )
     }
@@ -283,7 +241,7 @@ private struct GlobalGameFooter: View {
     }
 
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 8) {
             ForEach(items) { item in
                 Button {
                     selectedTab = item.tab
@@ -293,25 +251,7 @@ private struct GlobalGameFooter: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(6)
-        .background(
-            Capsule()
-                .fill(MontamPalette.panel.opacity(0.96))
-        )
-        .clipShape(Capsule())
-        .overlay(
-            Capsule()
-                .stroke(
-                    LinearGradient(
-                        colors: [
-                            MontamPalette.gold, MontamPalette.blue,
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ),
-                    lineWidth: 2
-                )
-        )
+        .padding(.vertical, 4)
     }
 
     private func footerItem(_ item: FooterItem) -> some View {
@@ -329,34 +269,73 @@ private struct GlobalGameFooter: View {
                 .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 56)
+        .frame(height: 58)
         .background(
-            isSelected
-                ? AnyShapeStyle(
-                    LinearGradient(
-                        colors: [
-                            item.tint.opacity(0.34),
-                            item.tint.opacity(0.14),
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: footerFillColors(
+                        item: item,
+                        isSelected: isSelected
+                    ),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
-                : AnyShapeStyle(Color.clear)
+            )
         )
-        .clipShape(MontamEvolutionShape())
+        .clipShape(MontamCutRectangle(cut: 11))
         .overlay(
-            MontamEvolutionShape()
+            MontamCutRectangle(cut: 11)
                 .stroke(
-                    isSelected
-                        ? item.tint
-                        : .white.opacity(0.08),
-                    lineWidth: isSelected ? 2.2 : 1
+                    isSelected ? MontamPalette.gold : item.tint.opacity(0.58),
+                    lineWidth: isSelected ? 2 : 1.2
                 )
         )
-        .scaleEffect(isSelected ? 1.02 : 1)
+        .scaleEffect(isSelected ? 1.04 : 1)
         .animation(.easeOut(duration: 0.16), value: isSelected)
-        .offset(y: -1)
+        .offset(y: isSelected ? -3 : 0)
+    }
+
+    private func footerFillColors(
+        item: FooterItem,
+        isSelected: Bool
+    ) -> [Color] {
+        if isSelected {
+            return [
+                item.tint,
+                MontamPalette.black,
+                MontamPalette.black,
+            ]
+        }
+
+        return [
+            item.tint,
+            MontamPalette.black,
+            MontamPalette.black,
+        ]
+    }
+}
+
+private struct ChromePanelBackground: View {
+    let cut: CGFloat
+
+    var body: some View {
+        LinearGradient(
+            colors: [
+                MontamPalette.black.opacity(0.46),
+                MontamPalette.blue.opacity(0.20),
+                MontamPalette.black.opacity(0.40),
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(alignment: .trailing) {
+            RemoteAssetImage(name: "montam_icon")
+                .scaledToFit()
+                .frame(width: 94, height: 94)
+                .opacity(0.07)
+                .offset(x: 26)
+        }
+        .clipShape(MontamCutRectangle(cut: cut))
     }
 }
 
@@ -392,8 +371,8 @@ extension GlobalGameFooter {
             }
         }
         .frame(
-            width: isSelected ? 30 : 26,
-            height: isSelected ? 30 : 26
+            width: isSelected ? 28 : 24,
+            height: isSelected ? 28 : 24
         )
         .shadow(
             color: isSelected ? item.tint.opacity(0.45) : .clear,

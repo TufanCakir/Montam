@@ -32,7 +32,9 @@ struct TeamView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
         }
-        .background(background)
+        .background {
+            MontamBackground()
+        }
         .sheet(item: $selectedCharacter) { CharacterDetailView(owned: $0) }
         .alert("Team braucht 1 Montam", isPresented: $showTeamWarning) {
             Button("OK", role: .cancel) {}
@@ -126,7 +128,7 @@ struct TeamView: View {
                     selectedCharacter = owned
                 }
             } else {
-                RemoteAssetImage(name: "skin_pyro_feral_default")
+                RemoteAssetImage(name: "skin_cryon_feral_default")
                     .scaledToFit()
                     .padding(18)
                     .opacity(0.28)

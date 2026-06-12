@@ -59,10 +59,10 @@ extension TutorialConfig {
             ),
         ],
         previewForms: [
-            "skin_pyro_feral_default",
-            "skin_blazion_tamed_default",
-            "skin_infernon_mastered_default",
-            "skin_solarion_exalted_default",
+            "skin_cryon_feral_default",
+            "skin_crygon_tamed_default",
+            "skin_stormeon_mastered_default",
+            "skin_imperion_exalted_default",
         ]
     )
 }

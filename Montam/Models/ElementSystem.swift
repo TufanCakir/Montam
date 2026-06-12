@@ -23,7 +23,7 @@ enum MontamElement: String, Codable, CaseIterable, Hashable {
     var icon: String {
         switch self {
         case .fire:
-            "skin_pyro_feral_default"
+            "skin_pyron_feral_default"
         case .water:
             "skin_blazion_tamed_default"
         case .nature:

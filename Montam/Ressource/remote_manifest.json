@@ -53,8 +53,8 @@
             "file": "montam_icon.png"
         },
         {
-            "id": "skin_pyro_feral_default",
-            "file": "skin_pyro_feral_default.png"
+            "id": "skin_pyron_feral_default",
+            "file": "skin_pyron_feral_default.png"
         },
         {
             "id": "skin_blazion_tamed_default",
@@ -85,8 +85,8 @@
             "file": "skin_imperion_exalted_default.png"
         },
         {
-            "id": "skin_pyro_feral_blue",
-            "file": "skin_pyro_feral_blue.png"
+            "id": "skin_pyron_feral_blue",
+            "file": "skin_pyron_feral_blue.png"
         },
         {
             "id": "skin_blazion_tamed_blue",
@@ -125,12 +125,16 @@
             "file": "icon_montam_liquid.png"
         },
         {
+            "id": "montam_bg_dark",
+            "file": "montam_bg_dark.png"
+        },
+        {
             "id": "icon_info",
             "file": "icon_info.png"
         },
         {
-            "id": "egg_feral_pyro",
-            "file": "egg_feral_pyro.png"
+            "id": "egg_feral_pyron",
+            "file": "egg_feral_pyron.png"
         },
         {
             "id": "egg_feral_cryon",

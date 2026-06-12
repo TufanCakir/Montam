@@ -17,6 +17,61 @@ struct TutorialView: View {
             ? tutorial.steps[index] : tutorial.steps[0]
     }
 
+    private var starterCharacter: OwnedCharacter? {
+        appModel.teamManager.activeTeam.first
+            ?? appModel.teamManager.ownedCharacters.first
+    }
+
+    private var starterImage: String {
+        guard let starterCharacter else {
+            return "skin_cryon_feral_default"
+        }
+
+        return SkinInventoryManager.shared.activeImage(for: starterCharacter.base)
+    }
+
+    private var dynamicPreviewForms: [String] {
+        guard let starterCharacter else {
+            return tutorial.previewForms
+        }
+
+        return evolutionForms(for: starterCharacter.baseId)
+    }
+
+    private func evolutionForms(for characterId: String) -> [String] {
+        let id = characterId.lowercased()
+
+        if id.contains("cryon")
+            || id.contains("crygon")
+            || id.contains("stormeon")
+            || id.contains("imperion")
+        {
+            return [
+                "skin_cryon_feral_default",
+                "skin_crygon_tamed_default",
+                "skin_stormeon_mastered_default",
+                "skin_imperion_exalted_default",
+            ]
+        }
+
+        if id.contains("pyron")
+            || id.contains("blazion")
+            || id.contains("infernon")
+            || id.contains("solarion")
+        {
+            return [
+                "skin_pyron_feral_default",
+                "skin_blazion_tamed_default",
+                "skin_infernon_mastered_default",
+                "skin_solarion_exalted_default",
+            ]
+        }
+
+        return [starterImage] + tutorial.previewForms.filter {
+            $0 != starterImage
+        }
+    }
+
     var body: some View {
         VStack(spacing: 18) {
             Text(tutorial.title.uppercased())
@@ -56,7 +111,9 @@ struct TutorialView: View {
             Spacer()
         }
         .padding(.horizontal, 22)
-        .background(MontamScreenBackground())
+        .background {
+            MontamBackground()
+        }
         .onAppear {
             tutorial = TutorialConfigLoader.load()
         }
@@ -64,12 +121,12 @@ struct TutorialView: View {
 
     private var battlePreview: some View {
         VStack(spacing: 14) {
-            RemoteAssetImage(name: "skin_solarion_exalted_default")
+            RemoteAssetImage(name: starterImage)
                 .scaledToFit()
                 .frame(height: 116)
 
             HStack(spacing: 10) {
-                ForEach(tutorial.previewForms, id: \.self) { form in
+                ForEach(dynamicPreviewForms, id: \.self) { form in
                     RemoteAssetImage(name: form)
                         .scaledToFit()
                         .frame(maxWidth: .infinity)

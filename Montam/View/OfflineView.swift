@@ -9,48 +9,40 @@ import SwiftUI
 
 struct OfflineView: View {
     @ObservedObject private var network = NetworkMonitor.shared
-    @State private var scanOffset: CGFloat = -120
 
     var body: some View {
-        ZStack {
-            MontamScreenBackground()
 
-            VStack(spacing: 22) {
-                Spacer()
+        VStack(spacing: 22) {
+            Spacer()
 
-                statusMark
+            statusMark
 
-                VStack(spacing: 9) {
-                    Text("REMOTE LOST")
-                        .font(
-                            .system(size: 31, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .tracking(1.2)
+            VStack(spacing: 9) {
+                Text("REMOTE LOST")
+                    .font(
+                        .system(size: 31, weight: .black, design: .rounded)
+                    )
+                    .foregroundStyle(.white)
+                    .tracking(1.2)
 
-                    Text("MONTAM BRAUCHT EINE AKTIVE VERBINDUNG")
-                        .font(
-                            .system(size: 12, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(MontamPalette.mutedText)
-                        .multilineTextAlignment(.center)
-                }
-
-                connectionPanel
-
-                retryButton
-
-                Spacer()
+                Text("MONTAM BRAUCHT EINE AKTIVE VERBINDUNG")
+                    .font(
+                        .system(size: 12, weight: .black, design: .rounded)
+                    )
+                    .foregroundStyle(MontamPalette.mutedText)
+                    .multilineTextAlignment(.center)
             }
-            .padding(24)
+
+            connectionPanel
+
+            retryButton
+
+            Spacer()
         }
-        .onAppear {
-            scanOffset = 120
+        .padding(24)
+        .background {
+            MontamBackground()
         }
-        .animation(
-            .linear(duration: 1.15).repeatForever(autoreverses: false),
-            value: scanOffset
-        )
     }
 
     private var statusMark: some View {
@@ -62,7 +54,6 @@ struct OfflineView: View {
             MontamEvolutionShape()
                 .stroke(MontamPalette.blue, lineWidth: 2)
                 .frame(width: 132, height: 90)
-                .offset(x: scanOffset)
                 .mask(
                     MontamEvolutionShape()
                         .frame(width: 164, height: 116)

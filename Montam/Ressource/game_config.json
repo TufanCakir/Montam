@@ -6,6 +6,8 @@
         "requiredForNewAccount": true,
         "selectionCount": 1
     },
+    "homeBackgroundImage": "montam_bg_dark",
+    "homeFeaturedImage": "skin_imperion_exalted_default",
     "footerItems": [
         {
             "tab": "home",
@@ -42,7 +44,7 @@
         {
             "id": "story",
             "title": "Story Battle",
-            "icon": "skin_pyro_feral_default",
+            "icon": "skin_cryon_feral_default",
             "route": "story",
             "color": "gold",
             "style": "wide"
@@ -50,7 +52,7 @@
         {
             "id": "upgrade",
             "title": "Upgrade",
-            "icon": "skin_blazion_tamed_default",
+            "icon": "skin_crygon_tamed_default",
             "route": "upgrade",
             "color": "blue",
             "style": "small"
@@ -58,7 +60,7 @@
         {
             "id": "hatchery",
             "title": "Hatchery",
-            "icon": "egg_feral_pyro",
+            "icon": "egg_feral_cryon",
             "route": "hatchery",
             "color": "gold",
             "style": "small"
@@ -66,7 +68,7 @@
         {
             "id": "wardrobe",
             "title": "Wardrobe",
-            "icon": "skin_solarion_exalted_default",
+            "icon": "skin_stormeon_mastered_default",
             "route": "wardrobe",
             "color": "blue",
             "style": "small"
@@ -74,7 +76,7 @@
         {
             "id": "events",
             "title": "Events",
-            "icon": "skin_solarion_exalted_default",
+            "icon": "skin_imperion_exalted_default",
             "route": "events",
             "color": "gold",
             "style": "small"
@@ -82,7 +84,7 @@
         {
             "id": "gifts",
             "title": "Gifts",
-            "icon": "skin_pyro_feral_default",
+            "icon": "skin_cryon_feral_default",
             "route": "gifts",
             "color": "blue",
             "style": "small"
@@ -90,7 +92,7 @@
         {
             "id": "passes",
             "title": "Passes",
-            "icon": "skin_pyro_feral_default",
+            "icon": "skin_crygon_tamed_default",
             "route": "passes",
             "color": "gold",
             "style": "small"
@@ -98,7 +100,7 @@
         {
             "id": "news",
             "title": "News",
-            "icon": "skin_pyro_feral_default",
+            "icon": "skin_stormeon_mastered_default",
             "route": "news",
             "color": "blue",
             "style": "small"
@@ -106,26 +108,19 @@
         {
             "id": "settings",
             "title": "Settings",
-            "icon": "skin_solarion_exalted_default",
+            "icon": "skin_imperion_exalted_default",
             "route": "settings",
-            "color": "blue",
+            "color": "gold",
             "style": "wide"
         }
     ],
     "loadingImages": [
         "montam_icon",
-        "skin_pyro_feral_default",
-        "skin_blazion_tamed_default",
-        "skin_infernon_mastered_default",
-        "skin_solarion_exalted_default",
         "skin_cryon_feral_default",
         "skin_crygon_tamed_default",
         "skin_stormeon_mastered_default",
         "skin_imperion_exalted_default",
-        "skin_pyro_feral_blue",
-        "skin_blazion_tamed_blue",
-        "skin_infernon_mastered_blue",
-        "skin_solarion_exalted_blue"
+        "egg_feral_cryon"
     ],
     "eventUI": {
         "title": "Events",
@@ -149,8 +144,8 @@
             "montamShards": "icon_montam_shards",
             "montamContainers": "icon_montam_containers",
             "montamLiquid": "icon_montam_liquid",
-            "egg": "egg_feral_pyro",
-            "skin": "skin_solarion_exalted_blue"
+            "egg": "egg_feral_cryon",
+            "skin": "skin_imperion_exalted_default"
         }
     },
     "battleDifficulties": [
@@ -175,15 +170,16 @@
     ],
     "storyChapters": [
         {
-            "id": "story_pyro_awakening",
-            "title": "Pyro Awakening",
+            "id": "story_cryon_awakening",
+            "title": "Cryon Awakening",
             "description":
-                "Pyro folgt einer Feuer-Spur und stellt sich dem ersten Schatten.",
-            "icon": "skin_pyro_feral_default",
-            "enemyImage": "skin_pyro_feral_default",
+                "Cryon folgt einer fremden Energie und stellt sich dem ersten Schatten.",
+            "icon": "skin_cryon_feral_default",
+            "enemyImage": "skin_cryon_feral_default",
+            "battleBackground": "montam_bg_dark",
             "enemyElement": "nature",
             "storyText":
-                "Pyro spuert eine fremde Energie im alten Krater. Jeder Sieg bringt ihn naeher an seine erste echte Form.",
+                "Cryon spuert eine fremde Energie im alten Krater. Jeder Sieg bringt ihn naeher an seine erste echte Form.",
             "targetStages": 5,
             "rewards": {
                 "montamCoins": 500,
@@ -195,15 +191,16 @@
             }
         },
         {
-            "id": "story_blazion_trial",
-            "title": "Blazion Trial",
+            "id": "story_crygon_trial",
+            "title": "Crygon Trial",
             "description":
-                "Blazion kaempft gegen Wasserwellen und lernt Kontrolle.",
-            "icon": "skin_blazion_tamed_default",
-            "enemyImage": "skin_blazion_tamed_default",
+                "Crygon kaempft gegen Wasserwellen und lernt Kontrolle.",
+            "icon": "skin_crygon_tamed_default",
+            "enemyImage": "skin_crygon_tamed_default",
+            "battleBackground": "montam_bg_dark",
             "enemyElement": "water",
             "storyText":
-                "Die Arena kuehlt ab. Blazion muss jeden Angriff sauber setzen, sonst erstickt seine Flamme.",
+                "Die Arena kuehlt ab. Crygon muss jeden Angriff sauber setzen, sonst verliert er die Kontrolle.",
             "targetStages": 6,
             "rewards": {
                 "montamCoins": 850,
@@ -215,14 +212,15 @@
             }
         },
         {
-            "id": "story_solarion_oath",
-            "title": "Solarion Oath",
-            "description": "Solarion prüft die Kraft der ganzen Linie.",
-            "icon": "skin_solarion_exalted_default",
-            "enemyImage": "skin_solarion_exalted_default",
+            "id": "story_imperion_oath",
+            "title": "Imperion Oath",
+            "description": "Imperion prueft die Kraft der ganzen Linie.",
+            "icon": "skin_imperion_exalted_default",
+            "enemyImage": "skin_imperion_exalted_default",
+            "battleBackground": "montam_bg_dark",
             "enemyElement": "dark",
             "storyText":
-                "Solarion steht vor der letzten Pruefung. Licht und Dunkelheit treffen frontal aufeinander.",
+                "Imperion steht vor der letzten Pruefung. Licht und Dunkelheit treffen frontal aufeinander.",
             "targetStages": 7,
             "rewards": {
                 "montamCoins": 1400,

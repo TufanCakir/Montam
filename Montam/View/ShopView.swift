@@ -50,7 +50,7 @@ struct ShopView: View {
                     } else if let errorMessage {
                         stateView(
                             title: errorMessage,
-                            image: "skin_solarion_exalted_default"
+                            image: "skin_imperion_exalted_default"
                         )
                     } else {
                         LazyVGrid(columns: columns, spacing: 14) {
@@ -65,20 +65,10 @@ struct ShopView: View {
             }
         }
         .padding(.top, 18)
-        .background(background)
+        .background {
+            MontamBackground()
+        }
         .task { await loadShop() }
-    }
-
-    private var background: some View {
-        black
-            .overlay(alignment: .topTrailing) {
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 230, height: 230)
-                    .opacity(0.055)
-                    .offset(x: 62, y: -40)
-            }
-            .ignoresSafeArea()
     }
 
     private var categoryBar: some View {
@@ -262,11 +252,21 @@ struct ShopView: View {
     }
 
     private func grantItem(_ item: ShopItem) {
-        if let montamCoins = item.montamCoins { MontamCoinsManager.shared.add(montamCoins) }
-        if let montamSaphirs = item.montamSaphirs { MontamSaphirsManager.shared.add(montamSaphirs) }
-        if let montamRubys = item.montamRubys { MontamRubysManager.shared.add(montamRubys) }
-        if let montamLiquid = item.montamLiquid { MontamLiquidManager.shared.add(montamLiquid) }
-        if let montamShards = item.montamShards { MontamShardsManager.shared.add(montamShards) }
+        if let montamCoins = item.montamCoins {
+            MontamCoinsManager.shared.add(montamCoins)
+        }
+        if let montamSaphirs = item.montamSaphirs {
+            MontamSaphirsManager.shared.add(montamSaphirs)
+        }
+        if let montamRubys = item.montamRubys {
+            MontamRubysManager.shared.add(montamRubys)
+        }
+        if let montamLiquid = item.montamLiquid {
+            MontamLiquidManager.shared.add(montamLiquid)
+        }
+        if let montamShards = item.montamShards {
+            MontamShardsManager.shared.add(montamShards)
+        }
         if let exp = item.exp { PlayerProgressManager.shared.addEXP(exp) }
         if let montamContainers = item.montamContainers {
             MontamContainersManager.shared.add(montamContainers)

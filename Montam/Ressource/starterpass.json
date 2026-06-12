@@ -1,11 +1,11 @@
 {
     "id": "starterpass_s1",
     "title": "StarterPass",
-    "icon": "skin_pyro_feral_default",
-    "backgroundImage": "skin_pyro_feral_default",
+    "icon": "skin_pyron_feral_default",
+    "backgroundImage": "skin_pyron_feral_default",
     "infoTitle": "StarterPass",
     "infoBody":
-        "Sammle Starter XP fuer die ersten wichtigen Ressourcen, MontamLiquid und Pyro Progress.",
+        "Sammle Starter XP fuer die ersten wichtigen Ressourcen, MontamLiquid und pyron Progress.",
     "infoTasks": [
         "Spiele deine ersten Story- und Event-Battles.",
         "Alle 75 Starter XP wird ein neuer Tier freigeschaltet.",
@@ -35,9 +35,9 @@
                 "amount": 100
             },
             "premium": {
-                "title": "Pyro Egg",
+                "title": "pyron Egg",
                 "type": "egg",
-                "eggId": "egg_feral_pyro",
+                "eggId": "egg_feral_pyron",
                 "amount": 1
             }
         }

@@ -58,7 +58,6 @@ struct EventView: View {
             }
             .scrollIndicators(.hidden)
         }
-        .background(MontamScreenBackground())
         .navigationTitle(
             eventUI.title ?? EventUIConfig.fallback.title ?? "Events"
         )

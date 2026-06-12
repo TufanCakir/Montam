@@ -143,7 +143,7 @@ extension ShopItem {
 
     private func eggIcon(for id: String) -> String {
         EggConfigLoader.load().eggs.first(where: { $0.id == id })?.eggImage
-            ?? "egg_feral_pyro"
+            ?? "egg_feral_pyron"
     }
 
     private func skinIcon(for id: String) -> String {

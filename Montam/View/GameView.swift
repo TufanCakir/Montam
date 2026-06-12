@@ -15,87 +15,95 @@ struct GameView: View {
     @State private var eventVictory: EventVictoryResult?
 
     var body: some View {
-        ZStack {
-            MontamScreenBackground()
-
-            VStack(spacing: 0) {
-                battleHeader
-
-                Spacer(minLength: 10)
-
-                enemyArea
-
-                Spacer(minLength: 14)
-
-                playerArea
-
-                if battle.isEventBattle {
-                    eventSkillButton
-                        .padding(.top, 10)
+        battleContent
+            .background {
+                BattleBackground(imageName: battle.battleBackgroundName)
+            }
+            .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture {
+                battle.attackEnemy()
+            }
+            .onAppear {
+                battle.configure(appModel: appModel) { result in
+                    eventVictory = result
                 }
-
-                Spacer(minLength: 12)
-
-                battleFooter
             }
-            .padding(.horizontal, 18)
-            .padding(.top, 48)
-            .padding(.bottom, 18)
-
-            if let drawnForm = battle.drawnForm {
-                summonCard(for: drawnForm)
-                    .transition(.scale.combined(with: .opacity))
-                    .zIndex(10)
+            .onDisappear {
+                battle.saveLastSeen()
             }
-
-            if let message = battle.floatingMessage {
-                Text(message)
-                    .font(.system(size: 15, weight: .black, design: .rounded))
-                    .foregroundStyle(MontamPalette.gold)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .background(MontamPalette.panel)
-                    .clipShape(MontamEvolutionShape())
-                    .overlay(
-                        MontamEvolutionShape()
-                            .stroke(MontamPalette.gold, lineWidth: 1.5)
-                    )
-                    .offset(y: -42)
-                    .zIndex(12)
+            .task {
+                await battle.runAutoBattle()
             }
-
-            if let eventVictory {
-                EventVictoryView(result: eventVictory) {
-                    self.eventVictory = nil
-                    EventRuntime.shared.clear()
-                    appModel.selectedLevelId = nil
-                    appModel.selectedStoryChapter = nil
-                    appModel.selectedBattleDifficulty = nil
-                    appModel.appState = .home
+            .sheet(isPresented: $showsEventAttacks) {
+                eventAttackSheet
+                    .presentationDetents([.medium])
+            }
+            .overlay {
+                if let drawnForm = battle.drawnForm {
+                    summonCard(for: drawnForm)
+                        .transition(.scale.combined(with: .opacity))
+                        .zIndex(10)
                 }
-                .zIndex(20)
             }
-        }
-        .ignoresSafeArea()
-        .contentShape(Rectangle())
-        .onTapGesture {
-            battle.attackEnemy()
-        }
-        .onAppear {
-            battle.configure(appModel: appModel) { result in
-                eventVictory = result
+            .overlay {
+                if let message = battle.floatingMessage {
+                    Text(message)
+                        .font(
+                            .system(size: 15, weight: .black, design: .rounded)
+                        )
+                        .foregroundStyle(MontamPalette.gold)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 10)
+                        .background(MontamPalette.panel)
+                        .clipShape(MontamEvolutionShape())
+                        .overlay(
+                            MontamEvolutionShape()
+                                .stroke(MontamPalette.gold, lineWidth: 1.5)
+                        )
+                        .offset(y: -42)
+                        .zIndex(12)
+                }
             }
+            .overlay {
+                if let eventVictory {
+                    EventVictoryView(result: eventVictory) {
+                        self.eventVictory = nil
+                        EventRuntime.shared.clear()
+                        appModel.selectedLevelId = nil
+                        appModel.selectedStoryChapter = nil
+                        appModel.selectedBattleDifficulty = nil
+                        appModel.appState = .home
+                    }
+                    .zIndex(20)
+                }
+            }
+    }
+
+    private var battleContent: some View {
+        VStack(spacing: 0) {
+            battleHeader
+
+            Spacer(minLength: 10)
+
+            enemyArea
+
+            Spacer(minLength: 14)
+
+            playerArea
+
+            if battle.isEventBattle {
+                eventSkillButton
+                    .padding(.top, 10)
+            }
+
+            Spacer(minLength: 12)
+
+            battleFooter
         }
-        .onDisappear {
-            battle.saveLastSeen()
-        }
-        .task {
-            await battle.runAutoBattle()
-        }
-        .sheet(isPresented: $showsEventAttacks) {
-            eventAttackSheet
-                .presentationDetents([.medium])
-        }
+        .padding(.horizontal, 18)
+        .padding(.top, 48)
+        .padding(.bottom, 18)
     }
 
     private var battleHeader: some View {
@@ -121,11 +129,13 @@ struct GameView: View {
 
                 Spacer()
 
-                Text("COINS \(battle.montamCoins)  SAPHIRS \(battle.montamSaphirs)")
-                    .font(.system(size: 14, weight: .black, design: .rounded))
-                    .foregroundStyle(MontamPalette.gold)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
+                Text(
+                    "COINS \(battle.montamCoins)  SAPHIRS \(battle.montamSaphirs)"
+                )
+                .font(.system(size: 14, weight: .black, design: .rounded))
+                .foregroundStyle(MontamPalette.gold)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
             }
 
             HStack(spacing: 10) {
@@ -218,7 +228,7 @@ struct GameView: View {
             VStack(spacing: 2) {
                 RemoteAssetImage(
                     name: battle.eventAttacks.first?.icon
-                        ?? "skin_solarion_exalted_default"
+                        ?? "skin_imperion_exalted_default"
                 )
                 .scaledToFit()
                 .frame(width: 34, height: 28)
@@ -501,14 +511,35 @@ struct BattleEvolutionForm: Identifiable, Equatable, Hashable {
     }
 
     static let fallbackFeral = BattleEvolutionForm(
-        characterId: "character_montam_feral_pyro",
-        title: "PYRO",
-        assetName: "skin_pyro_feral_default",
+        characterId: "character_montam_feral_cryon",
+        title: "CRYON",
+        assetName: "skin_cryon_feral_default",
         attackPower: 12,
         energyGain: 12,
         element: .fire,
         isFeral: true
     )
+}
+
+private struct BattleBackground: View {
+    let imageName: String
+
+    var body: some View {
+        RemoteAssetImage(name: imageName)
+            .scaledToFill()
+            .overlay(
+                LinearGradient(
+                    colors: [
+                        MontamPalette.black.opacity(0.26),
+                        MontamPalette.black.opacity(0.10),
+                        MontamPalette.black.opacity(0.38),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .ignoresSafeArea()
+    }
 }
 
 @MainActor
@@ -530,6 +561,7 @@ final class BattleViewModel: ObservableObject {
     @Published var montamSaphirs = 0
     @Published var battleTitle: String?
     @Published var storyText: String?
+    @Published var battleBackgroundName = "montam_bg_dark"
     @Published private var battleForms: [BattleEvolutionForm] = [
         .fallbackFeral
     ]
@@ -562,12 +594,12 @@ final class BattleViewModel: ObservableObject {
 
     var enemyImageName: String {
         if let event = EventRuntime.shared.activeEvent {
-            return event.icon ?? "skin_solarion_exalted_default"
+            return event.icon ?? "skin_imperion_exalted_default"
         }
         if let chapter = appModel?.selectedStoryChapter {
             return chapter.enemyImage
         }
-        return "skin_solarion_exalted_default"
+        return "skin_imperion_exalted_default"
     }
 
     func configure(
@@ -589,6 +621,11 @@ final class BattleViewModel: ObservableObject {
         storyText =
             EventRuntime.shared.activeEvent?.storyText
             ?? appModel.selectedStoryChapter?.storyText
+        battleBackgroundName =
+            EventRuntime.shared.activeEvent?.battleBackground
+            ?? appModel.selectedStoryChapter?.battleBackground
+            ?? GameConfigManager.shared.config.homeBackgroundImage
+            ?? "montam_bg_dark"
         rollNextEvolutionForm()
         claimOfflineRewards()
         spawnEnemy()
@@ -740,7 +777,9 @@ final class BattleViewModel: ObservableObject {
                 scaledReward(max(1, (reward?.montamContainers ?? 20) / 10))
             )
             if stage.isMultiple(of: 3) {
-                MontamRubysManager.shared.add(scaledReward(max(1, reward?.montamRubys ?? 1)))
+                MontamRubysManager.shared.add(
+                    scaledReward(max(1, reward?.montamRubys ?? 1))
+                )
             }
         }
 
@@ -855,7 +894,8 @@ final class BattleViewModel: ObservableObject {
     }
 
     private func rollNextEvolutionForm() {
-        nextEvolutionForm = availableEvolutionForms.randomElement()
+        nextEvolutionForm =
+            availableEvolutionForms.randomElement()
             ?? currentForm
     }
 
@@ -896,7 +936,8 @@ final class BattleViewModel: ObservableObject {
             }
             ?? .fallbackFeral
 
-        nextEvolutionForm = availableEvolutionForms.randomElement()
+        nextEvolutionForm =
+            availableEvolutionForms.randomElement()
             ?? currentForm
     }
 

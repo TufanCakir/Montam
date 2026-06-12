@@ -43,7 +43,6 @@ final class AppModel: ObservableObject {
     @Published var selectedStoryChapter: StoryChapter?
     @Published var selectedBattleDifficulty: BattleDifficulty?
     // MARK: - Loading Overlay
-    @Published var isTransitionLoading: Bool = false
     @Published var currentLoadingImage: String = "loading1"
     @Published var loadingTitle: String = "REMOTE SYNC"
     @Published var loadingSubtitle: String = "Lade Montam Daten"
@@ -111,33 +110,21 @@ final class AppModel: ObservableObject {
 
     func switchToGame() {
         pickLoadingImage()
-        isTransitionLoading = true
         appState = .game
-        isTransitionLoading = false
     }
 
     func navigateWithLoading(_ action: @escaping () -> Void) {
-        pickLoadingImage()
-        loadingTitle = "REMOTE SYNC"
-        loadingSubtitle = "Pruefe Live-Service Daten"
-        isTransitionLoading = true
-
-        RemoteDownloadManager.shared.preloadForNavigation(
-            files: remoteBootFiles
-        ) {
-            action()
-            self.isTransitionLoading = false
-        }
+        action()
     }
 
     /// Called when player presses "Start"
     func startGame() {
         selectedTab = .home
-        guard hasCompletedFirstTutorial else {
-            appState = .tutorial
+        guard hasChosenStarter else {
+            appState = .starterSelection
             return
         }
-        appState = hasChosenStarter ? .home : .starterSelection
+        appState = hasCompletedFirstTutorial ? .home : .tutorial
     }
 
     var hasCompletedFirstTutorial: Bool {
@@ -147,7 +134,7 @@ final class AppModel: ObservableObject {
     func completeFirstTutorial() {
         UserDefaults.standard.set(true, forKey: firstTutorialKey)
         selectedTab = .home
-        appState = hasChosenStarter ? .home : .starterSelection
+        appState = .home
     }
 
     func startBattle() {
@@ -206,10 +193,6 @@ final class AppModel: ObservableObject {
         return keyWasSet && accountHasMontamStarter
     }
 
-    private var remoteBootFiles: [String] {
-        Array(Set(JSONLoader.manifest().jsonFiles + ["remote_manifest"]))
-    }
-
     func chooseStarter(characterId: String) {
         chooseStarters(characterIds: [characterId])
     }
@@ -240,7 +223,7 @@ final class AppModel: ObservableObject {
             UserDefaults.standard.set(true, forKey: starterKey)
 
             selectedTab = .home
-            appState = .home
+            appState = hasCompletedFirstTutorial ? .home : .tutorial
         } catch {
             print("Starter load failed:", error)
         }
