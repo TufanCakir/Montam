@@ -49,7 +49,7 @@ struct TutorialView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 58)
                     .background(MontamPalette.gold)
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
             .buttonStyle(.plain)
 

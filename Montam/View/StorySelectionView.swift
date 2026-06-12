@@ -75,10 +75,10 @@ struct StorySelectionView: View {
                                     : MontamPalette.panel
                             )
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                             .overlay(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                                     .stroke(
                                         selected
                                             ? MontamPalette.blue
@@ -150,15 +150,15 @@ struct StorySelectionView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
                     .background(MontamPalette.gold)
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
             .buttonStyle(.plain)
         }
         .padding(16)
         .background(MontamPalette.panel)
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(MontamPalette.gold, lineWidth: 1.7)
         )
     }

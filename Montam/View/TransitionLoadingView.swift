@@ -19,16 +19,16 @@ struct TransitionLoadingView: View {
             Spacer()
 
             ZStack {
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(MontamPalette.gold, lineWidth: 3)
                     .frame(width: 156, height: 112)
 
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(MontamPalette.blue, lineWidth: 2)
                     .frame(width: 126, height: 88)
                     .offset(x: bladeOffset)
                     .mask(
-                        MontamEggShape()
+                        MontamEvolutionShape()
                             .frame(width: 156, height: 112)
                     )
 

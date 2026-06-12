@@ -126,7 +126,7 @@ struct RemoteLoadingView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 58)
                 .background(tint)
-                .clipShape(MontamEggShape())
+                .clipShape(MontamEvolutionShape())
         }
         .buttonStyle(.plain)
     }

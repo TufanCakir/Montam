@@ -344,9 +344,9 @@ private struct GlobalGameFooter: View {
                 )
                 : AnyShapeStyle(Color.clear)
         )
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(
                     isSelected
                         ? item.tint

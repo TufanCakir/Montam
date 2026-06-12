@@ -112,9 +112,9 @@ struct PassView: View {
         }
         .frame(height: 146)
         .background(MontamPalette.panel)
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(MontamPalette.gold, lineWidth: 1.8)
         )
     }
@@ -152,7 +152,7 @@ struct PassView: View {
                                 ? MontamPalette.gold
                                 : MontamPalette.panel
                         )
-                        .clipShape(MontamEggShape())
+                        .clipShape(MontamEvolutionShape())
                     }
                     .buttonStyle(.plain)
                 }
@@ -248,7 +248,7 @@ struct PassView: View {
                         canClaim
                             ? MontamPalette.gold : MontamPalette.black
                     )
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
             .padding(10)
             .frame(maxWidth: .infinity)
@@ -267,7 +267,7 @@ struct PassView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 180)
                     .clipped()
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
 
                 HStack(spacing: 12) {
                     RemoteAssetImage(name: pass.icon)

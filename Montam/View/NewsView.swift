@@ -82,7 +82,7 @@ struct NewsView: View {
                                     : MontamPalette.panel
                             )
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                     }
                     .buttonStyle(.plain)
@@ -178,9 +178,9 @@ struct NewsView: View {
         }
         .padding(16)
         .background(MontamPalette.panel)
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(
                     featured
                         ? MontamPalette.gold : MontamPalette.blue,
@@ -196,7 +196,7 @@ struct NewsView: View {
             .padding(.horizontal, 7)
             .frame(height: 20)
             .background(tint)
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
     }
 }
 

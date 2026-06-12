@@ -41,12 +41,12 @@ struct StartView: View {
             let height = proxy.size.height
 
             ZStack {
-                MontamEggShape()
+                MontamEvolutionShape()
                     .fill(blue.opacity(0.12))
                     .frame(width: width * 0.82, height: height * 0.46)
                     .offset(x: width * 0.30, y: -height * 0.22)
 
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(gold.opacity(0.18), lineWidth: 2)
                     .frame(width: width * 0.70, height: height * 0.38)
                     .offset(x: -width * 0.34, y: height * 0.22)
@@ -70,7 +70,7 @@ struct StartView: View {
 
     private var logoSection: some View {
         ZStack {
-            MontamEggShape()
+            MontamEvolutionShape()
                 .fill(
                     LinearGradient(
                         colors: [
@@ -84,15 +84,15 @@ struct StartView: View {
                 )
                 .frame(width: 258, height: 258)
                 .overlay(
-                    MontamEggShape()
+                    MontamEvolutionShape()
                         .stroke(.white.opacity(0.10), lineWidth: 1)
                 )
 
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(gold, lineWidth: 2)
                 .frame(width: 230, height: 230)
 
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(blue, lineWidth: 3)
                 .frame(width: 198, height: 198)
 
@@ -163,11 +163,11 @@ struct StartView: View {
                         .padding(7)
                         .frame(width: 40, height: 40)
                         .background(
-                            MontamEggShape()
+                            MontamEvolutionShape()
                                 .fill(isPrimary ? blue.opacity(0.92) : gold)
                         )
                         .overlay(
-                            MontamEggShape()
+                            MontamEvolutionShape()
                                 .stroke(.white.opacity(0.20), lineWidth: 1)
                         )
 

@@ -11,7 +11,7 @@ struct StarterSelectionView: View {
     @EnvironmentObject private var appModel: AppModel
 
     @State private var config: StarterEggConfig = StarterEggConfig(
-        title: "Wähle dein Montam Ei",
+        title: "Wähle deinen Starter",
         subtitle: "Diese Auswahl ist nur einmal pro Account möglich.",
         eggs: []
     )
@@ -122,7 +122,7 @@ struct StarterSelectionView: View {
                     .frame(width: 46, height: 46)
                     .opacity(canConfirm ? 1 : 0.45)
 
-                    Text(canConfirm ? "Starter wählen" : "Ei auswählen")
+                    Text(canConfirm ? "Starter wählen" : "Starter auswählen")
                         .font(
                             .system(.headline, design: .rounded, weight: .black)
                         )

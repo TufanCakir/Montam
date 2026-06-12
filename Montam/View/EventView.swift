@@ -103,7 +103,7 @@ struct EventView: View {
                                     : MontamPalette.panel
                             )
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                     }
                     .buttonStyle(.plain)
@@ -229,21 +229,21 @@ struct EventView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
                 .background(MontamPalette.gold)
-                .clipShape(MontamEggShape())
+                .clipShape(MontamEvolutionShape())
             }
             .buttonStyle(.plain)
         }
         .padding(16)
         .background(MontamPalette.panel)
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(
                     event.category == .boss
                         ? MontamPalette.gold : MontamPalette.blue,
                     lineWidth: 1.8
                 )
         )
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
     }
 
     private func eventBadge(_ title: String) -> some View {
@@ -253,7 +253,7 @@ struct EventView: View {
             .padding(.horizontal, 7)
             .frame(height: 20)
             .background(MontamPalette.gold)
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
     }
 
     private func difficultyRow(_ event: GameEvent) -> some View {
@@ -284,7 +284,7 @@ struct EventView: View {
                                     : MontamPalette.black.opacity(0.62)
                             )
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                     }
                     .buttonStyle(.plain)

@@ -55,9 +55,9 @@ struct GameView: View {
                     .padding(.horizontal, 18)
                     .padding(.vertical, 10)
                     .background(MontamPalette.panel)
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
                     .overlay(
-                        MontamEggShape()
+                        MontamEvolutionShape()
                             .stroke(MontamPalette.gold, lineWidth: 1.5)
                     )
                     .offset(y: -42)
@@ -111,9 +111,9 @@ struct GameView: View {
                         .foregroundStyle(.white)
                         .frame(width: 78, height: 34)
                         .background(MontamPalette.panel)
-                        .clipShape(MontamEggShape())
+                        .clipShape(MontamEvolutionShape())
                         .overlay(
-                            MontamEggShape()
+                            MontamEvolutionShape()
                                 .stroke(MontamPalette.gold, lineWidth: 1.5)
                         )
                 }
@@ -206,7 +206,7 @@ struct GameView: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(MontamPalette.panelLight)
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
         }
     }
@@ -229,9 +229,9 @@ struct GameView: View {
             }
             .frame(width: 104, height: 56)
             .background(MontamPalette.gold)
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
             .overlay(
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(MontamPalette.blue, lineWidth: 2)
             )
         }
@@ -253,9 +253,9 @@ struct GameView: View {
                                 ? MontamPalette.gold
                                 : MontamPalette.blue.opacity(0.45)
                         )
-                        .clipShape(MontamEggShape())
+                        .clipShape(MontamEvolutionShape())
                         .overlay(
-                            MontamEggShape()
+                            MontamEvolutionShape()
                                 .stroke(
                                     battle.canSummonEvolution
                                         ? MontamPalette.blue
@@ -378,10 +378,10 @@ struct GameView: View {
                             .frame(height: 62)
                             .background(MontamPalette.panel)
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                             .overlay(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                                     .stroke(
                                         MontamPalette.blue,
                                         lineWidth: 1.5
@@ -420,9 +420,9 @@ struct GameView: View {
             .padding(.horizontal, 12)
             .frame(height: 40)
             .background(MontamPalette.black)
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
             .overlay(
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(tint, lineWidth: 1.5)
             )
         }

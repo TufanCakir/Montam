@@ -62,7 +62,7 @@ struct DailyLoginPopupView: View {
                         .frame(height: 58)
                         .background(MontamPalette.gold)
                         .clipShape(
-                            MontamEggShape()
+                            MontamEvolutionShape()
                         )
                 }
                 .buttonStyle(.plain)
@@ -140,9 +140,9 @@ struct DailyLoginPopupView: View {
         .padding(.horizontal, 10)
         .frame(height: 48)
         .background(MontamPalette.black.opacity(0.72))
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(tint.opacity(0.9), lineWidth: 1)
         )
     }

@@ -43,10 +43,10 @@ struct SummonResultView: View {
                     .frame(height: 58)
                     .background(MontamPalette.gold)
                     .overlay(
-                        MontamEggShape()
+                        MontamEvolutionShape()
                             .stroke(MontamPalette.blue, lineWidth: 2)
                     )
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
             .buttonStyle(.plain)
             .padding(.horizontal, 20)
@@ -108,16 +108,16 @@ struct SummonResultView: View {
                     .padding(.horizontal, 9)
                     .frame(height: 22)
                     .background(MontamPalette.black)
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
         }
         .padding(10)
         .background(MontamPalette.panel)
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(character.rarity.color, lineWidth: 1.6)
         )
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
     }
 }
 

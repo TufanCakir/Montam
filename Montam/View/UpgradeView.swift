@@ -113,7 +113,7 @@ struct UpgradeView: View {
                         canUpgrade
                             ? MontamPalette.gold : MontamPalette.black
                     )
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
             .buttonStyle(.plain)
             .disabled(!canUpgrade)

@@ -162,9 +162,9 @@ struct CharacterDetailView: View {
             .padding(.horizontal, 10)
             .frame(height: 30)
             .background(MontamPalette.black)
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
             .overlay(
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(tint, lineWidth: 1)
             )
     }
@@ -187,7 +187,7 @@ struct CharacterDetailView: View {
         }
         .padding(12)
         .background(MontamPalette.black)
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
     }
 
     private func statRow(_ title: String, value: String) -> some View {
@@ -204,7 +204,7 @@ struct CharacterDetailView: View {
         }
         .padding(12)
         .background(MontamPalette.black)
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
     }
 
     private func skillRow(_ skill: Skill) -> some View {
@@ -229,7 +229,7 @@ struct CharacterDetailView: View {
         }
         .padding(12)
         .background(MontamPalette.black)
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
     }
 }
 

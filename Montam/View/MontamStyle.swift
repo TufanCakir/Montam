@@ -46,36 +46,20 @@ struct MontamCutRectangle: Shape {
     }
 }
 
-struct MontamEggShape: Shape {
+struct MontamEvolutionShape: Shape {
     func path(in rect: CGRect) -> Path {
-        let centerX = rect.midX
-        let topY = rect.minY
-        let bottomY = rect.maxY
-        let shoulderY = rect.minY + rect.height * 0.36
-        let bellyY = rect.minY + rect.height * 0.78
+        let corner = min(rect.width, rect.height) * 0.16
+        let notch = min(rect.width, rect.height) * 0.10
 
         var path = Path()
-        path.move(to: CGPoint(x: centerX, y: topY))
-        path.addCurve(
-            to: CGPoint(x: rect.maxX, y: bellyY),
-            control1: CGPoint(x: centerX + rect.width * 0.40, y: topY),
-            control2: CGPoint(x: rect.maxX, y: shoulderY)
-        )
-        path.addCurve(
-            to: CGPoint(x: centerX, y: bottomY),
-            control1: CGPoint(x: rect.maxX, y: bottomY),
-            control2: CGPoint(x: centerX + rect.width * 0.28, y: bottomY)
-        )
-        path.addCurve(
-            to: CGPoint(x: rect.minX, y: bellyY),
-            control1: CGPoint(x: centerX - rect.width * 0.28, y: bottomY),
-            control2: CGPoint(x: rect.minX, y: bottomY)
-        )
-        path.addCurve(
-            to: CGPoint(x: centerX, y: topY),
-            control1: CGPoint(x: rect.minX, y: shoulderY),
-            control2: CGPoint(x: rect.minX + rect.width * 0.10, y: topY)
-        )
+        path.move(to: CGPoint(x: rect.minX + corner, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - corner, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + corner))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - corner))
+        path.addLine(to: CGPoint(x: rect.midX + notch, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.midX - notch, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - corner))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + corner))
         path.closeSubpath()
         return path
     }

@@ -41,7 +41,7 @@ struct SummonPoolView: View {
                             .frame(width: 34, height: 34)
                             .background(MontamPalette.panel)
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                     }
                     .buttonStyle(.plain)
@@ -115,7 +115,7 @@ struct SummonPoolView: View {
                             .frame(height: 18)
                             .background(MontamPalette.gold)
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                     }
                 }

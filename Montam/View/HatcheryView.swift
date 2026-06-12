@@ -70,7 +70,7 @@ struct HatcheryView: View {
             .padding(.horizontal, 12)
             .frame(height: 38)
             .background(MontamPalette.panel)
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
 
             if let message {
                 Text(message)
@@ -116,7 +116,7 @@ struct HatcheryView: View {
                             .frame(height: 22)
                             .background(MontamPalette.gold)
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                     }
 
@@ -167,9 +167,9 @@ struct HatcheryView: View {
                         canHatch
                             ? MontamPalette.gold : MontamPalette.black
                     )
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
                     .overlay(
-                        MontamEggShape()
+                        MontamEvolutionShape()
                             .stroke(
                                 canHatch
                                     ? MontamPalette.blue
@@ -203,9 +203,9 @@ struct HatcheryView: View {
         .padding(.horizontal, 8)
         .frame(height: 28)
         .background(MontamPalette.black)
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(tint, lineWidth: 1)
         )
     }
@@ -270,7 +270,7 @@ struct HatcheryView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
                     .background(MontamPalette.gold)
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
             .buttonStyle(.plain)
         }

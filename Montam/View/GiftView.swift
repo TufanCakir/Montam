@@ -101,19 +101,19 @@ struct GiftView: View {
                     .padding(.horizontal, 14)
                     .frame(height: 34)
                     .background(MontamPalette.gold)
-                    .clipShape(MontamEggShape())
+                    .clipShape(MontamEvolutionShape())
             }
             .padding(14)
             .background(MontamPalette.panel)
             .overlay(
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(
                         gift.type == .montamContainers || gift.type == .montamShards
                             ? MontamPalette.blue : MontamPalette.gold,
                         lineWidth: 1.7
                     )
             )
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
         }
         .buttonStyle(.plain)
     }

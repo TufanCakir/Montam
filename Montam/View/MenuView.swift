@@ -31,7 +31,7 @@ struct MenuView: View {
                             Button {
                                 perform(item)
                             } label: {
-                                eggLink(
+                                evolutionLink(
                                     title: item.title,
                                     image: item.icon,
                                     tint: menuTint(for: item.color)
@@ -53,7 +53,7 @@ struct MenuView: View {
                             Button {
                                 perform(item)
                             } label: {
-                                smallEggLink(
+                                smallEvolutionLink(
                                     title: item.title,
                                     image: item.icon,
                                     tint: menuTint(for: item.color)
@@ -152,7 +152,7 @@ struct MenuView: View {
         }
     }
 
-    private func eggLink(title: String, image: String, tint: Color)
+    private func evolutionLink(title: String, image: String, tint: Color)
         -> some View
     {
         ZStack(alignment: .leading) {
@@ -165,7 +165,7 @@ struct MenuView: View {
                 .shadow(color: tint.opacity(0.16), radius: 10, y: 4)
 
             HStack(spacing: 11) {
-                iconEgg(image: image, tint: tint, size: 40)
+                evolutionIcon(image: image, tint: tint, size: 40)
 
                 Text(title)
                     .font(.system(size: 14, weight: .black, design: .rounded))
@@ -181,11 +181,11 @@ struct MenuView: View {
         .frame(height: 50)
     }
 
-    private func smallEggLink(title: String, image: String, tint: Color)
+    private func smallEvolutionLink(title: String, image: String, tint: Color)
         -> some View
     {
         VStack(spacing: 4) {
-            iconEgg(image: image, tint: tint, size: 42)
+            evolutionIcon(image: image, tint: tint, size: 42)
 
             Text(title.uppercased())
                 .font(.system(size: 9, weight: .black, design: .rounded))
@@ -197,24 +197,24 @@ struct MenuView: View {
         .frame(height: 82)
         .background(matteFill(tint: tint))
         .overlay(
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(tint.opacity(0.90), lineWidth: 1.7)
         )
-        .clipShape(MontamEggShape())
+        .clipShape(MontamEvolutionShape())
         .shadow(color: tint.opacity(0.14), radius: 8, y: 4)
     }
 
-    private func iconEgg(image: String, tint: Color, size: CGFloat) -> some View {
+    private func evolutionIcon(image: String, tint: Color, size: CGFloat) -> some View {
         RemoteAssetImage(name: image)
             .scaledToFit()
             .padding(size * 0.16)
             .frame(width: size, height: size)
             .background(
-                MontamEggShape()
+                MontamEvolutionShape()
                     .fill(MontamPalette.black.opacity(0.58))
             )
             .overlay(
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(tint.opacity(0.75), lineWidth: 1.2)
             )
     }

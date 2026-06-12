@@ -55,16 +55,16 @@ struct OfflineView: View {
 
     private var statusMark: some View {
         ZStack {
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(MontamPalette.gold, lineWidth: 3)
                 .frame(width: 164, height: 116)
 
-            MontamEggShape()
+            MontamEvolutionShape()
                 .stroke(MontamPalette.blue, lineWidth: 2)
                 .frame(width: 132, height: 90)
                 .offset(x: scanOffset)
                 .mask(
-                    MontamEggShape()
+                    MontamEvolutionShape()
                         .frame(width: 164, height: 116)
                 )
 
@@ -134,9 +134,9 @@ struct OfflineView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 58)
             .background(MontamPalette.gold)
-            .clipShape(MontamEggShape())
+            .clipShape(MontamEvolutionShape())
             .overlay(
-                MontamEggShape()
+                MontamEvolutionShape()
                     .stroke(MontamPalette.blue, lineWidth: 1.6)
             )
         }

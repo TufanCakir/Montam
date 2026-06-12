@@ -177,7 +177,7 @@ struct WardrobeView: View {
                             .frame(height: 20)
                             .background(MontamPalette.gold)
                             .clipShape(
-                                MontamEggShape()
+                                MontamEvolutionShape()
                             )
                     }
 
@@ -231,7 +231,7 @@ struct WardrobeView: View {
                                 ? MontamPalette.gold
                                 : MontamPalette.black
                         )
-                        .clipShape(MontamEggShape())
+                        .clipShape(MontamEvolutionShape())
                 }
                 .buttonStyle(.plain)
                 .disabled(!characterOwned || !unlocked || equipped)
