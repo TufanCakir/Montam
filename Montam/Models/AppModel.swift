@@ -35,7 +35,7 @@ final class AppModel: ObservableObject {
 
     // MARK: - Published State
 
-    @Published var appState: AppState = .remoteLoading
+    @Published var appState: AppState = .start
 
     @Published var selectedTab: RootView.Tab = .home
 

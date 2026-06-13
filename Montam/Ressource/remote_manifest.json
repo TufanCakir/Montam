@@ -129,6 +129,10 @@
             "file": "montam_bg_dark.png"
         },
         {
+            "id": "montam_arena_1",
+            "file": "montam_arena_1.png"
+        },
+        {
             "id": "icon_info",
             "file": "icon_info.png"
         },

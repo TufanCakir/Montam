@@ -5,12 +5,17 @@
 //  Created by Tufan Cakir on 11.06.26.
 //
 
+import Combine
 import SwiftUI
 
 struct MenuView: View {
     @EnvironmentObject private var appModel: AppModel
-    let navigate: (RootView.HomeRoute) -> Void
+
     @State private var showsMenu = false
+    @State private var featuredCharacters: [Character] = []
+    @State private var featuredIndex = 0
+
+    let navigate: (RootView.HomeRoute) -> Void
 
     init(navigate: @escaping (RootView.HomeRoute) -> Void = { _ in }) {
         self.navigate = navigate
@@ -20,20 +25,18 @@ struct MenuView: View {
     private let panel = MontamPalette.panel
     private let gold = Color(red: 0.95, green: 0.72, blue: 0.18)
     private let blue = Color(red: 0.08, green: 0.24, blue: 0.62)
+    private let montamRotationTimer = Timer.publish(
+        every: 2.8,
+        on: .main,
+        in: .common
+    ).autoconnect()
 
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .bottomTrailing) {
-                featuredMontam(in: proxy.size)
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: .infinity
-                    )
-
-                RemoteAssetImage(name: "montam_icon")
-                    .scaledToFit()
-                    .frame(width: 82, height: 54)
-                    .position(x: 62, y: 64)
+                if !showsMenu {
+                   montamShowcase
+                }
 
                 openMenuButton
                     .position(
@@ -51,20 +54,79 @@ struct MenuView: View {
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .animation(.easeOut(duration: 0.18), value: showsMenu)
+        .onAppear {
+            loadFeaturedCharacters()
+        }
+        .onReceive(montamRotationTimer) { _ in
+            rotateFeaturedMontam()
+        }
     }
 
-    private func featuredMontam(in size: CGSize) -> some View {
-        let imageHeight = min(max(size.height * 0.38, 220), 390)
-        let imageWidth = min(size.width * 0.68, 500)
+    private func loadFeaturedCharacters() {
+        guard featuredCharacters.isEmpty else { return }
 
-        return RemoteAssetImage(name: homeFeaturedImage)
-            .scaledToFill()
-            .frame(width: imageWidth, height: imageHeight)
+        let characters =
+            (try? JSONLoader.load("characters") as [Character])
+            ?? []
+
+        featuredCharacters = characters.filter { !$0.sprite.isEmpty }
+        featuredIndex = 0
+    }
+
+    private func rotateFeaturedMontam() {
+        guard !showsMenu, featuredCharacters.count > 1 else {
+            return
+        }
+
+        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+            featuredIndex = (featuredIndex + 1) % featuredCharacters.count
+        }
+    }
+
+    private var montamShowcase: some View {
+        ZStack {
+            if let featuredMontam {
+                VStack(spacing: 8) {
+                    RemoteAssetImage(name: featuredMontam.sprite)
+                        .scaledToFit()
+                        .id(featuredMontam.id)
+                        .transition(
+                            .asymmetric(
+                                insertion: .opacity.combined(
+                                    with: .scale(scale: 0.92)
+                                ),
+                                removal: .opacity.combined(
+                                    with: .scale(scale: 1.06)
+                                )
+                            )
+                        )
+                }
+            } else {
+                RemoteAssetImage(name: "skin_cryon_feral_default")
+                    .scaledToFit()
+                    .frame(width: 210, height: 210)
+            }
+        }
+        .animation(
+            .spring(response: 0.42, dampingFraction: 0.82),
+            value: featuredIndex
+        )
+        .offset(y: -50)
+    }
+
+    private var featuredMontam: Character? {
+        guard featuredCharacters.indices.contains(featuredIndex) else {
+            return featuredCharacters.first
+        }
+
+        return featuredCharacters[featuredIndex]
     }
 
     private var openMenuButton: some View {
         Button {
-            showsMenu = true
+            withAnimation(.easeOut(duration: 0.18)) {
+                showsMenu.toggle()
+            }
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "square.grid.3x3.fill")
@@ -88,31 +150,13 @@ struct MenuView: View {
 
     private var menuOverlay: some View {
         ZStack {
-            black.opacity(0.68)
+            Color.clear
                 .ignoresSafeArea()
                 .onTapGesture {
                     showsMenu = false
                 }
 
             GeometryReader { proxy in
-                VStack {
-                    HStack {
-
-                        Spacer()
-
-                        Button {
-                            showsMenu = false
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 15, weight: .black))
-                                .foregroundStyle(.white)
-                                .frame(width: 34, height: 34)
-                                .background(MontamPalette.black.opacity(0.78))
-                                .clipShape(MontamCutRectangle(cut: 8))
-                        }
-                        .buttonStyle(.plain)
-                    }
-
                     VStack {
                         LazyVGrid(
                             columns: gridColumns(for: proxy.size.width),
@@ -135,7 +179,6 @@ struct MenuView: View {
                 .padding()
             }
         }
-    }
 
     private var menuItems: [GameMenuConfigItem] {
         GameConfigManager.shared.config.homeMenuItems

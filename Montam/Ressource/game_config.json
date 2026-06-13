@@ -176,7 +176,7 @@
                 "Cryon folgt einer fremden Energie und stellt sich dem ersten Schatten.",
             "icon": "skin_cryon_feral_default",
             "enemyImage": "skin_cryon_feral_default",
-            "battleBackground": "montam_bg_dark",
+            "battleBackground": "montam_arena_1",
             "enemyElement": "nature",
             "storyText":
                 "Cryon spuert eine fremde Energie im alten Krater. Jeder Sieg bringt ihn naeher an seine erste echte Form.",

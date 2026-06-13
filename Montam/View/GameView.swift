@@ -15,89 +15,90 @@ struct GameView: View {
     @State private var eventVictory: EventVictoryResult?
 
     var body: some View {
-        battleContent
-            .background {
-                BattleBackground(imageName: battle.battleBackgroundName)
-            }
-            .ignoresSafeArea()
-            .contentShape(Rectangle())
-            .onTapGesture {
-                battle.attackEnemy()
-            }
-            .onAppear {
-                battle.configure(appModel: appModel) { result in
-                    eventVictory = result
+        VStack {
+            battleContent
+                .background {
+                    BattleBackground(imageName: battle.battleBackgroundName)
                 }
-            }
-            .onDisappear {
-                battle.saveLastSeen()
-            }
-            .task {
-                await battle.runAutoBattle()
-            }
-            .sheet(isPresented: $showsEventAttacks) {
-                eventAttackSheet
-                    .presentationDetents([.medium])
-            }
-            .overlay {
-                if let drawnForm = battle.drawnForm {
-                    summonCard(for: drawnForm)
-                        .transition(.scale.combined(with: .opacity))
-                        .zIndex(10)
+                .ignoresSafeArea()
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    battle.attackEnemy()
                 }
-            }
-            .overlay {
-                if let message = battle.floatingMessage {
-                    Text(message)
-                        .font(
-                            .system(size: 15, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(MontamPalette.gold)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 10)
-                        .background(MontamPalette.panel)
-                        .clipShape(MontamEvolutionShape())
-                        .overlay(
-                            MontamEvolutionShape()
-                                .stroke(MontamPalette.gold, lineWidth: 1.5)
-                        )
-                        .offset(y: -42)
-                        .zIndex(12)
-                }
-            }
-            .overlay {
-                if let eventVictory {
-                    EventVictoryView(result: eventVictory) {
-                        self.eventVictory = nil
-                        EventRuntime.shared.clear()
-                        appModel.selectedLevelId = nil
-                        appModel.selectedStoryChapter = nil
-                        appModel.selectedBattleDifficulty = nil
-                        appModel.appState = .home
+                .onAppear {
+                    battle.configure(appModel: appModel) { result in
+                        eventVictory = result
                     }
-                    .zIndex(20)
                 }
-            }
+                .onDisappear {
+                    battle.saveLastSeen()
+                }
+                .task {
+                    await battle.runAutoBattle()
+                }
+                .sheet(isPresented: $showsEventAttacks) {
+                    eventAttackSheet
+                        .presentationDetents([.medium])
+                }
+                .overlay {
+                    if let drawnForm = battle.drawnForm {
+                        summonCard(for: drawnForm)
+                            .transition(.scale.combined(with: .opacity))
+                            .zIndex(10)
+                    }
+                }
+                .overlay {
+                    if let message = battle.floatingMessage {
+                        Text(message)
+                            .font(
+                                .system(
+                                    size: 15,
+                                    weight: .black,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(MontamPalette.gold)
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 10)
+                            .background(MontamPalette.panel)
+                            .clipShape(MontamEvolutionShape())
+                            .overlay(
+                                MontamEvolutionShape()
+                                    .stroke(MontamPalette.gold, lineWidth: 1.5)
+                            )
+                            .offset(y: -42)
+                            .zIndex(12)
+                    }
+                }
+                .overlay {
+                    if let eventVictory {
+                        EventVictoryView(result: eventVictory) {
+                            self.eventVictory = nil
+                            EventRuntime.shared.clear()
+                            appModel.selectedLevelId = nil
+                            appModel.selectedStoryChapter = nil
+                            appModel.selectedBattleDifficulty = nil
+                            appModel.appState = .home
+                        }
+                        .zIndex(20)
+                    }
+                }
+        }
     }
-
     private var battleContent: some View {
         VStack(spacing: 0) {
             battleHeader
 
-            Spacer(minLength: 10)
+            Spacer()
 
-            enemyArea
-
-            Spacer(minLength: 14)
-
-            playerArea
+            battleField
 
             if battle.isEventBattle {
                 eventSkillButton
                     .padding(.top, 10)
             }
 
-            Spacer(minLength: 12)
+            Spacer()
 
             battleFooter
         }
@@ -151,73 +152,21 @@ struct GameView: View {
         }
     }
 
-    private var enemyArea: some View {
-        VStack(spacing: 12) {
-            Text("STAGE \(battle.stage)")
-                .font(.system(size: 22, weight: .black, design: .rounded))
-                .foregroundStyle(MontamPalette.gold)
+    private var playerArea: some View {
+        VStack(spacing: 10) {
+            groundedMontamImage(name: battle.currentForm.assetName)
+                .scaleEffect(battle.playerPulse ? 0.94 : 1.0)
+                .animation(.snappy(duration: 0.12), value: battle.playerPulse)
+                .offset(y: 100)
 
-            if let battleTitle = battle.battleTitle {
-                Text(battleTitle.uppercased())
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.76))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
-            }
-
-            if let storyText = battle.storyText {
-                Text(storyText)
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(MontamPalette.mutedText)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(3)
-                    .frame(maxWidth: 310)
-            }
-
-            RemoteAssetImage(name: battle.enemyImageName)
-                .scaledToFit()
-                .frame(width: 132, height: 132)
-                .padding(12)
-                .background(MontamPalette.panel)
-                .clipShape(MontamCutRectangle(cut: 14))
-                .overlay(
-                    MontamCutRectangle(cut: 14)
-                        .stroke(MontamPalette.gold, lineWidth: 2)
-                )
-
-            ProgressView(value: battle.enemyHealthRatio)
-                .progressViewStyle(.linear)
-                .tint(MontamPalette.gold)
-                .frame(maxWidth: 270)
-                .scaleEffect(x: 1, y: 1.5, anchor: .center)
-
-            Text("HP \(battle.enemyHP) / \(battle.enemyMaxHP)")
-                .font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
         }
     }
 
-    private var playerArea: some View {
-        VStack(spacing: 10) {
-            RemoteAssetImage(name: battle.currentForm.assetName)
+    private func groundedMontamImage(name: String) -> some View {
+        ZStack(alignment: .bottom) {
+
+            RemoteAssetImage(name: name)
                 .scaledToFit()
-                .frame(width: 190, height: 190)
-                .scaleEffect(battle.playerPulse ? 0.94 : 1.0)
-                .animation(.snappy(duration: 0.12), value: battle.playerPulse)
-
-            HStack(spacing: 8) {
-                Text(battle.currentForm.title)
-                    .font(.system(size: 18, weight: .black, design: .rounded))
-                    .foregroundStyle(MontamPalette.gold)
-
-                Text(battle.currentForm.element.title)
-                    .font(.system(size: 10, weight: .black, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.72))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(MontamPalette.panelLight)
-                    .clipShape(MontamEvolutionShape())
-            }
         }
     }
 
@@ -246,6 +195,35 @@ struct GameView: View {
             )
         }
         .buttonStyle(.plain)
+    }
+
+    private var battleField: some View {
+        HStack(alignment: .center) {
+
+            groundedMontamImage(
+                name: battle.currentForm.assetName
+            )
+            .scaleEffect(0.65)
+            .scaleEffect(x: -1, y: 1)
+            .offset(x: -40, y: 200)
+
+            Spacer()
+
+            VStack(spacing: 0) {
+
+                ProgressView(value: battle.enemyHealthRatio)
+                    .progressViewStyle(.linear)
+                    .tint(.red)
+                    .frame(width: 140)
+                    .scaleEffect(x: 1, y: 1.8)
+
+                RemoteAssetImage(name: battle.enemyImageName)
+                    .scaledToFit()
+                    .scaleEffect(0.65)
+            }
+            .offset(x: 40, y: 200)
+        }
+        .padding(.horizontal, 30)
     }
 
     private var battleFooter: some View {

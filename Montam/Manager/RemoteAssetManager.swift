@@ -12,39 +12,21 @@ final class RemoteAssetManager {
 
     private let folderName = "RemoteMontamAssets"
     private let timeout: TimeInterval = 8
+    private let cacheLock = NSLock()
+    private var localURLCache: [String: URL]?
 
     private init() {
         migrateLegacyCacheIfNeeded()
     }
 
-    func preload(manifest: RemoteManifest, completion: @escaping () -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let baseURL = manifest.assetBaseURL.flatMap(URL.init(string:)) {
-                self.preload(assets: manifest.assets, baseURL: baseURL)
-            }
-
-            if let musicBaseURL = manifest.musicBaseURL.flatMap(
-                URL.init(string:)
-            ) {
-                self.preload(assets: manifest.music, baseURL: musicBaseURL)
-            }
-
-            DispatchQueue.main.async {
-                completion()
-            }
-        }
-    }
-
     func localURL(for id: String) -> URL? {
-        let directory = remoteDirectory()
-        let matches =
-            (try? FileManager.default.contentsOfDirectory(
-                at: directory,
-                includingPropertiesForKeys: nil
-            )) ?? []
-        return matches.first {
-            $0.deletingPathExtension().lastPathComponent == id
+        cacheLock.lock()
+        if localURLCache == nil {
+            localURLCache = buildLocalURLCache()
         }
+        let url = localURLCache?[id]
+        cacheLock.unlock()
+        return url
     }
 
     func download(asset: RemoteAsset, baseURL: URL) -> Int {
@@ -72,10 +54,11 @@ final class RemoteAssetManager {
         }.count
     }
 
-    private func preload(assets: [RemoteAsset], baseURL: URL) {
-        for asset in assets {
-            _ = download(asset: asset, baseURL: baseURL)
-        }
+    func clearCache() {
+        try? FileManager.default.removeItem(at: remoteDirectory())
+        cacheLock.lock()
+        localURLCache = nil
+        cacheLock.unlock()
     }
 
     private func save(_ data: Data, id: String, fileExtension: String) {
@@ -87,12 +70,21 @@ final class RemoteAssetManager {
         let url = directory.appendingPathComponent(id).appendingPathExtension(
             fileExtension.isEmpty ? "png" : fileExtension
         )
-        try? data.write(to: url, options: .atomic)
+        guard (try? data.write(to: url, options: .atomic)) != nil else {
+            return
+        }
+
+        cacheLock.lock()
+        localURLCache?[id] = url
+        cacheLock.unlock()
     }
 
     private func removeCachedAsset(id: String) {
         guard let localURL = localURL(for: id) else { return }
         try? FileManager.default.removeItem(at: localURL)
+        cacheLock.lock()
+        localURLCache?.removeValue(forKey: id)
+        cacheLock.unlock()
     }
 
     private func fetchData(from url: URL) -> Data? {
@@ -128,6 +120,21 @@ final class RemoteAssetManager {
             in: .userDomainMask
         )[0]
         .appendingPathComponent(folderName, isDirectory: true)
+    }
+
+    private func buildLocalURLCache() -> [String: URL] {
+        let directory = remoteDirectory()
+        let files =
+            (try? FileManager.default.contentsOfDirectory(
+                at: directory,
+                includingPropertiesForKeys: nil
+            )) ?? []
+
+        return Dictionary(
+            uniqueKeysWithValues: files.map {
+                ($0.deletingPathExtension().lastPathComponent, $0)
+            }
+        )
     }
 
     private func legacyCacheDirectory() -> URL {

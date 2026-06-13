@@ -60,6 +60,28 @@ final class RemoteDownloadManager: ObservableObject {
         run(downloadAssets: true, completion: completion)
     }
 
+    func checkForUpdate(completion: @escaping (Bool) -> Void) {
+        statusText = "Prüfe Remote Update"
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            let hasUpdate = JSONLoader.remoteFileDiffersFromCache(
+                "remote_manifest"
+            )
+
+            DispatchQueue.main.async {
+                self.statusText =
+                    hasUpdate ? "Update verfügbar" : "Remote Daten aktuell"
+                completion(hasUpdate)
+            }
+        }
+    }
+
+    func clearCache() {
+        JSONLoader.clearCache()
+        RemoteAssetManager.shared.clearCache()
+        refreshManifest()
+    }
+
     private func run(downloadAssets: Bool, completion: @escaping () -> Void) {
         isLoading = true
         downloadedBytes = 0
@@ -70,6 +92,7 @@ final class RemoteDownloadManager: ObservableObject {
             ? "Lade komplette Remote Daten" : "Preload JSON Daten"
 
         DispatchQueue.global(qos: .userInitiated).async {
+            _ = JSONLoader.cacheRemoteFile("remote_manifest")
             let manifest = JSONLoader.manifest()
             let jsonFiles = Array(Set(manifest.jsonFiles + ["remote_manifest"]))
             let remoteFileCount =

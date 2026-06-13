@@ -18,40 +18,30 @@ final class JSONLoader {
         return try JSONDecoder().decode(T.self, from: data)
     }
 
-    static func preload(_ files: [String], completion: @escaping () -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            var filesToLoad = files
-            let manifest: RemoteManifest? = try? load("remote_manifest")
-
-            if let manifest {
-                filesToLoad.append(contentsOf: manifest.jsonFiles)
-            }
-
-            for file in Set(filesToLoad) {
-                _ = try? data(for: file)
-            }
-
-            DispatchQueue.main.async {
-                if let manifest {
-                    RemoteAssetManager.shared.preload(
-                        manifest: manifest,
-                        completion: completion
-                    )
-                } else {
-                    completion()
-                }
-            }
-        }
-    }
-
     static func hasCachedData(for file: String) -> Bool {
         cachedData(for: file) != nil
+    }
+
+    static func remoteFileDiffersFromCache(_ file: String) -> Bool {
+        guard let remoteData = fetchRemoteData(for: file) else {
+            return false
+        }
+
+        return cachedData(for: file) != remoteData
     }
 
     static func cacheRemoteFile(_ file: String) -> Int {
         guard let remoteData = fetchRemoteData(for: file) else { return 0 }
         cache(remoteData, for: file)
         return remoteData.count
+    }
+
+    static func clearCache() {
+        let defaults = UserDefaults.standard
+        for key in defaults.dictionaryRepresentation().keys
+        where key.hasPrefix(cacheKeyPrefix) {
+            defaults.removeObject(forKey: key)
+        }
     }
 
     static func manifest() -> RemoteManifest {
@@ -65,11 +55,6 @@ final class JSONLoader {
     }
 
     private static func data(for file: String) throws -> Data {
-        if let remoteData = fetchRemoteData(for: file) {
-            cache(remoteData, for: file)
-            return remoteData
-        }
-
         if let cachedData = cachedData(for: file) {
             return cachedData
         }
@@ -129,6 +114,8 @@ final class JSONLoader {
     }
 
     private static func cacheKey(for file: String) -> String {
-        "montam_remote_json_\(file)"
+        "\(cacheKeyPrefix)\(file)"
     }
+
+    private static let cacheKeyPrefix = "montam_remote_json_"
 }
