@@ -39,6 +39,7 @@ enum AppSettingsService {
 
     static func clearCache() {
         URLCache.shared.removeAllCachedResponses()
+        RemoteContentService.clearCachedContent()
         removeTemporaryFiles()
     }
 

@@ -13,13 +13,31 @@
     "enemySpriteMaxHeightRatio": 0.22,
     "backgroundTransitionFightCount": 3,
     "maxLevel": 100,
-    "xpBase": 100,
-    "xpLinearGrowth": 35,
-    "xpExponentialGrowth": 1.04,
+    "xpBase": 160,
+    "xpLinearGrowth": 58,
+    "xpExponentialGrowth": 1.075,
     "backgroundSequence": [
+        "bg_beach_01",
+        "pixel_night_city",
+        "bg_lava_01",
         "generated_mountain",
+        "bg_ice_01",
+
+        "pixel_city_mix",
+        "beach_01",
         "generated_lava",
-        "generated_ice"
+        "pixel_rooftop_city",
+        "ice_01",
+
+        "lava_01",
+        "pixel_ocean",
+        "generated_ice",
+        "beach_02",
+        "pixel_lava",
+
+        "lava_02",
+        "pixel_ice",
+        "pixel_start_night_city"
     ],
     "playerMonsters": [
         {
@@ -37,15 +55,15 @@
         {
             "backgroundIndex": 0,
             "isBossWave": false,
-            "xpReward": 35,
+            "xpReward": 18,
             "enemies": [
                 {
-                    "id": "kyro",
+                    "id": "pyron",
                     "level": 1,
                     "slot": 0
                 },
                 {
-                    "id": "kyro",
+                    "id": "pyron",
                     "level": 1,
                     "slot": 1
                 }
@@ -54,20 +72,20 @@
         {
             "backgroundIndex": 1,
             "isBossWave": false,
-            "xpReward": 45,
+            "xpReward": 24,
             "enemies": [
                 {
-                    "id": "kyro",
+                    "id": "pyron",
                     "level": 2,
                     "slot": 0
                 },
                 {
-                    "id": "kyro",
+                    "id": "pyron",
                     "level": 2,
                     "slot": 1
                 },
                 {
-                    "id": "kyro",
+                    "id": "pyron",
                     "level": 2,
                     "slot": 2
                 }
@@ -76,10 +94,10 @@
         {
             "backgroundIndex": 2,
             "isBossWave": true,
-            "xpReward": 130,
+            "xpReward": 72,
             "enemies": [
                 {
-                    "id": "kyro",
+                    "id": "pyron",
                     "level": 3,
                     "slot": 0,
                     "hpMultiplier": 1.5,
@@ -93,6 +111,6 @@
         "crystalIcon": "icon_crystal",
         "coins": 130,
         "crystals": 1,
-        "eventExp": 130
+        "eventExp": 72
     }
 }

@@ -13,6 +13,7 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
     private var player: AVAudioPlayer?
     private var settingsObserver: NSObjectProtocol?
     private var currentIndex = 0
+    private var currentFileNames: [String] = []
 
     override init() {
         super.init()
@@ -32,7 +33,24 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
     }
 
     func configure(fileNames: [String]) {
-        playlist = fileNames.compactMap(Self.audioURL(for:))
+        let uniqueFileNames = fileNames.reduce(into: [String]()) {
+            result,
+            name in
+            guard !result.contains(name) else {
+                return
+            }
+
+            result.append(name)
+        }
+
+        guard uniqueFileNames != currentFileNames else {
+            applyMusicSetting()
+            return
+        }
+
+        currentFileNames = uniqueFileNames
+        playlist = uniqueFileNames.compactMap(Self.audioURL(for:))
+        currentIndex = min(currentIndex, max(playlist.count - 1, 0))
         applyMusicSetting()
     }
 
@@ -41,7 +59,7 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
             return
         }
 
-        play(at: currentIndex)
+        play(at: currentIndex, attempts: 0)
     }
 
     func audioPlayerDidFinishPlaying(
@@ -53,12 +71,16 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
             return
         }
 
-        currentIndex = (currentIndex + 1) % max(playlist.count, 1)
-        play(at: currentIndex)
+        playNext()
     }
 
-    private func play(at index: Int) {
+    private func play(at index: Int, attempts: Int) {
         guard isMusicEnabled, !playlist.isEmpty else {
+            return
+        }
+
+        guard attempts < playlist.count else {
+            player = nil
             return
         }
 
@@ -74,7 +96,18 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
         } catch {
             currentIndex = (currentIndex + 1) % playlist.count
             player = nil
+            play(at: currentIndex, attempts: attempts + 1)
         }
+    }
+
+    private func playNext() {
+        guard !playlist.isEmpty else {
+            player = nil
+            return
+        }
+
+        currentIndex = (currentIndex + 1) % playlist.count
+        play(at: currentIndex, attempts: 0)
     }
 
     private func applyMusicSetting() {
@@ -96,6 +129,11 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
     }
 
     nonisolated private static func audioURL(for fileName: String) -> URL? {
+        let cachedURL = RemoteContentService.cachedMusicURL(named: fileName)
+        if FileManager.default.fileExists(atPath: cachedURL.path()) {
+            return cachedURL
+        }
+
         let nsName = fileName as NSString
         let ext = nsName.pathExtension
         let name = nsName.deletingPathExtension

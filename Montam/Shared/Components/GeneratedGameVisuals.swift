@@ -38,8 +38,7 @@ struct GameResourceIcon: View {
         if resource?.renderMode == .image,
             let imageName = resource?.imageName ?? fallbackImage
         {
-            Image(imageName)
-                .resizable()
+            RemoteAssetImage(imageName: imageName)
                 .scaledToFit()
         } else {
             generatedIcon

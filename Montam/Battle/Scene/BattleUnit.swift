@@ -16,6 +16,9 @@ final class BattleUnit {
     var currentHP: Int
     var attack: Int
     var defense: Int
+    let xOffset: Int
+    let yOffset: Int
+    let zOffset: Int
     let attackBonus: Double
     let defenseBonus: Double
     let healthBonus: Double
@@ -33,6 +36,9 @@ final class BattleUnit {
         currentHP: Int,
         attack: Int,
         defense: Int,
+        xOffset: Int = 0,
+        yOffset: Int = 0,
+        zOffset: Int = 0,
         attackBonus: Double = 0,
         defenseBonus: Double = 0,
         healthBonus: Double = 0
@@ -45,6 +51,9 @@ final class BattleUnit {
         self.currentHP = currentHP
         self.attack = attack
         self.defense = defense
+        self.xOffset = xOffset
+        self.yOffset = yOffset
+        self.zOffset = zOffset
         self.attackBonus = attackBonus
         self.defenseBonus = defenseBonus
         self.healthBonus = healthBonus

@@ -8,10 +8,24 @@
         "renderMode": "image",
         "accentColor": "#00C8FF",
         "iconShape": "monster",
-        "description": "Beschwöre Monster aus dem Beginnings-Pool.",
-        "singleCost": 15,
-        "multiCost": 30,
-        "guaranteedAfter": 50
+        "description": "Beschwöre Kyro aus dem Pool.",
+        "singleCost": 5,
+        "multiCost": 50,
+        "guaranteedAfter": 500
+    },
+    {
+        "id": "pyron_banner",
+        "title": "Beginnings Summon",
+        "category": "beginnings",
+        "currency": "crystal",
+        "bannerImage": "mon_pyron",
+        "renderMode": "image",
+        "accentColor": "#00C8FF",
+        "iconShape": "monster",
+        "description": "Beschwöre Pyron aus dem Pool.",
+        "singleCost": 5,
+        "multiCost": 50,
+        "guaranteedAfter": 500
     },
     {
         "id": "support_banner",
@@ -23,9 +37,9 @@
         "accentColor": "#B658FF",
         "iconShape": "support",
         "description": "Beschwöre Supporter für deine Monster.",
-        "singleCost": 1,
-        "multiCost": 10,
-        "guaranteedAfter": 50
+        "singleCost": 5,
+        "multiCost": 50,
+        "guaranteedAfter": 500
     },
     {
         "id": "support_cards_banner",
@@ -37,9 +51,9 @@
         "iconShape": "cards",
         "description":
             "Erhalte dynamisch generierte Support-Karten für Kampfboni.",
-        "singleCost": 1,
-        "multiCost": 10,
-        "guaranteedAfter": 40
+        "singleCost": 5,
+        "multiCost": 50,
+        "guaranteedAfter": 500
     },
     {
         "id": "support_monster_banner",
@@ -50,9 +64,9 @@
         "accentColor": "#FFB000",
         "iconShape": "monster",
         "description": "Beschwöre Monster, die dein aktives Team verstärken.",
-        "singleCost": 15,
-        "multiCost": 30,
-        "guaranteedAfter": 50
+        "singleCost": 5,
+        "multiCost": 50,
+        "guaranteedAfter": 500
     },
     {
         "id": "ability_cards_banner",
@@ -63,9 +77,9 @@
         "accentColor": "#00D2FF",
         "iconShape": "cards",
         "description": "Ziehe Karten mit aktiven und passiven Fähigkeiten.",
-        "singleCost": 15,
-        "multiCost": 30,
-        "guaranteedAfter": 50
+        "singleCost": 5,
+        "multiCost": 50,
+        "guaranteedAfter": 500
     },
     {
         "id": "event_support_banner",
@@ -76,8 +90,8 @@
         "accentColor": "#FF4F9A",
         "iconShape": "ticket",
         "description": "Zeitlich empfohlene Banner für Event-Fortschritt.",
-        "singleCost": 1,
-        "multiCost": 10,
-        "guaranteedAfter": 30
+        "singleCost": 5,
+        "multiCost": 50,
+        "guaranteedAfter": 500
     }
 ]

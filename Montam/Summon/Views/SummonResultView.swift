@@ -174,8 +174,7 @@ private struct SummonResultCard: View {
     @ViewBuilder
     private var resultArtwork: some View {
         if let imageName = item.imageName, !imageName.isEmpty {
-            Image(imageName)
-                .resizable()
+            RemoteAssetImage(imageName: imageName)
                 .scaledToFit()
                 .padding(8)
         } else {

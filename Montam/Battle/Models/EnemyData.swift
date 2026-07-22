@@ -10,6 +10,7 @@ import Foundation
 struct EnemyData: Codable {
     let id: String
     let enemyName: String
+    let imageName: String?
     let name: String
     let rarity: String?
     let hp: Int?

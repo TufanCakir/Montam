@@ -138,6 +138,7 @@ final class GameScene: SKScene {
         }
 
         spawnEnemies(wave: wave, config: config)
+        refreshHealthBars()
         runEntrance(config: config, includePlayers: playerUnitsStartedOffscreen)
         { [weak self] in
             self?.runCombatLoop()
@@ -177,15 +178,6 @@ final class GameScene: SKScene {
         skyNode?.removeFromParent()
         worldNode?.removeFromParent()
 
-        let sky = GeneratedEnvironmentNodes.backgroundNode(
-            for: currentBackgroundData,
-            size: size
-        )
-        sky.name = "sky"
-        sky.zPosition = -120
-        skyNode = sky
-        addChild(sky)
-
         let world = SKNode()
         world.name = "world"
         world.zPosition = -100
@@ -196,6 +188,24 @@ final class GameScene: SKScene {
             size.width
         )
         let worldSize = CGSize(width: worldWidth, height: size.height)
+
+        if currentBackgroundData.resolvedBackgroundImageName == nil {
+            let sky = GeneratedEnvironmentNodes.backgroundNode(
+                for: currentBackgroundData,
+                size: size
+            )
+            sky.name = "sky"
+            sky.zPosition = -120
+            skyNode = sky
+            addChild(sky)
+        } else {
+            let scrollingBackground = GeneratedEnvironmentNodes.backgroundNode(
+                for: currentBackgroundData,
+                size: worldSize
+            )
+            scrollingBackground.zPosition = 0
+            world.addChild(scrollingBackground)
+        }
 
         let groundHeight = max(size.height * config.groundYRatio, 80)
         let ground = GeneratedEnvironmentNodes.groundNode(
@@ -363,15 +373,17 @@ final class GameScene: SKScene {
 
     private func movePlayersToStart(config: BattleConfigData) {
         let groundY = size.height * config.groundYRatio
-        let monsterSpacing = max(size.width * 0.11, 48)
-        let supportSpacing = max(size.width * 0.08, 36)
+        let monsterSpacing = max(size.width * 0.095, 46)
+        let supportSpacing = max(size.width * 0.1, 44)
 
         for (index, unit) in playerUnits.enumerated() {
             unit.node.position = CGPoint(
                 x: -config.edgeXPadding - CGFloat(index) * monsterSpacing,
                 y: groundedY(for: unit, groundY: groundY)
+                    + formationYOffset(index: index, count: playerUnits.count)
             )
-            unit.node.zPosition = CGFloat(20 + index)
+            unit.node.position = positionWithOffsets(unit.node.position, unit: unit)
+            unit.node.zPosition = zPosition(for: unit, index: index)
         }
 
         for (index, unit) in supportUnits.enumerated() {
@@ -379,23 +391,27 @@ final class GameScene: SKScene {
                 x: -config.edgeXPadding - CGFloat(index) * supportSpacing,
                 y: groundedY(for: unit, groundY: groundY)
             )
+            unit.node.position = positionWithOffsets(unit.node.position, unit: unit)
             unit.node.zPosition = CGFloat(10 + index)
         }
     }
 
     private func spawnEnemies(wave: BattleWaveData, config: BattleConfigData) {
-        enemyUnits = unitFactory(config: config).enemyUnits(from: wave)
+        let scaledWave = waveScaledForCurrentTeam(wave)
+        enemyUnits = unitFactory(config: config).enemyUnits(from: scaledWave)
         enemyUnits.forEach { addChild($0.node) }
 
         let groundY = size.height * config.groundYRatio
-        let spacing = max(size.width * 0.11, 46)
+        let spacing = max(size.width * 0.16, 72)
 
         for (index, unit) in enemyUnits.enumerated() {
             unit.node.position = CGPoint(
                 x: size.width + config.edgeXPadding + CGFloat(index) * spacing,
                 y: groundedY(for: unit, groundY: groundY)
+                    + formationYOffset(index: index, count: enemyUnits.count)
             )
-            unit.node.zPosition = CGFloat(30 + index)
+            unit.node.position = positionWithOffsets(unit.node.position, unit: unit)
+            unit.node.zPosition = zPosition(for: unit, index: index)
         }
     }
 
@@ -405,22 +421,27 @@ final class GameScene: SKScene {
         completion: @escaping () -> Void
     ) {
         let groundY = size.height * config.groundYRatio
-        let playerSpacing = max(size.width * 0.13, 58)
-        let enemySpacing = max(size.width * 0.13, 58)
-        let supportSpacing = max(size.width * 0.08, 36)
+        let playerSpacing = max(size.width * 0.095, 46)
+        let enemySpacing = max(size.width * 0.16, 72)
+        let supportSpacing = max(size.width * 0.1, 44)
 
         var actions: [SKAction] = []
 
         if includePlayers {
             for (index, unit) in playerUnits.enumerated() {
                 let target = CGPoint(
-                    x: size.width * 0.28 + CGFloat(index) * playerSpacing,
+                    x: size.width * 0.22 + CGFloat(index) * playerSpacing,
                     y: groundedY(for: unit, groundY: groundY)
+                        + formationYOffset(
+                            index: index,
+                            count: playerUnits.count
+                        )
                 )
+                let adjustedTarget = positionWithOffsets(target, unit: unit)
                 actions.append(
                     .run {
                         unit.node.run(
-                            .move(to: target, duration: config.walkDuration)
+                            .move(to: adjustedTarget, duration: config.walkDuration)
                         )
                     }
                 )
@@ -428,13 +449,15 @@ final class GameScene: SKScene {
 
             for (index, unit) in supportUnits.enumerated() {
                 let target = CGPoint(
-                    x: size.width * 0.18 + CGFloat(index) * supportSpacing,
+                    x: size.width * 0.1 + CGFloat(index) * supportSpacing,
                     y: groundedY(for: unit, groundY: groundY)
+                        + max(size.height * 0.018, 14)
                 )
+                let adjustedTarget = positionWithOffsets(target, unit: unit)
                 actions.append(
                     .run {
                         unit.node.run(
-                            .move(to: target, duration: config.walkDuration)
+                            .move(to: adjustedTarget, duration: config.walkDuration)
                         )
                     }
                 )
@@ -443,13 +466,15 @@ final class GameScene: SKScene {
 
         for (index, unit) in enemyUnits.enumerated() {
             let target = CGPoint(
-                x: size.width * 0.72 - CGFloat(index) * enemySpacing,
+                x: size.width * 0.86 - CGFloat(index) * enemySpacing,
                 y: groundedY(for: unit, groundY: groundY)
+                    + formationYOffset(index: index, count: enemyUnits.count)
             )
+            let adjustedTarget = positionWithOffsets(target, unit: unit)
             actions.append(
                 .run {
                     unit.node.run(
-                        .move(to: target, duration: config.walkDuration)
+                        .move(to: adjustedTarget, duration: config.walkDuration)
                     )
                 }
             )
@@ -466,8 +491,52 @@ final class GameScene: SKScene {
 
     private func groundedY(for unit: BattleUnit, groundY: CGFloat) -> CGFloat {
         let visibleHeight = unit.node.size.height * abs(unit.node.yScale)
-        let transparentPaddingCompensation = max(visibleHeight * 0.045, 4)
-        return groundY - transparentPaddingCompensation
+        let transparentPaddingCompensation = max(visibleHeight * 0.08, 10)
+        let groundAdjustment = max(size.height * 0.012, 12)
+        return groundY - transparentPaddingCompensation - groundAdjustment
+    }
+
+    private func waveScaledForCurrentTeam(_ wave: BattleWaveData)
+        -> BattleWaveData
+    {
+        let playerLevel = max(playerUnits.map(\.level).max() ?? 1, 1)
+        let enemyLevelFloor = max(playerLevel - 1, 1)
+        let hpBonus = 1 + Double(max(playerLevel - 1, 0)) * 0.1
+
+        return BattleWaveData(
+            backgroundIndex: wave.backgroundIndex,
+            isBossWave: wave.isBossWave,
+            xpReward: wave.xpReward,
+            enemies: wave.enemies.map { enemy in
+                let level = max(enemy.level ?? 1, enemyLevelFloor)
+                let multiplier = (enemy.hpMultiplier ?? 1) * hpBonus
+                return enemy.with(level: level, hpMultiplier: multiplier)
+            }
+        )
+    }
+
+    private func formationYOffset(index: Int, count: Int) -> CGFloat {
+        guard count > 1 else {
+            return 0
+        }
+
+        let depthSpacing = max(size.height * 0.022, 16)
+        let centeredIndex = CGFloat(index) - CGFloat(count - 1) / 2
+        return centeredIndex * depthSpacing
+    }
+
+    private func positionWithOffsets(_ position: CGPoint, unit: BattleUnit)
+        -> CGPoint
+    {
+        CGPoint(
+            x: position.x + CGFloat(unit.xOffset) * 0.1,
+            y: position.y + CGFloat(unit.yOffset) * 0.1
+        )
+    }
+
+    private func zPosition(for unit: BattleUnit, index: Int) -> CGFloat {
+        40 + unit.node.position.y * 0.01 + CGFloat(unit.zOffset) * 0.1
+            + CGFloat(index)
     }
 
     private func runCombatLoop() {
@@ -498,8 +567,11 @@ final class GameScene: SKScene {
     }
 
     private func playerAttack() {
-        for unit in playerUnits where unit.isAlive {
-            guard let target = BattleCombatSystem.firstAliveUnit(in: enemyUnits)
+        let livingEnemies = enemyUnits.filter(\.isAlive)
+
+        for (index, unit) in playerUnits.filter(\.isAlive).enumerated() {
+            guard !livingEnemies.isEmpty,
+                let target = livingEnemies[safe: index % livingEnemies.count]
             else {
                 return
             }
@@ -510,9 +582,11 @@ final class GameScene: SKScene {
     }
 
     private func enemyAttack() {
-        for unit in enemyUnits where unit.isAlive {
-            guard
-                let target = BattleCombatSystem.firstAliveUnit(in: playerUnits)
+        let livingPlayers = playerUnits.filter(\.isAlive)
+
+        for (index, unit) in enemyUnits.filter(\.isAlive).enumerated() {
+            guard !livingPlayers.isEmpty,
+                let target = livingPlayers[safe: index % livingPlayers.count]
             else {
                 return
             }
@@ -748,9 +822,19 @@ final class GameScene: SKScene {
     private func refreshHealthBars() {
         removeNodes(named: "healthBar")
 
-        for unit in playerUnits + enemyUnits where unit.node.parent != nil {
-            unit.node.addChild(BattleHUDFactory.healthBar(for: unit))
+        for unit in playerUnits + enemyUnits
+        where unit.node.parent != nil && unit.isAlive {
+            let healthBar = BattleHUDFactory.healthBar(for: unit)
+            healthBar.position = healthBarPosition(for: unit)
+            addChild(healthBar)
         }
+    }
+
+    private func healthBarPosition(for unit: BattleUnit) -> CGPoint {
+        return CGPoint(
+            x: unit.node.frame.midX,
+            y: unit.node.frame.maxY + 12
+        )
     }
 
     private func unitFactory(config: BattleConfigData) -> BattleUnitFactory {
@@ -767,5 +851,11 @@ final class GameScene: SKScene {
         enumerateChildNodes(withName: "//\(name)") { node, _ in
             node.removeFromParent()
         }
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

@@ -15,7 +15,7 @@ struct StartView: View {
     @State private var isMenuPresented = false
     @State private var isSettingsPresented = false
     @State private var menuMessage: String?
-    @State private var logoPulse = false
+    @State private var isLogoOpen = false
     @State private var background = PixelEnvironmentCatalog.randomBackground()
 
     var body: some View {
@@ -64,7 +64,10 @@ struct StartView: View {
         }
         .ignoresSafeArea()
         .onAppear {
-            logoPulse = true
+            isLogoOpen = false
+            withAnimation(.easeOut(duration: 1.15).delay(0.2)) {
+                isLogoOpen = true
+            }
         }
     }
 
@@ -76,23 +79,11 @@ struct StartView: View {
             )
 
             VStack(spacing: 0) {
-                topBrandRow
-                    .padding(.top, 72)
 
                 Spacer()
 
-                Image("montam_logo")
-                    .resizable()
-                    .scaledToFit()
+                RevealingLogo(progress: isLogoOpen ? 1 : 0)
                     .padding(.horizontal, 34)
-                    .scaleEffect(logoPulse ? 1.02 : 0.98)
-                    .shadow(color: .cyan.opacity(0.7), radius: 16)
-                    .animation(
-                        .easeInOut(duration: 1.5).repeatForever(
-                            autoreverses: true
-                        ),
-                        value: logoPulse
-                    )
 
                 Spacer()
 
@@ -110,52 +101,19 @@ struct StartView: View {
         }
     }
 
-    private var topBrandRow: some View {
-        HStack(alignment: .top) {
-            VStack(spacing: 18) {
-
-                MontamStudioBadge()
-                    .frame(width: 116, height: 76)
-
-                Text(AppBundleInfo.versionDisplay)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(.blue.opacity(0.75))
-                    .frame(width: 142, height: 28)
-                    .background(.white)
-                    .clipShape(Capsule())
-            }
-
-            Spacer()
-
-            Text("MONTAM")
-                .font(.system(size: 30, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .overlay(alignment: .bottom) {
-                    Rectangle()
-                        .fill(.white)
-                        .frame(height: 3)
-                        .offset(y: 4)
-                }
-                .shadow(color: .black.opacity(0.6), radius: 2, x: 2, y: 2)
-                .padding(.top, 10)
-        }
-        .padding(.horizontal, 56)
-    }
-
     private var startPrompt: some View {
         Text("Touch To Start")
             .font(.system(size: 25, weight: .heavy, design: .rounded))
-            .foregroundStyle(.white.opacity(0.95))
+            .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical)
             .background(
                 LinearGradient(
-                    colors: [.clear, .cyan.opacity(0.62), .clear],
+                    colors: [.clear, .blue.opacity(0.80), .clear],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             )
-            .shadow(color: .black.opacity(0.4), radius: 2, x: 1, y: 2)
     }
 
     private var bottomRow: some View {
@@ -168,8 +126,15 @@ struct StartView: View {
                     .font(.system(size: 15, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: .black, radius: 2, x: 1, y: 2)
+                
+                Text(AppBundleInfo.versionDisplay)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(.blue)
+                    .frame(width: 142, height: 28)
+                    .background(.black)
+                    .clipShape(Capsule())
             }
-
+        
             Spacer()
 
             Button {
@@ -183,7 +148,7 @@ struct StartView: View {
                     .frame(width: 96, height: 48)
                     .background(
                         LinearGradient(
-                            colors: [.cyan, .blue],
+                            colors: [.blue, .blue],
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -191,11 +156,10 @@ struct StartView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8).stroke(
-                            .black.opacity(0.75),
+                            .yellow,
                             lineWidth: 2
                         )
                     )
-                    .shadow(color: .black.opacity(0.55), radius: 0, x: 0, y: 4)
             }
             .buttonStyle(.plain)
         }
@@ -369,24 +333,54 @@ private struct StartMenuButton: View {
     }
 }
 
-private struct MontamStudioBadge: View {
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 7)
-                .fill(.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 7).stroke(
-                        .blue,
-                        lineWidth: 3
-                    )
-                )
+private struct RevealingLogo: View {
+    let progress: CGFloat
 
-            Text("Tufan\nCakir")
-                .font(.system(size: 20, weight: .heavy, design: .rounded))
-                .foregroundStyle(.black)
-                .multilineTextAlignment(.center)
-                .lineSpacing(-4)
-        }
+    var body: some View {
+        Image("montam_logo")
+            .resizable()
+            .scaledToFit()
+            .opacity(0.18)
+            .overlay(alignment: .leading) {
+                GeometryReader { geometry in
+                    Image("montam_logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            width: geometry.size.width,
+                            height: geometry.size.height
+                        )
+                        .mask(alignment: .leading) {
+                            Rectangle()
+                                .frame(
+                                    width: geometry.size.width
+                                        * min(max(progress, 0), 1)
+                                )
+                        }
+                }
+            }
+            .overlay(alignment: .leading) {
+                GeometryReader { geometry in
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    .clear,
+                                    .white.opacity(progress < 1 ? 0.7 : 0),
+                                    .clear,
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: 34)
+                        .offset(
+                            x: geometry.size.width
+                                * min(max(progress, 0), 1) - 17
+                        )
+                }
+            }
+            .shadow(color: .black.opacity(0.42), radius: 10, x: 0, y: 8)
     }
 }
 

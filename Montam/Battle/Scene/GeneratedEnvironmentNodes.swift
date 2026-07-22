@@ -6,12 +6,13 @@
 //
 
 import SpriteKit
+import UIKit
 
 enum GeneratedEnvironmentNodes {
     static func backgroundNode(for data: BackgroundData, size: CGSize) -> SKNode
     {
         if let imageName = data.resolvedBackgroundImageName {
-            let node = SKSpriteNode(imageNamed: imageName)
+            let node = SKSpriteNode(texture: texture(named: imageName))
             node.name = "background"
             node.size = size
             node.position = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -46,8 +47,12 @@ enum GeneratedEnvironmentNodes {
         let root = SKNode()
         root.name = "ground"
 
+        if data.resolvedBackgroundImageName != nil {
+            return root
+        }
+
         if let imageName = data.resolvedGroundImageName {
-            let ground = SKSpriteNode(imageNamed: imageName)
+            let ground = SKSpriteNode(texture: texture(named: imageName))
             ground.size = CGSize(width: size.width, height: groundHeight)
             ground.anchorPoint = CGPoint(x: 0.5, y: 0)
             ground.position = CGPoint(x: size.width / 2, y: 0)
@@ -74,6 +79,17 @@ enum GeneratedEnvironmentNodes {
             groundHeight: groundHeight
         )
         return root
+    }
+
+    private static func texture(named imageName: String) -> SKTexture {
+        let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
+        if FileManager.default.fileExists(atPath: cachedURL.path()),
+            let image = UIImage(contentsOfFile: cachedURL.path())
+        {
+            return SKTexture(image: image)
+        }
+
+        return SKTexture(imageNamed: imageName)
     }
 
     private static func addSkyDetails(

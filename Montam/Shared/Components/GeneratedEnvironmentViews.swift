@@ -67,8 +67,7 @@ struct GeneratedBackgroundView: View {
     var body: some View {
         ZStack {
             if let imageName = data.resolvedBackgroundImageName {
-                Image(imageName)
-                    .resizable()
+                RemoteAssetImage(imageName: imageName)
                     .scaledToFill()
             } else {
                 generatedSky
@@ -126,9 +125,10 @@ struct GeneratedGroundView: View {
 
     var body: some View {
         ZStack {
-            if let imageName = data.resolvedGroundImageName {
-                Image(imageName)
-                    .resizable()
+            if data.resolvedBackgroundImageName != nil {
+                Color.clear
+            } else if let imageName = data.resolvedGroundImageName {
+                RemoteAssetImage(imageName: imageName)
                     .scaledToFill()
             } else {
                 LinearGradient(

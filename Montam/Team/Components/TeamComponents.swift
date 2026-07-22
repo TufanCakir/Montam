@@ -76,8 +76,7 @@ struct SupportTeamContent: View {
                         onSelect(row.id)
                     } label: {
                         HStack(spacing: 10) {
-                            Image(row.imageName)
-                                .resizable()
+                            RemoteAssetImage(imageName: row.imageName)
                                 .scaledToFit()
                                 .frame(width: 58, height: 58)
 
@@ -225,8 +224,7 @@ private struct ActiveMonsterPanel: View {
     var body: some View {
         VStack(spacing: 10) {
             HStack(spacing: 12) {
-                Image(row.imageName)
-                    .resizable()
+                RemoteAssetImage(imageName: row.imageName)
                     .scaledToFit()
                     .frame(width: 118, height: 118)
                     .padding(8)
@@ -293,8 +291,7 @@ private struct TeamEvolutionButton: View {
             onEvolve(evolution.evolution)
         } label: {
             HStack(spacing: 8) {
-                Image(evolution.evolution.targetImageName)
-                    .resizable()
+                RemoteAssetImage(imageName: evolution.evolution.targetImageName)
                     .scaledToFit()
                     .frame(width: 34, height: 34)
                 VStack(alignment: .leading, spacing: 1) {
@@ -351,11 +348,12 @@ private struct TeamAppearanceStrip: View {
                             onEquip(appearance, monsterId)
                         } label: {
                             VStack(spacing: 4) {
-                                Image(appearance.imageName)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 58, height: 58)
-                                    .opacity(appearance.isUnlocked ? 1 : 0.35)
+                                RemoteAssetImage(
+                                    imageName: appearance.imageName
+                                )
+                                .scaledToFit()
+                                .frame(width: 58, height: 58)
+                                .opacity(appearance.isUnlocked ? 1 : 0.35)
 
                                 Text(
                                     appearance.isUnlocked
@@ -404,8 +402,7 @@ private struct TeamMonsterListRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
-                Image(row.imageName)
-                    .resizable()
+                RemoteAssetImage(imageName: row.imageName)
                     .scaledToFit()
                     .frame(width: 54, height: 54)
 

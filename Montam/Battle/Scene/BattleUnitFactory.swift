@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import UIKit
 
 struct BattleUnitFactory {
     let monsters: [MonsterData]
@@ -91,7 +92,10 @@ struct BattleUnitFactory {
                 maxHP: stats.maxHP,
                 currentHP: stats.maxHP,
                 attack: stats.attack,
-                defense: stats.defense
+                defense: stats.defense,
+                xOffset: monster.xOffset,
+                yOffset: monster.yOffset,
+                zOffset: monster.zOffset
             )
 
         case .enemy:
@@ -105,7 +109,7 @@ struct BattleUnitFactory {
                 enemy: enemy
             )
             let node = makeSprite(
-                imageName: enemy.enemyName,
+                imageName: config.imageName ?? enemy.imageName ?? enemy.enemyName,
                 side: side,
                 scaleMultiplier: config.scaleMultiplier ?? 1
             )
@@ -117,7 +121,10 @@ struct BattleUnitFactory {
                 maxHP: stats.maxHP,
                 currentHP: stats.maxHP,
                 attack: stats.attack,
-                defense: stats.defense
+                defense: stats.defense,
+                xOffset: enemy.xOffset,
+                yOffset: enemy.yOffset,
+                zOffset: enemy.zOffset
             )
 
         case .support:
@@ -144,6 +151,9 @@ struct BattleUnitFactory {
             currentHP: 1,
             attack: 0,
             defense: 0,
+            xOffset: tamer.xOffset,
+            yOffset: tamer.yOffset,
+            zOffset: tamer.zOffset,
             attackBonus: tamer.supportAttackBonus ?? 0,
             defenseBonus: tamer.supportDefenseBonus ?? 0,
             healthBonus: tamer.supportHealthBonus ?? 0
@@ -155,7 +165,7 @@ struct BattleUnitFactory {
         side: BattleSide,
         scaleMultiplier: Double
     ) -> SKSpriteNode {
-        let texture = SKTexture(imageNamed: imageName)
+        let texture = Self.texture(named: imageName)
         let node = SKSpriteNode(texture: texture)
         node.anchorPoint = CGPoint(x: 0.5, y: 0)
 
@@ -169,6 +179,17 @@ struct BattleUnitFactory {
         }
 
         return node
+    }
+
+    private static func texture(named imageName: String) -> SKTexture {
+        let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
+        if FileManager.default.fileExists(atPath: cachedURL.path()),
+            let image = UIImage(contentsOfFile: cachedURL.path())
+        {
+            return SKTexture(image: image)
+        }
+
+        return SKTexture(imageNamed: imageName)
     }
 
     private func maxSpriteHeightRatio(for side: BattleSide) -> Double {

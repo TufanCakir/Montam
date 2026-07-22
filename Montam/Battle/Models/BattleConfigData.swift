@@ -59,6 +59,17 @@ struct BattleUnitConfig: Decodable {
         self.scaleMultiplier = scaleMultiplier
         self.imageName = imageName
     }
+
+    func with(level: Int?, hpMultiplier: Double?) -> BattleUnitConfig {
+        BattleUnitConfig(
+            id: id,
+            level: level,
+            slot: slot,
+            hpMultiplier: hpMultiplier,
+            scaleMultiplier: scaleMultiplier,
+            imageName: imageName
+        )
+    }
 }
 
 struct BattleRewardConfig: Decodable {

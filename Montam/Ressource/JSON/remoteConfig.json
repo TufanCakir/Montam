@@ -1,0 +1,49 @@
+{
+    "contentVersion": 1,
+    "minimumAppVersion": "1.0",
+    "notes": "Basis Remote-Inhalte",
+    "jsonFiles": [
+        "background",
+        "battleConfig",
+        "battleReward",
+        "daily",
+        "enemy",
+        "event",
+        "evolution",
+        "gameVisual",
+        "gift",
+        "monster",
+        "monsterAppearance",
+        "music",
+        "news",
+        "shop",
+        "summon",
+        "summonCategory",
+        "summonCost",
+        "summonPool",
+        "tamer",
+        "trade"
+    ],
+    "assetExtensions": [
+        "png",
+        "jpg",
+        "jpeg",
+        "webp"
+    ],
+    "assetKeys": [
+        "imageName",
+        "backgroundImage",
+        "groundImageName",
+        "groundImage",
+        "monsterName",
+        "tamerName",
+        "enemyName",
+        "bannerImage",
+        "targetImageName"
+    ],
+    "assetFiles": [],
+    "musicFiles": [
+        "mon_song_1.mp3",
+        "mon_song_2.mp3"
+    ]
+}

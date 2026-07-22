@@ -11,8 +11,7 @@ struct Background: View {
     let imageName: String
 
     var body: some View {
-        Image(imageName)
-            .resizable()
+        RemoteAssetImage(imageName: imageName)
             .scaledToFill()
             .ignoresSafeArea()
     }

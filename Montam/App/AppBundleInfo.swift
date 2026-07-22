@@ -8,11 +8,18 @@
 import Foundation
 
 enum AppBundleInfo {
+    static var appVersion: String {
+        Bundle.main.object(
+            forInfoDictionaryKey: "CFBundleShortVersionString"
+        ) as? String ?? "0"
+    }
+
     static var versionDisplay: String {
         let version =
             Bundle.main.object(
                 forInfoDictionaryKey: "CFBundleShortVersionString"
-            ) as? String
+            )
+            as? String
         let build =
             Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion")
             as? String

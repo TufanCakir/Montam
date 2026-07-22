@@ -281,8 +281,7 @@ struct SummonBannerArtwork: View {
         if summon.renderMode != "generated", let imageName = summon.bannerImage,
             !imageName.isEmpty
         {
-            Image(imageName)
-                .resizable()
+            RemoteAssetImage(imageName: imageName)
                 .scaledToFit()
                 .padding(.vertical, 6)
         } else {

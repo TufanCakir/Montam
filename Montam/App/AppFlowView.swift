@@ -12,25 +12,45 @@ struct AppFlowView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Query private var saves: [GameSaveData]
+    @State private var remoteContent = RemoteContentService.shared
     @State private var didTapStart = false
     @State private var didFinishOnboarding = false
 
     var body: some View {
+        ZStack {
+            appContent
+
+            if remoteContent.isUpdating,
+                let statusText = remoteContent.statusText
+            {
+                RemoteContentLoadingOverlay(text: statusText)
+            }
+        }
+        .task {
+            await remoteContent.updateAtLaunch()
+        }
+        .statusBarHidden(true)
+    }
+
+    @ViewBuilder
+    private var appContent: some View {
         if !didTapStart {
             StartView {
                 didTapStart = true
             } onDataDeleted: {
                 resetToStart()
             }
-        } else if didFinishOnboarding
-            || saves.first?.didCompleteOnboarding == true
-        {
-            RootView {
-                resetToStart()
-            }
         } else {
-            OnboardingView {
-                didFinishOnboarding = true
+            if didFinishOnboarding
+                || saves.first?.didCompleteOnboarding == true
+            {
+                RootView {
+                    resetToStart()
+                }
+            } else {
+                OnboardingView {
+                    didFinishOnboarding = true
+                }
             }
         }
     }
@@ -84,8 +104,7 @@ struct OnboardingView: View {
                         startGame(with: monster)
                     } label: {
                         VStack(spacing: 10) {
-                            Image(monster.monsterName)
-                                .resizable()
+                            RemoteAssetImage(imageName: monster.monsterName)
                                 .scaledToFit()
                                 .frame(height: 150)
 
@@ -318,8 +337,7 @@ private struct SelectionRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 14) {
-                Image(imageName)
-                    .resizable()
+                RemoteAssetImage(imageName: imageName)
                     .scaledToFit()
                     .frame(width: 74, height: 74)
                     .opacity(isEnabled ? 1 : 0.38)

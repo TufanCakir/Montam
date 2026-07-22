@@ -22,8 +22,7 @@ struct PlayerStatusBar: View {
     var body: some View {
         HStack(alignment: .center, spacing: 7) {
             VStack(spacing: 0) {
-                Image(activeMonsterImageName)
-                    .resizable()
+                RemoteAssetImage(imageName: activeMonsterImageName)
                     .scaledToFit()
                     .padding(4)
                     .frame(width: 38, height: 38)
