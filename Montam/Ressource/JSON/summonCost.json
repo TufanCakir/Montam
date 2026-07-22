@@ -1,0 +1,10 @@
+[
+    {
+        "amountPool": 10,
+        "singleTicketalCost": 5,
+        "multiTicketalCost": 50,
+        "singleCrystalCost": 5,
+        "multiCrystalCost": 50,
+        "maxSummons": 1
+    }
+]

@@ -1,0 +1,16 @@
+[
+    {
+        "id": "kyro",
+        "enemyName": "enemy_kyro",
+        "name": "Kyro",
+        "rarity": "normal",
+        "level": 1,
+        "hp": 2800,
+        "attack": 150,
+        "defense": 35,
+        "enemyGrowthRate": 1.08,
+        "yOffset": 180,
+        "xOffset": 180,
+        "zOffset": 180
+    }
+]

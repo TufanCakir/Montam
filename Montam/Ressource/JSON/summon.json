@@ -1,0 +1,82 @@
+[
+    {
+        "id": "beginnings_banner",
+        "title": "Beginnings Summon",
+        "category": "beginnings",
+        "currency": "crystal",
+        "bannerImage": "mon_kyro",
+        "renderMode": "image",
+        "accentColor": "#00C8FF",
+        "iconShape": "monster",
+        "description": "Beschwöre Monster aus dem Beginnings-Pool.",
+        "singleCost": 15,
+        "multiCost": 30,
+        "guaranteedAfter": 50
+    },
+    {
+        "id": "support_banner",
+        "title": "Support Summon",
+        "category": "support",
+        "currency": "summon_ticket",
+        "bannerImage": "tamer_kael",
+        "renderMode": "image",
+        "accentColor": "#B658FF",
+        "iconShape": "support",
+        "description": "Beschwöre Supporter für deine Monster.",
+        "singleCost": 1,
+        "multiCost": 10,
+        "guaranteedAfter": 50
+    },
+    {
+        "id": "support_cards_banner",
+        "title": "Support-Karten Beschwörung",
+        "category": "support",
+        "currency": "summon_ticket",
+        "renderMode": "generated",
+        "accentColor": "#35D875",
+        "iconShape": "cards",
+        "description": "Erhalte dynamisch generierte Support-Karten für Kampfboni.",
+        "singleCost": 1,
+        "multiCost": 10,
+        "guaranteedAfter": 40
+    },
+    {
+        "id": "support_monster_banner",
+        "title": "Support-Monster Beschwörung",
+        "category": "support",
+        "currency": "crystal",
+        "renderMode": "generated",
+        "accentColor": "#FFB000",
+        "iconShape": "monster",
+        "description": "Beschwöre Monster, die dein aktives Team verstärken.",
+        "singleCost": 15,
+        "multiCost": 30,
+        "guaranteedAfter": 50
+    },
+    {
+        "id": "ability_cards_banner",
+        "title": "Fähigkeitskarten Beschwörung",
+        "category": "special",
+        "currency": "crystal",
+        "renderMode": "generated",
+        "accentColor": "#00D2FF",
+        "iconShape": "cards",
+        "description": "Ziehe Karten mit aktiven und passiven Fähigkeiten.",
+        "singleCost": 15,
+        "multiCost": 30,
+        "guaranteedAfter": 50
+    },
+    {
+        "id": "event_support_banner",
+        "title": "Event-Support Beschwörung",
+        "category": "empfohlen",
+        "currency": "summon_ticket",
+        "renderMode": "generated",
+        "accentColor": "#FF4F9A",
+        "iconShape": "ticket",
+        "description": "Zeitlich empfohlene Banner für Event-Fortschritt.",
+        "singleCost": 1,
+        "multiCost": 10,
+        "guaranteedAfter": 30
+    }
+]

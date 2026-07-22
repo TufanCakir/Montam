@@ -1,0 +1,46 @@
+[
+    {
+        "id": "coins_to_ticket_small",
+        "title": "Ticket-Tausch",
+        "subtitle": "Tausche Coins gegen ein Beschwörungsticket.",
+        "section": "Tickets",
+        "costCurrency": "coins",
+        "costAmount": 500,
+        "rewardCurrency": "summon_ticket",
+        "rewardAmount": 1,
+        "sortOrder": 10
+    },
+    {
+        "id": "bits_to_coins_small",
+        "title": "Coin-Paket",
+        "subtitle": "Tausche Bits gegen Coins.",
+        "section": "Währungen",
+        "costCurrency": "bits",
+        "costAmount": 100,
+        "rewardCurrency": "coins",
+        "rewardAmount": 1000,
+        "sortOrder": 20
+    },
+    {
+        "id": "crystals_to_tickets",
+        "title": "Ticket-Bündel",
+        "subtitle": "Kristalle gegen mehrere Tickets tauschen.",
+        "section": "Tickets",
+        "costCurrency": "crystals",
+        "costAmount": 10,
+        "rewardCurrency": "summon_ticket",
+        "rewardAmount": 3,
+        "sortOrder": 30
+    },
+    {
+        "id": "coins_to_bits",
+        "title": "Bit-Paket",
+        "subtitle": "Coins gegen Bits tauschen.",
+        "section": "Währungen",
+        "costCurrency": "coins",
+        "costAmount": 300,
+        "rewardCurrency": "bits",
+        "rewardAmount": 50,
+        "sortOrder": 40
+    }
+]

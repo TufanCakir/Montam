@@ -1,0 +1,68 @@
+{
+    "products": [
+        {
+            "id": "crystals_small",
+            "productId": "montam.crystals.small",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Kleines Kristallpaket",
+            "subtitle": "10 Kristalle",
+            "visual": "crystals",
+            "badge": null,
+            "sortOrder": 10,
+            "rewards": {
+                "crystals": 10,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "crystals_medium",
+            "productId": "montam.crystals.medium",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Mittleres Kristallpaket",
+            "subtitle": "30 Kristalle",
+            "visual": "crystals",
+            "badge": null,
+            "sortOrder": 20,
+            "rewards": {
+                "crystals": 30,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "crystals_big",
+            "productId": "montam.crystals.big",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Großes Kristallpaket",
+            "subtitle": "50 Kristalle",
+            "visual": "crystals",
+            "badge": "BEST",
+            "sortOrder": 30,
+            "rewards": {
+                "crystals": 50,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "event_pass",
+            "productId": "montam.pass.event",
+            "section": "pass",
+            "purchaseType": "nonConsumable",
+            "title": "Event-Pass",
+            "subtitle": "Einmaliger Event-Zugang",
+            "visual": "pass",
+            "badge": "EVENT",
+            "sortOrder": 10,
+            "rewards": {
+                "crystals": 100,
+                "coins": null,
+                "unlockEventPass": true
+            }
+        }
+    ]
+}

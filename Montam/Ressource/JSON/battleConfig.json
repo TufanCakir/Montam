@@ -1,0 +1,98 @@
+{
+    "groundYRatio": 0.18,
+    "edgeXPadding": 42,
+    "maxPlayerMonsters": 4,
+    "maxSupportTamers": 2,
+    "walkDuration": 0.72,
+    "attackInterval": 0.62,
+    "fadeDuration": 0.75,
+    "worldWidthMultiplier": 3.4,
+    "worldScrollStepRatio": 0.46,
+    "playerSpriteMaxHeightRatio": 0.22,
+    "supportSpriteMaxHeightRatio": 0.18,
+    "enemySpriteMaxHeightRatio": 0.22,
+    "backgroundTransitionFightCount": 3,
+    "maxLevel": 100,
+    "xpBase": 100,
+    "xpLinearGrowth": 35,
+    "xpExponentialGrowth": 1.04,
+    "backgroundSequence": [
+        "generated_mountain",
+        "generated_lava",
+        "generated_ice"
+    ],
+    "playerMonsters": [
+        {
+            "id": "kyro",
+            "slot": 0
+        }
+    ],
+    "supportTamers": [
+        {
+            "id": "kael",
+            "slot": 0
+        }
+    ],
+    "waves": [
+        {
+            "backgroundIndex": 0,
+            "isBossWave": false,
+            "xpReward": 35,
+            "enemies": [
+                {
+                    "id": "kyro",
+                    "level": 1,
+                    "slot": 0
+                },
+                {
+                    "id": "kyro",
+                    "level": 1,
+                    "slot": 1
+                }
+            ]
+        },
+        {
+            "backgroundIndex": 1,
+            "isBossWave": false,
+            "xpReward": 45,
+            "enemies": [
+                {
+                    "id": "kyro",
+                    "level": 2,
+                    "slot": 0
+                },
+                {
+                    "id": "kyro",
+                    "level": 2,
+                    "slot": 1
+                },
+                {
+                    "id": "kyro",
+                    "level": 2,
+                    "slot": 2
+                }
+            ]
+        },
+        {
+            "backgroundIndex": 2,
+            "isBossWave": true,
+            "xpReward": 130,
+            "enemies": [
+                {
+                    "id": "kyro",
+                    "level": 3,
+                    "slot": 0,
+                    "hpMultiplier": 1.5,
+                    "scaleMultiplier": 1.35
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "coinIcon": "icon_coin",
+        "crystalIcon": "icon_crystal",
+        "coins": 130,
+        "crystals": 1,
+        "eventExp": 130
+    }
+}

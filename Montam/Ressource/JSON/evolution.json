@@ -1,0 +1,12 @@
+[
+    {
+        "id": "kyro_to_kyro_plus",
+        "sourceMonsterId": "kyro",
+        "targetMonsterId": "kyro_plus",
+        "targetImageName": "mon_kyro",
+        "displayName": "Kyro Prime",
+        "requiredLevel": 20,
+        "coinCost": 250,
+        "crystalCost": 0
+    }
+]

@@ -1,0 +1,15 @@
+[
+    {
+        "id": "kyro",
+        "monsterName": "mon_kyro",
+        "name": "Kyro",
+        "rarity": "rare",
+        "hp": 10000,
+        "attack": 620,
+        "defense": 180,
+        "monsterGrowthRate": 1.12,
+        "yOffset": 280,
+        "xOffset": -100,
+        "zOffset": 180
+    }
+]

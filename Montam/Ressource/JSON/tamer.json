@@ -1,0 +1,15 @@
+[
+    {
+        "id": "kael",
+        "tamerName": "tamer_kael",
+        "name": "Kael",
+        "tamerGrowthRate": 1.12,
+        "rarity": "legendary",
+        "supportAttackBonus": 0.15,
+        "supportDefenseBonus": 0.08,
+        "supportHealthBonus": 0.12,
+        "yOffset": 180,
+        "xOffset": -30,
+        "zOffset": 180
+    }
+]

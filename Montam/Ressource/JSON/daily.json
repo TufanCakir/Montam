@@ -1,0 +1,22 @@
+[
+    {
+        "day": 1,
+        "coins": 500,
+        "crystals": 50
+    },
+    {
+        "day": 2,
+        "coins": 700,
+        "crystals": 60
+    },
+    {
+        "day": 3,
+        "coins": 900,
+        "crystals": 70
+    },
+    {
+        "day": 7,
+        "coins": 2000,
+        "crystals": 150
+    }
+]
