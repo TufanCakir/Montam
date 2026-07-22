@@ -1,13 +1,19 @@
 //
 //  ShopInventoryService.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SwiftData
 
 @MainActor
 enum ShopInventoryService {
-    static func applyRewards(from product: ShopProductData, saves: [GameSaveData], modelContext: ModelContext) {
+    static func applyRewards(
+        from product: ShopProductData,
+        saves: [GameSaveData],
+        modelContext: ModelContext
+    ) {
         let save = ensureSave(saves: saves, modelContext: modelContext)
 
         if let crystals = product.rewards.crystals {
@@ -33,8 +39,13 @@ enum ShopInventoryService {
         try? modelContext.save()
     }
 
-    static func syncEntitlements(productIds: Set<String>, saves: [GameSaveData], modelContext: ModelContext) {
-        guard productIds.contains("montam.pass.event"), let save = saves.first else {
+    static func syncEntitlements(
+        productIds: Set<String>,
+        saves: [GameSaveData],
+        modelContext: ModelContext
+    ) {
+        guard productIds.contains("montam.pass.event"), let save = saves.first
+        else {
             return
         }
 
@@ -42,7 +53,10 @@ enum ShopInventoryService {
         try? modelContext.save()
     }
 
-    private static func ensureSave(saves: [GameSaveData], modelContext: ModelContext) -> GameSaveData {
+    private static func ensureSave(
+        saves: [GameSaveData],
+        modelContext: ModelContext
+    ) -> GameSaveData {
         if let save = saves.first {
             return save
         }

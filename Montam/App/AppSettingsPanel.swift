@@ -1,3 +1,10 @@
+//
+//  AppSettingsPanel.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 import SwiftData
 import SwiftUI
 
@@ -6,7 +13,8 @@ struct AppSettingsPanel: View {
     let onDataDeleted: () -> Void
 
     @Environment(\.modelContext) private var modelContext
-    @AppStorage(AppSettingsService.musicEnabledKey) private var isMusicEnabled = true
+    @AppStorage(AppSettingsService.musicEnabledKey) private var isMusicEnabled =
+        true
     @State private var isConfirmingDelete = false
     @State private var message: String?
 
@@ -16,8 +24,12 @@ struct AppSettingsPanel: View {
 
             VStack(spacing: 16) {
                 Toggle(isOn: $isMusicEnabled) {
-                    Label("Musik", systemImage: isMusicEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                        .font(.system(size: 21, weight: .heavy, design: .rounded))
+                    Label(
+                        "Musik",
+                        systemImage: isMusicEnabled
+                            ? "speaker.wave.2.fill" : "speaker.slash.fill"
+                    )
+                    .font(.system(size: 21, weight: .heavy, design: .rounded))
                 }
                 .toggleStyle(.switch)
                 .padding(.horizontal, 18)
@@ -30,13 +42,19 @@ struct AppSettingsPanel: View {
                     showMessage("Cache geleert.")
                 }
 
-                settingsButton(title: "Benutzerdaten löschen", icon: "exclamationmark.triangle.fill", role: .destructive) {
+                settingsButton(
+                    title: "Benutzerdaten löschen",
+                    icon: "exclamationmark.triangle.fill",
+                    role: .destructive
+                ) {
                     isConfirmingDelete = true
                 }
 
                 if let message {
                     Text(message)
-                        .font(.system(size: 14, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 14, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.cyan)
                         .multilineTextAlignment(.center)
                 }
@@ -46,7 +64,12 @@ struct AppSettingsPanel: View {
         }
         .frame(width: 350)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(.cyan.opacity(0.9), lineWidth: 3))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16).stroke(
+                .cyan.opacity(0.9),
+                lineWidth: 3
+            )
+        )
         .confirmationDialog(
             "Alle Spieldaten löschen?",
             isPresented: $isConfirmingDelete,
@@ -59,7 +82,9 @@ struct AppSettingsPanel: View {
 
             Button("Abbrechen", role: .cancel) {}
         } message: {
-            Text("Dein Spielstand, Monster und Tamer werden vollständig entfernt.")
+            Text(
+                "Dein Spielstand, Monster und Tamer werden vollständig entfernt."
+            )
         }
     }
 
@@ -84,7 +109,11 @@ struct AppSettingsPanel: View {
         .padding(.horizontal, 20)
         .frame(height: 60)
         .background(
-            LinearGradient(colors: [.blue, .cyan.opacity(0.78)], startPoint: .leading, endPoint: .trailing)
+            LinearGradient(
+                colors: [.blue, .cyan.opacity(0.78)],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
         )
     }
 
@@ -102,9 +131,17 @@ struct AppSettingsPanel: View {
                 .minimumScaleFactor(0.72)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(role == .destructive ? Color.red.opacity(0.78) : Color.cyan.opacity(0.88))
+                .background(
+                    role == .destructive
+                        ? Color.red.opacity(0.78) : Color.cyan.opacity(0.88)
+                )
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(.black.opacity(0.7), lineWidth: 2))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8).stroke(
+                        .black.opacity(0.7),
+                        lineWidth: 2
+                    )
+                )
         }
         .buttonStyle(.plain)
     }
@@ -119,4 +156,8 @@ struct AppSettingsPanel: View {
             }
         }
     }
+}
+
+#Preview {
+    RootView()
 }

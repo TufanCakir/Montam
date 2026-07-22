@@ -1,6 +1,8 @@
 //
 //  BattleStatCalculator.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Foundation
@@ -15,24 +17,54 @@ enum BattleStatCalculator {
         let growth = monster.monsterGrowthRate ?? 1.0
         return BattleStats(
             level: level,
-            maxHP: scaledStat(base: monster.hp ?? 1_000, level: level, growth: growth, multiplier: config.hpMultiplier ?? 1),
-            attack: scaledStat(base: monster.attack ?? 100, level: level, growth: growth),
-            defense: scaledStat(base: monster.defense ?? 20, level: level, growth: growth)
+            maxHP: scaledStat(
+                base: monster.hp ?? 1_000,
+                level: level,
+                growth: growth,
+                multiplier: config.hpMultiplier ?? 1
+            ),
+            attack: scaledStat(
+                base: monster.attack ?? 100,
+                level: level,
+                growth: growth
+            ),
+            defense: scaledStat(
+                base: monster.defense ?? 20,
+                level: level,
+                growth: growth
+            )
         )
     }
 
-    static func enemyStats(from config: BattleUnitConfig, enemy: EnemyData) -> BattleStats {
+    static func enemyStats(from config: BattleUnitConfig, enemy: EnemyData)
+        -> BattleStats
+    {
         let level = config.level ?? enemy.level ?? 1
         let growth = enemy.enemyGrowthRate ?? 1.0
         return BattleStats(
             level: level,
-            maxHP: scaledStat(base: enemy.hp ?? 1_000, level: level, growth: growth, multiplier: config.hpMultiplier ?? 1),
-            attack: scaledStat(base: enemy.attack ?? 100, level: level, growth: growth),
-            defense: scaledStat(base: enemy.defense ?? 20, level: level, growth: growth)
+            maxHP: scaledStat(
+                base: enemy.hp ?? 1_000,
+                level: level,
+                growth: growth,
+                multiplier: config.hpMultiplier ?? 1
+            ),
+            attack: scaledStat(
+                base: enemy.attack ?? 100,
+                level: level,
+                growth: growth
+            ),
+            defense: scaledStat(
+                base: enemy.defense ?? 20,
+                level: level,
+                growth: growth
+            )
         )
     }
 
-    static func tamerStats(from config: BattleUnitConfig, tamer: TamerData) -> BattleSupportStats {
+    static func tamerStats(from config: BattleUnitConfig, tamer: TamerData)
+        -> BattleSupportStats
+    {
         let level = max(config.level ?? 1, 1)
         let growth = pow(tamer.tamerGrowthRate ?? 1, Double(level - 1))
         return BattleSupportStats(
@@ -42,9 +74,15 @@ enum BattleStatCalculator {
         )
     }
 
-    private static func scaledStat(base: Int, level: Int, growth: Double, multiplier: Double = 1) -> Int {
+    private static func scaledStat(
+        base: Int,
+        level: Int,
+        growth: Double,
+        multiplier: Double = 1
+    ) -> Int {
         let safeLevel = max(level, 1)
-        let scaled = Double(base) * pow(growth, Double(safeLevel - 1)) * multiplier
+        let scaled =
+            Double(base) * pow(growth, Double(safeLevel - 1)) * multiplier
         return max(Int(scaled.rounded()), 1)
     }
 }

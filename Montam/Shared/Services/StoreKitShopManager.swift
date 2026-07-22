@@ -1,12 +1,12 @@
 //
 //  StoreKitShopManager.swift
-//  Monster Transorfmieren
+//  Montam
 //
-//  Created by Tufan Cakir on 21.07.26.
+//  Created by Tufan Cakir on 20.07.26.
 //
 
-import Foundation
 import Combine
+import Foundation
 import StoreKit
 
 @MainActor
@@ -21,8 +21,12 @@ final class StoreKitShopManager: ObservableObject {
 
         do {
             let products = try await Product.products(for: uniqueIds)
-            productsById = Dictionary(uniqueKeysWithValues: products.map { ($0.id, $0) })
-            unavailableProductIds = Set(uniqueIds).subtracting(productsById.keys)
+            productsById = Dictionary(
+                uniqueKeysWithValues: products.map { ($0.id, $0) }
+            )
+            unavailableProductIds = Set(uniqueIds).subtracting(
+                productsById.keys
+            )
             await refreshEntitlements()
         } catch {
             errorMessage = "Store konnte nicht geladen werden."
@@ -77,14 +81,17 @@ final class StoreKitShopManager: ObservableObject {
     }
 
     func isPurchased(_ productData: ShopProductData) -> Bool {
-        productData.purchaseType == .nonConsumable && purchasedProductIds.contains(productData.productId)
+        productData.purchaseType == .nonConsumable
+            && purchasedProductIds.contains(productData.productId)
     }
 
     private func refreshEntitlements() async {
         var purchasedIds: Set<String> = []
 
         for await result in Transaction.currentEntitlements {
-            guard case .verified(let transaction) = result, transaction.revocationDate == nil else {
+            guard case .verified(let transaction) = result,
+                transaction.revocationDate == nil
+            else {
                 continue
             }
 
@@ -94,7 +101,9 @@ final class StoreKitShopManager: ObservableObject {
         purchasedProductIds = purchasedIds
     }
 
-    private func verifiedTransaction(from result: VerificationResult<Transaction>) throws -> Transaction {
+    private func verifiedTransaction(
+        from result: VerificationResult<Transaction>
+    ) throws -> Transaction {
         switch result {
         case .verified(let transaction):
             return transaction

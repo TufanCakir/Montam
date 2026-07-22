@@ -1,3 +1,10 @@
+//
+//  RootComponents.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 import SwiftUI
 
 enum RootTab: CaseIterable, Identifiable {
@@ -37,30 +44,86 @@ enum RootTab: CaseIterable, Identifiable {
 }
 
 struct RootGameHeader: View {
-    var onSettingsTap: () -> Void = {}
+    var body: some View {
+        PlayerStatusBar()
+            .padding(.horizontal)
+            .frame(
+                maxWidth: .infinity,
+                maxHeight: .infinity,
+                alignment: .bottom
+            )
+            .background(AppScreenBackground())
+    }
+}
+
+struct RootTopActionButtons: View {
+    let onDailyTap: () -> Void
+    let onGiftTap: () -> Void
+    let onNewsTap: () -> Void
+    let onSettingsTap: () -> Void
+
+    private let columns = [
+        GridItem(.fixed(32), spacing: 6),
+        GridItem(.fixed(32), spacing: 6),
+    ]
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            PlayerStatusBar()
-                .padding(.horizontal, 10)
-                .padding(.top, 30)
-                .padding(.bottom, 6)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        VStack {
+            HStack {
+                Spacer()
 
-            Button(action: onSettingsTap) {
-                Image(systemName: "gearshape.fill")
-                    .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(.cyan)
-                    .frame(width: 34, height: 34)
-                    .background(Color.black.opacity(0.32))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(.cyan.opacity(0.5), lineWidth: 1))
+                LazyVGrid(columns: columns, spacing: 6) {
+                    RootTopActionButton(
+                        systemName: "calendar",
+                        action: onDailyTap
+                    )
+
+                    RootTopActionButton(
+                        systemName: "gift.fill",
+                        action: onGiftTap
+                    )
+
+                    RootTopActionButton(
+                        systemName: "newspaper.fill",
+                        action: onNewsTap
+                    )
+
+                    RootTopActionButton(
+                        systemName: "gear",
+                        action: onSettingsTap
+                    )
+                }
+                .frame(width: 70)
             }
-            .buttonStyle(.plain)
-            .padding(.top, 48)
-            .padding(.trailing, 10)
+            .padding(.horizontal)
+            .padding(.top, 100)
+
+            Spacer()
         }
-        .background(AppScreenBackground())
+        .ignoresSafeArea()
+    }
+}
+
+private struct RootTopActionButton: View {
+    let systemName: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 14, weight: .black))
+                .foregroundStyle(.cyan)
+                .frame(width: 32, height: 32)
+                .background(Color.black.opacity(0.34))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8).stroke(
+                        .cyan.opacity(0.5),
+                        lineWidth: 1
+                    )
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -93,7 +156,7 @@ struct RootGameFooter: View {
                     .padding(.horizontal, 5)
                 }
             }
-            .padding(.bottom, 30)
+            .padding(.bottom, 22)
         }
     }
 }
@@ -105,21 +168,21 @@ private struct RootFooterButton: View {
 
     private var offsetY: CGFloat {
         switch tab {
-        case .tamer: 8
-        case .montam: 12
-        case .dungeon: 16
-        case .game: 28
-        case .summon: 16
-        case .shop: 12
-        case .trade: 8
+        case .tamer: 6
+        case .montam: 9
+        case .dungeon: 12
+        case .game: 20
+        case .summon: 12
+        case .shop: 9
+        case .trade: 6
         }
     }
 
     private var iconSize: CGFloat {
         switch tab {
-        case .game: 66
-        case .dungeon, .summon: 36
-        default: 36
+        case .game: 58
+        case .dungeon, .summon: 34
+        default: 34
         }
     }
 
@@ -136,18 +199,22 @@ private struct RootFooterButton: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: tab == .game ? 42 : 11)
                             .stroke(
-                                isSelected ? .white.opacity(0.78) : .cyan.opacity(0.6),
+                                isSelected
+                                    ? .white.opacity(0.78) : .cyan.opacity(0.6),
                                 lineWidth: 2
                             )
                     )
                     .shadow(
-                        color: tab == .game ? .purple.opacity(0.85) : .black.opacity(0.45),
+                        color: tab == .game
+                            ? .purple.opacity(0.85) : .black.opacity(0.45),
                         radius: tab == .game ? 12 : 3
                     )
 
                 if !tab.title.isEmpty {
                     Text(tab.title)
-                        .font(.system(size: 12, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 12, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(isSelected ? .white : .cyan)
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
@@ -156,13 +223,16 @@ private struct RootFooterButton: View {
             .frame(width: iconSize, height: iconSize)
         }
         .offset(y: offsetY)
+        .padding(.bottom, 20)
     }
 
     private var tileBackground: some ShapeStyle {
         if tab == .game {
             return AnyShapeStyle(
                 RadialGradient(
-                    colors: [.cyan.opacity(0.95), .blue.opacity(0.78), .indigo],
+                    colors: [
+                        .cyan.opacity(0.95), .blue.opacity(0.78), .indigo,
+                    ],
                     center: .center,
                     startRadius: 8,
                     endRadius: 44
@@ -226,4 +296,8 @@ private struct RootFooterWave: Shape {
             path.closeSubpath()
         }
     }
+}
+
+#Preview {
+    RootView()
 }

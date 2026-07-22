@@ -1,13 +1,20 @@
 //
 //  SummonInventoryService.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SwiftData
 
 @MainActor
 enum SummonInventoryService {
-    static func spend(cost: Int, currency: String, saves: [GameSaveData], modelContext: ModelContext) -> Bool {
+    static func spend(
+        cost: Int,
+        currency: String,
+        saves: [GameSaveData],
+        modelContext: ModelContext
+    ) -> Bool {
         guard cost > 0 else {
             return true
         }
@@ -46,11 +53,18 @@ enum SummonInventoryService {
         for result in results {
             switch result.kind {
             case .monster:
-                guard let monster = monsters.first(where: { $0.monsterName == result.imageName || $0.name == result.title }) else {
+                guard
+                    let monster = monsters.first(where: {
+                        $0.monsterName == result.imageName
+                            || $0.name == result.title
+                    })
+                else {
                     continue
                 }
 
-                let owned = ownedMonsters.first { $0.monsterId == monster.id } ?? OwnedMonsterData(monsterId: monster.id)
+                let owned =
+                    ownedMonsters.first { $0.monsterId == monster.id }
+                    ?? OwnedMonsterData(monsterId: monster.id)
 
                 if owned.modelContext == nil {
                     modelContext.insert(owned)
@@ -58,11 +72,18 @@ enum SummonInventoryService {
                     owned.xp += 25
                 }
             case .tamer:
-                guard let tamer = tamers.first(where: { $0.tamerName == result.imageName || $0.name == result.title }) else {
+                guard
+                    let tamer = tamers.first(where: {
+                        $0.tamerName == result.imageName
+                            || $0.name == result.title
+                    })
+                else {
                     continue
                 }
 
-                let owned = ownedTamers.first { $0.tamerId == tamer.id } ?? OwnedTamerData(tamerId: tamer.id)
+                let owned =
+                    ownedTamers.first { $0.tamerId == tamer.id }
+                    ?? OwnedTamerData(tamerId: tamer.id)
 
                 if owned.modelContext == nil {
                     modelContext.insert(owned)
@@ -77,7 +98,10 @@ enum SummonInventoryService {
         try? modelContext.save()
     }
 
-    private static func ensureSave(saves: [GameSaveData], modelContext: ModelContext) -> GameSaveData {
+    private static func ensureSave(
+        saves: [GameSaveData],
+        modelContext: ModelContext
+    ) -> GameSaveData {
         if let save = saves.first {
             return save
         }

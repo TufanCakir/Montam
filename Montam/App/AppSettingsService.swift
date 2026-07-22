@@ -1,3 +1,10 @@
+//
+//  AppSettingsService.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 import Foundation
 import SwiftData
 
@@ -7,15 +14,20 @@ enum AppSettingsService {
 
     static func deleteUserData(modelContext: ModelContext) {
         do {
-            for save in try modelContext.fetch(FetchDescriptor<GameSaveData>()) {
+            for save in try modelContext.fetch(FetchDescriptor<GameSaveData>())
+            {
                 modelContext.delete(save)
             }
 
-            for monster in try modelContext.fetch(FetchDescriptor<OwnedMonsterData>()) {
+            for monster in try modelContext.fetch(
+                FetchDescriptor<OwnedMonsterData>()
+            ) {
                 modelContext.delete(monster)
             }
 
-            for tamer in try modelContext.fetch(FetchDescriptor<OwnedTamerData>()) {
+            for tamer in try modelContext.fetch(
+                FetchDescriptor<OwnedTamerData>()
+            ) {
                 modelContext.delete(tamer)
             }
 
@@ -34,10 +46,12 @@ enum AppSettingsService {
         let fileManager = FileManager.default
         let temporaryDirectory = fileManager.temporaryDirectory
 
-        guard let items = try? fileManager.contentsOfDirectory(
-            at: temporaryDirectory,
-            includingPropertiesForKeys: nil
-        ) else {
+        guard
+            let items = try? fileManager.contentsOfDirectory(
+                at: temporaryDirectory,
+                includingPropertiesForKeys: nil
+            )
+        else {
             return
         }
 

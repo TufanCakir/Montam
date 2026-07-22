@@ -1,3 +1,10 @@
+//
+//  RootSaveMigrationService.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 import SwiftData
 
 @MainActor
@@ -14,7 +21,9 @@ enum RootSaveMigrationService {
             return
         }
 
-        if let current = ownedMonsters.first(where: { $0.monsterId == currentId }) {
+        if let current = ownedMonsters.first(where: {
+            $0.monsterId == currentId
+        }) {
             merge(legacyMonsters, into: current, modelContext: modelContext)
         } else if let legacy = legacyMonsters.first {
             legacy.monsterId = currentId

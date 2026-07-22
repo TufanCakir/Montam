@@ -1,6 +1,8 @@
 //
 //  GameProgressionData.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Foundation
@@ -26,14 +28,23 @@ struct GameProgressionData: Decodable {
     var resolvedMaxLevel: Int { max(maxLevel ?? 100, 1) }
     var resolvedXPBase: Int { max(xpBase ?? 100, 1) }
     var resolvedXPLinearGrowth: Int { max(xpLinearGrowth ?? 35, 0) }
-    var resolvedXPExponentialGrowth: Double { max(xpExponentialGrowth ?? 1.04, 1) }
+    var resolvedXPExponentialGrowth: Double {
+        max(xpExponentialGrowth ?? 1.04, 1)
+    }
 }
 
 enum GameProgressionCalculator {
-    static func xpNeeded(for level: Int, progression: GameProgressionData) -> Int {
+    static func xpNeeded(for level: Int, progression: GameProgressionData)
+        -> Int
+    {
         let safeLevel = max(level, 1)
-        let linear = progression.resolvedXPBase + max(safeLevel - 1, 0) * progression.resolvedXPLinearGrowth
-        let exponential = pow(progression.resolvedXPExponentialGrowth, Double(safeLevel - 1))
+        let linear =
+            progression.resolvedXPBase + max(safeLevel - 1, 0)
+            * progression.resolvedXPLinearGrowth
+        let exponential = pow(
+            progression.resolvedXPExponentialGrowth,
+            Double(safeLevel - 1)
+        )
         return max(Int((Double(linear) * exponential).rounded()), 1)
     }
 

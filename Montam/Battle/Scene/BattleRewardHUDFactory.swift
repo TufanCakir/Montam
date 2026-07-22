@@ -1,18 +1,30 @@
 //
 //  BattleRewardHUDFactory.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SpriteKit
 
 enum BattleRewardHUDFactory {
-    static func bossVictoryNode(rewards: BattleRewardConfig, xpReward: Int, sceneSize: CGSize) -> SKNode {
+    static func bossVictoryNode(
+        rewards: BattleRewardConfig,
+        xpReward: Int,
+        sceneSize: CGSize
+    ) -> SKNode {
         let container = SKNode()
         container.name = "reward"
         container.zPosition = 900
-        container.position = CGPoint(x: sceneSize.width / 2, y: sceneSize.height * 0.62)
+        container.position = CGPoint(
+            x: sceneSize.width / 2,
+            y: sceneSize.height * 0.62
+        )
 
-        let panel = SKShapeNode(rectOf: CGSize(width: min(sceneSize.width - 44, 360), height: 132), cornerRadius: 18)
+        let panel = SKShapeNode(
+            rectOf: CGSize(width: min(sceneSize.width - 44, 360), height: 132),
+            cornerRadius: 18
+        )
         panel.fillColor = SKColor.black.withAlphaComponent(0.72)
         panel.strokeColor = .cyan
         panel.lineWidth = 2
@@ -32,8 +44,18 @@ enum BattleRewardHUDFactory {
         container.addChild(subtitle)
 
         addRewardIcon("exp", text: "+\(xpReward)", x: -108, to: container)
-        addRewardIcon(rewards.coinIcon, text: "+\(rewards.coins)", x: 0, to: container)
-        addRewardIcon(rewards.crystalIcon, text: "+\(rewards.crystals)", x: 108, to: container)
+        addRewardIcon(
+            rewards.coinIcon,
+            text: "+\(rewards.coins)",
+            x: 0,
+            to: container
+        )
+        addRewardIcon(
+            rewards.crystalIcon,
+            text: "+\(rewards.crystals)",
+            x: 108,
+            to: container
+        )
 
         container.setScale(0.75)
         container.alpha = 0
@@ -44,14 +66,19 @@ enum BattleRewardHUDFactory {
         .sequence([
             .group([
                 .fadeIn(withDuration: 0.18),
-                .scale(to: 1, duration: 0.18)
+                .scale(to: 1, duration: 0.18),
             ]),
             .wait(forDuration: 1.1),
-            .fadeOut(withDuration: 0.25)
+            .fadeOut(withDuration: 0.25),
         ])
     }
 
-    private static func addRewardIcon(_ resourceId: String, text: String, x: CGFloat, to node: SKNode) {
+    private static func addRewardIcon(
+        _ resourceId: String,
+        text: String,
+        x: CGFloat,
+        to node: SKNode
+    ) {
         let icon = rewardNode(for: resourceId)
         icon.position = CGPoint(x: x - 24, y: -20)
         node.addChild(icon)

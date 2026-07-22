@@ -11,5 +11,18 @@
         "yOffset": 280,
         "xOffset": -100,
         "zOffset": 180
+    },
+    {
+        "id": "kyro_plus",
+        "monsterName": "mon_kyro",
+        "name": "Kyro Prime",
+        "rarity": "epic",
+        "hp": 14500,
+        "attack": 820,
+        "defense": 240,
+        "monsterGrowthRate": 1.16,
+        "yOffset": 280,
+        "xOffset": -100,
+        "zOffset": 180
     }
 ]

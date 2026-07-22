@@ -1,6 +1,8 @@
 //
 //  BattleRuntimeData.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Foundation
@@ -28,6 +30,7 @@ struct RuntimeOwnedMonster {
     let monsterId: String
     let level: Int
     let xp: Int
+    let imageName: String?
 }
 
 struct RuntimeOwnedTamer {

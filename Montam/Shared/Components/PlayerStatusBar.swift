@@ -1,8 +1,8 @@
 //
 //  PlayerStatusBar.swift
-//  Monster Transorfmieren
+//  Montam
 //
-//  Created by Tufan Cakir on 21.07.26.
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SwiftData
@@ -12,7 +12,8 @@ struct PlayerStatusBar: View {
 
     @Query private var saves: [GameSaveData]
     @Query private var ownedMonsters: [OwnedMonsterData]
-    private let monsters = JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+    private let monsters =
+        JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
 
     private var save: GameSaveData? {
         saves.first
@@ -20,23 +21,29 @@ struct PlayerStatusBar: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 7) {
-            ZStack(alignment: .bottom) {
+            VStack(spacing: 0) {
                 Image(activeMonsterImageName)
                     .resizable()
                     .scaledToFit()
                     .padding(4)
-                    .frame(width: 42, height: 42)
+                    .frame(width: 38, height: 38)
                     .background(.cyan.opacity(0.84))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(.orange, lineWidth: 2))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8).stroke(
+                            .orange,
+                            lineWidth: 2
+                        )
+                    )
 
                 Text("TLv.\(save?.playerLevel ?? 1)")
-                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+                    .font(.system(size: 9, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     .shadow(color: .black, radius: 1, x: 1, y: 1)
-                    .offset(y: 10)
             }
-            .frame(width: 44)
+            .frame(width: 42, height: 52)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("× \(formatNumber(save?.playerPower ?? 0))")
@@ -51,19 +58,32 @@ struct PlayerStatusBar: View {
                     .background(Color.black.opacity(0.62))
                     .clipShape(RoundedRectangle(cornerRadius: 9))
                     .overlay {
-                        Text("\(formatNumber(save?.playerXP ?? 0))/\(formatNumber(save?.playerMaxXP ?? 100))")
-                            .font(.system(size: 10, weight: .heavy, design: .rounded))
-                            .foregroundStyle(.green.opacity(0.92))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
+                        Text(
+                            "\(formatNumber(save?.playerXP ?? 0))/\(formatNumber(save?.playerMaxXP ?? 100))"
+                        )
+                        .font(
+                            .system(size: 10, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.green.opacity(0.92))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     }
                     .frame(height: 10)
             }
             .layoutPriority(2)
 
-            PlayerStatusCurrency(iconId: "coin", fallbackImage: "icon_coin", amount: formatNumber(save?.coins ?? 0))
-            PlayerStatusCurrency(iconId: "crystal", fallbackImage: "icon_crystal", amount: formatNumber(save?.crystals ?? 0))
+            PlayerStatusCurrency(
+                iconId: "coin",
+                fallbackImage: "icon_coin",
+                amount: formatNumber(save?.coins ?? 0)
+            )
+            PlayerStatusCurrency(
+                iconId: "crystal",
+                fallbackImage: "icon_crystal",
+                amount: formatNumber(save?.crystals ?? 0)
+            )
         }
+        .frame(height: 56)
     }
 
     private var progressValue: Double {
@@ -73,8 +93,9 @@ struct PlayerStatusBar: View {
     }
 
     private var activeMonsterImageName: String {
-        guard let activeId = ownedMonsters.first(where: \.isSelected)?.monsterId,
-              let monster = monsters.first(where: { $0.id == activeId })
+        guard
+            let activeId = ownedMonsters.first(where: \.isSelected)?.monsterId,
+            let monster = monsters.first(where: { $0.id == activeId })
         else {
             return monsters.first?.monsterName ?? "mon_kyro"
         }
@@ -119,6 +140,11 @@ private struct PlayerStatusCurrency: View {
         .frame(width: 78, height: 30)
         .background(.blue.opacity(0.45))
         .clipShape(RoundedRectangle(cornerRadius: 5))
-        .overlay(RoundedRectangle(cornerRadius: 5).stroke(.cyan.opacity(0.45), lineWidth: 2))
+        .overlay(
+            RoundedRectangle(cornerRadius: 5).stroke(
+                .cyan.opacity(0.45),
+                lineWidth: 2
+            )
+        )
     }
 }

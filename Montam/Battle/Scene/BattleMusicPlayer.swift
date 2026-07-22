@@ -1,6 +1,8 @@
 //
 //  BattleMusicPlayer.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import AVFoundation
@@ -42,7 +44,10 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
         play(at: currentIndex)
     }
 
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(
+        _ player: AVAudioPlayer,
+        successfully flag: Bool
+    ) {
         guard isMusicEnabled else {
             stop()
             return
@@ -86,7 +91,8 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
     }
 
     private var isMusicEnabled: Bool {
-        UserDefaults.standard.object(forKey: AppSettingsService.musicEnabledKey) as? Bool ?? true
+        UserDefaults.standard.object(forKey: AppSettingsService.musicEnabledKey)
+            as? Bool ?? true
     }
 
     nonisolated private static func audioURL(for fileName: String) -> URL? {
@@ -98,6 +104,9 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
             return nil
         }
 
-        return Bundle.main.url(forResource: name, withExtension: ext.isEmpty ? nil : ext)
+        return Bundle.main.url(
+            forResource: name,
+            withExtension: ext.isEmpty ? nil : ext
+        )
     }
 }

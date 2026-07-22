@@ -1,6 +1,8 @@
 //
 //  BattleUnitFactory.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SpriteKit
@@ -12,13 +14,16 @@ struct BattleUnitFactory {
     let sceneSize: CGSize
     let battleConfig: BattleConfigData
 
-    func playerUnits(from configuredMonsters: [BattleUnitConfig]) -> [BattleUnit] {
+    func playerUnits(from configuredMonsters: [BattleUnitConfig])
+        -> [BattleUnit]
+    {
         configuredMonsters
             .prefix(battleConfig.maxPlayerMonsters)
             .compactMap { unit(from: $0, side: .player) }
     }
 
-    func supportUnits(from configuredTamers: [BattleUnitConfig]) -> [BattleUnit] {
+    func supportUnits(from configuredTamers: [BattleUnitConfig]) -> [BattleUnit]
+    {
         configuredTamers
             .prefix(battleConfig.maxSupportTamers)
             .compactMap { tamer(from: $0) }
@@ -28,15 +33,21 @@ struct BattleUnitFactory {
         wave.enemies.compactMap { unit(from: $0, side: .enemy) }
     }
 
-    func supportStats(from configuredTamers: [BattleUnitConfig]) -> [BattleSupportStats] {
+    func supportStats(from configuredTamers: [BattleUnitConfig])
+        -> [BattleSupportStats]
+    {
         configuredTamers
             .prefix(battleConfig.maxSupportTamers)
             .compactMap { config in
-                guard let tamer = tamers.first(where: { $0.id == config.id }) else {
+                guard let tamer = tamers.first(where: { $0.id == config.id })
+                else {
                     return nil
                 }
 
-                return BattleStatCalculator.tamerStats(from: config, tamer: tamer)
+                return BattleStatCalculator.tamerStats(
+                    from: config,
+                    tamer: tamer
+                )
             }
     }
 
@@ -45,18 +56,33 @@ struct BattleUnitFactory {
             return nil
         }
 
-        return BattleStatCalculator.monsterStats(from: config, monster: monster, battleConfig: battleConfig)
+        return BattleStatCalculator.monsterStats(
+            from: config,
+            monster: monster,
+            battleConfig: battleConfig
+        )
     }
 
-    private func unit(from config: BattleUnitConfig, side: BattleSide) -> BattleUnit? {
+    private func unit(from config: BattleUnitConfig, side: BattleSide)
+        -> BattleUnit?
+    {
         switch side {
         case .player:
-            guard let monster = monsters.first(where: { $0.id == config.id }) else {
+            guard let monster = monsters.first(where: { $0.id == config.id })
+            else {
                 return nil
             }
 
-            let stats = BattleStatCalculator.monsterStats(from: config, monster: monster, battleConfig: battleConfig)
-            let node = makeSprite(imageName: monster.monsterName, side: side, scaleMultiplier: config.scaleMultiplier ?? 1)
+            let stats = BattleStatCalculator.monsterStats(
+                from: config,
+                monster: monster,
+                battleConfig: battleConfig
+            )
+            let node = makeSprite(
+                imageName: config.imageName ?? monster.monsterName,
+                side: side,
+                scaleMultiplier: config.scaleMultiplier ?? 1
+            )
             return BattleUnit(
                 node: node,
                 side: side,
@@ -69,12 +95,20 @@ struct BattleUnitFactory {
             )
 
         case .enemy:
-            guard let enemy = enemies.first(where: { $0.id == config.id }) else {
+            guard let enemy = enemies.first(where: { $0.id == config.id })
+            else {
                 return nil
             }
 
-            let stats = BattleStatCalculator.enemyStats(from: config, enemy: enemy)
-            let node = makeSprite(imageName: enemy.enemyName, side: side, scaleMultiplier: config.scaleMultiplier ?? 1)
+            let stats = BattleStatCalculator.enemyStats(
+                from: config,
+                enemy: enemy
+            )
+            let node = makeSprite(
+                imageName: enemy.enemyName,
+                side: side,
+                scaleMultiplier: config.scaleMultiplier ?? 1
+            )
             return BattleUnit(
                 node: node,
                 side: side,
@@ -96,7 +130,11 @@ struct BattleUnitFactory {
             return nil
         }
 
-        let node = makeSprite(imageName: tamer.tamerName, side: .support, scaleMultiplier: config.scaleMultiplier ?? 0.82)
+        let node = makeSprite(
+            imageName: tamer.tamerName,
+            side: .support,
+            scaleMultiplier: config.scaleMultiplier ?? 0.82
+        )
         return BattleUnit(
             node: node,
             side: .support,
@@ -112,7 +150,11 @@ struct BattleUnitFactory {
         )
     }
 
-    private func makeSprite(imageName: String, side: BattleSide, scaleMultiplier: Double) -> SKSpriteNode {
+    private func makeSprite(
+        imageName: String,
+        side: BattleSide,
+        scaleMultiplier: Double
+    ) -> SKSpriteNode {
         let texture = SKTexture(imageNamed: imageName)
         let node = SKSpriteNode(texture: texture)
         node.anchorPoint = CGPoint(x: 0.5, y: 0)

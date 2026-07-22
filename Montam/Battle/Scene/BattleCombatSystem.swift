@@ -1,6 +1,8 @@
 //
 //  BattleCombatSystem.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Foundation
@@ -15,10 +17,15 @@ enum BattleCombatSystem {
     }
 
     @discardableResult
-    static func applyDamage(from attacker: BattleUnit, to target: BattleUnit) -> BattleDamageResult {
+    static func applyDamage(from attacker: BattleUnit, to target: BattleUnit)
+        -> BattleDamageResult
+    {
         let damage = max(attacker.attack - target.defense, 1)
         target.currentHP = max(target.currentHP - damage, 0)
-        return BattleDamageResult(damage: damage, didDefeatTarget: !target.isAlive)
+        return BattleDamageResult(
+            damage: damage,
+            didDefeatTarget: !target.isAlive
+        )
     }
 }
 

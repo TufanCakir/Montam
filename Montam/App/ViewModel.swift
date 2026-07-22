@@ -1,6 +1,6 @@
 //
 //  ViewModel.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 20.07.26.
 //
@@ -31,8 +31,15 @@ class ViewModel {
         tamers = loadJSON("tamer", as: [TamerData].self) ?? []
     }
 
-    private func loadJSON<T: Decodable>(_ fileName: String, as type: T.Type) -> T? {
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
+    private func loadJSON<T: Decodable>(_ fileName: String, as type: T.Type)
+        -> T?
+    {
+        guard
+            let url = Bundle.main.url(
+                forResource: fileName,
+                withExtension: "json"
+            )
+        else {
             loadingError = "Could not find \(fileName).json in bundle."
             return nil
         }
@@ -41,7 +48,8 @@ class ViewModel {
             let data = try Data(contentsOf: url)
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
-            loadingError = "Could not decode \(fileName).json: \(error.localizedDescription)"
+            loadingError =
+                "Could not decode \(fileName).json: \(error.localizedDescription)"
             return nil
         }
     }

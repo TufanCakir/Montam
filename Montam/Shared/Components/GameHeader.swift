@@ -1,6 +1,6 @@
 //
 //  GameHeader.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 20.07.26.
 //
@@ -11,10 +11,10 @@ struct GameHeader: View {
 
     var body: some View {
         PlayerStatusBar()
-        .padding(.horizontal, 12)
-        .padding(.top, 44)
-        .padding(.bottom, 8)
-        .background(AppScreenBackground())
+            .padding(.horizontal, 12)
+            .padding(.top, 44)
+            .padding(.bottom, 8)
+            .background(AppScreenBackground())
     }
 
 }

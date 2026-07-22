@@ -1,6 +1,8 @@
 //
 //  ShopViewModel.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Observation
@@ -22,7 +24,8 @@ final class ShopViewModel {
         }
 
         let data = JSONDataLoader.load("shop", as: ShopData.self)
-        let loadedProducts = data?.products.sorted { $0.sortOrder < $1.sortOrder } ?? []
+        let loadedProducts =
+            data?.products.sorted { $0.sortOrder < $1.sortOrder } ?? []
         products = loadedProducts
         await store.loadProducts(productIds: loadedProducts.map(\.productId))
     }

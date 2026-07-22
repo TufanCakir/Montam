@@ -1,6 +1,12 @@
 [
     {
+        "id": "starter_gift",
+        "title": "Starter-Geschenk",
+        "message": "Danke fürs Spielen.",
         "coins": 500,
-        "crystals": 50
+        "crystals": 50,
+        "bits": 0,
+        "summonTickets": 1,
+        "expiresAt": null
     }
 ]

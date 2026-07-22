@@ -1,3 +1,10 @@
+//
+//  GameCurrency.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 enum GameCurrency {
     static func normalized(_ currency: String) -> String {
         switch currency {

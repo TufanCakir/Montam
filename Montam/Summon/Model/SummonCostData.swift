@@ -1,6 +1,6 @@
 //
 //  SummonCostData.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 20.07.26.
 //
@@ -15,4 +15,3 @@ struct SummonCostData: Codable {
     let multiCrystalCost: Int
     let maxSummons: Int
 }
-

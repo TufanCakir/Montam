@@ -1,6 +1,8 @@
 //
 //  SummonView.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SwiftData
@@ -20,23 +22,23 @@ struct SummonView: View {
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 14) {
-                SummonCategoryPicker(
-                    categories: viewModel.categories,
-                    selectedCategoryId: $viewModel.selectedCategoryId
-                )
-
-                if viewModel.filteredSummons.isEmpty {
-                    SummonEmptyState()
-                } else {
-                    SummonBannerPageList(
-                        summons: viewModel.filteredSummons,
-                        onSummon: performSummon
+                    SummonCategoryPicker(
+                        categories: viewModel.categories,
+                        selectedCategoryId: $viewModel.selectedCategoryId
                     )
+
+                    if viewModel.filteredSummons.isEmpty {
+                        SummonEmptyState()
+                    } else {
+                        SummonBannerPageList(
+                            summons: viewModel.filteredSummons,
+                            onSummon: performSummon
+                        )
+                    }
                 }
-            }
-            .padding(.horizontal, 22)
-            .padding(.top, 14)
-            .padding(.bottom, 12)
+                .padding(.horizontal, 22)
+                .padding(.top, 14)
+                .padding(.bottom, 12)
             }
             .overlay(alignment: .leading) {
                 SummonSideChevron(systemName: "chevron.left") {
@@ -68,7 +70,8 @@ struct SummonView: View {
     }
 
     private func performSummon(_ summon: SummonData, count: Int) {
-        let cost = count == 10 ? (summon.multiCost ?? 0) : (summon.singleCost ?? 0)
+        let cost =
+            count == 10 ? (summon.multiCost ?? 0) : (summon.singleCost ?? 0)
         let didSpend = SummonInventoryService.spend(
             cost: cost,
             currency: summon.currency,
@@ -77,7 +80,9 @@ struct SummonView: View {
         )
 
         guard didSpend else {
-            viewModel.showMessage("Nicht genug \(viewModel.currencyName(summon.currency)).")
+            viewModel.showMessage(
+                "Nicht genug \(viewModel.currencyName(summon.currency))."
+            )
             return
         }
 

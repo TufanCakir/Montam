@@ -1,0 +1,38 @@
+[
+    {
+        "id": "welcome",
+        "title": "Willkommen bei Montam",
+        "message": "News, Events und Hinweise erscheinen künftig hier.",
+        "date": "2026-07-22",
+        "category": "Info"
+    },
+    {
+        "id": "event_update",
+        "title": "Event-Ansicht überarbeitet",
+        "message": "Es gibt jetzt mehr Events..",
+        "date": "2026-07-22",
+        "category": "Update"
+    },
+    {
+        "id": "summon_update",
+        "title": "Summon-Ansicht überarbeitet",
+        "message":
+            "Banner und Beschwörungsaktionen sind jetzt kompakter und besser scrollbar.",
+        "date": "2026-07-22",
+        "category": "Update"
+    },
+    {
+        "id": "shop_update",
+        "title": "Shop-Ansicht überarbeitet",
+        "message": "Shop Karten sind jetzt kompakter und besser scrollbar.",
+        "date": "2026-07-22",
+        "category": "Update"
+    },
+    {
+        "id": "layout_update",
+        "title": "Game Layout-Ansicht überarbeitet",
+        "message": "Das gesamte Game Layout ist jetzt verbesssert worden.",
+        "date": "2026-07-22",
+        "category": "Update"
+    }
+]

@@ -5,8 +5,8 @@
 //  Created by Tufan Cakir on 20.07.26.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct MontamApp: App {
@@ -23,7 +23,7 @@ struct MontamApp: App {
         .modelContainer(for: [
             GameSaveData.self,
             OwnedMonsterData.self,
-            OwnedTamerData.self
+            OwnedTamerData.self,
         ])
     }
 }

@@ -1,3 +1,10 @@
+//
+//  TradeInventoryService.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 import SwiftData
 
 @MainActor
@@ -15,13 +22,24 @@ enum TradeInventoryService {
             return "Nicht genug \(GameCurrency.title(for: offer.costCurrency))."
         }
 
-        change(offer.costCurrency, by: -offer.costAmount, saves: saves, modelContext: modelContext)
-        change(offer.rewardCurrency, by: offer.rewardAmount, saves: saves, modelContext: modelContext)
+        change(
+            offer.costCurrency,
+            by: -offer.costAmount,
+            saves: saves,
+            modelContext: modelContext
+        )
+        change(
+            offer.rewardCurrency,
+            by: offer.rewardAmount,
+            saves: saves,
+            modelContext: modelContext
+        )
         try? modelContext.save()
         return "Tausch abgeschlossen."
     }
 
-    private static func amount(for currency: String, save: GameSaveData?) -> Int {
+    private static func amount(for currency: String, save: GameSaveData?) -> Int
+    {
         guard let save else {
             return 0
         }

@@ -1,6 +1,6 @@
 //
 //  GameScene.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 27.02.26.
 //
@@ -38,7 +38,10 @@ final class GameScene: SKScene {
         eventData = event
     }
 
-    func configure(selectedMonsters: [RuntimeOwnedMonster], selectedTamers: [RuntimeOwnedTamer]) {
+    func configure(
+        selectedMonsters: [RuntimeOwnedMonster],
+        selectedTamers: [RuntimeOwnedTamer]
+    ) {
         self.selectedMonsters = selectedMonsters
         self.selectedTamers = selectedTamers
 
@@ -50,7 +53,10 @@ final class GameScene: SKScene {
         startIfReady()
     }
 
-    func updateRuntimeSelection(selectedMonsters: [RuntimeOwnedMonster], selectedTamers: [RuntimeOwnedTamer]) {
+    func updateRuntimeSelection(
+        selectedMonsters: [RuntimeOwnedMonster],
+        selectedTamers: [RuntimeOwnedTamer]
+    ) {
         self.selectedMonsters = selectedMonsters
         self.selectedTamers = selectedTamers
     }
@@ -69,12 +75,19 @@ final class GameScene: SKScene {
     }
 
     private func loadBattleData() {
-        battleConfig = JSONDataLoader.load("battleConfig", as: BattleConfigData.self)
-        backgrounds = JSONDataLoader.load("background", as: [BackgroundData].self) ?? []
+        battleConfig = JSONDataLoader.load(
+            "battleConfig",
+            as: BattleConfigData.self
+        )
+        backgrounds =
+            JSONDataLoader.load("background", as: [BackgroundData].self) ?? []
         monsters = JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
         tamers = JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
         enemies = JSONDataLoader.load("enemy", as: [EnemyData].self) ?? []
-        let musicFiles = (JSONDataLoader.load("music", as: [MusicData].self) ?? []).map(\.file)
+        let musicFiles =
+            (JSONDataLoader.load("music", as: [MusicData].self) ?? []).map(
+                \.file
+            )
         musicPlayer.configure(fileNames: musicFiles)
 
         if let eventData {
@@ -125,7 +138,8 @@ final class GameScene: SKScene {
         }
 
         spawnEnemies(wave: wave, config: config)
-        runEntrance(config: config, includePlayers: playerUnitsStartedOffscreen) { [weak self] in
+        runEntrance(config: config, includePlayers: playerUnitsStartedOffscreen)
+        { [weak self] in
             self?.runCombatLoop()
         }
     }
@@ -139,7 +153,8 @@ final class GameScene: SKScene {
             return
         }
 
-        let backgroundKey = config.backgroundSequence.indices.contains(index)
+        let backgroundKey =
+            config.backgroundSequence.indices.contains(index)
             ? config.backgroundSequence[index]
             : backgrounds.first?.id
 
@@ -147,19 +162,25 @@ final class GameScene: SKScene {
             return
         }
 
-        currentBackgroundData = backgroundData(for: backgroundKey) ?? backgrounds.first
+        currentBackgroundData =
+            backgroundData(for: backgroundKey) ?? backgrounds.first
         installCurrentEnvironment()
     }
 
     private func installCurrentEnvironment() {
-        guard let currentBackgroundData, let config = battleConfig, size != .zero else {
+        guard let currentBackgroundData, let config = battleConfig,
+            size != .zero
+        else {
             return
         }
 
         skyNode?.removeFromParent()
         worldNode?.removeFromParent()
 
-        let sky = GeneratedEnvironmentNodes.backgroundNode(for: currentBackgroundData, size: size)
+        let sky = GeneratedEnvironmentNodes.backgroundNode(
+            for: currentBackgroundData,
+            size: size
+        )
         sky.name = "sky"
         sky.zPosition = -120
         skyNode = sky
@@ -170,7 +191,10 @@ final class GameScene: SKScene {
         world.zPosition = -100
         world.position = .zero
 
-        let worldWidth = max(size.width * (config.worldWidthMultiplier ?? 2.8), size.width)
+        let worldWidth = max(
+            size.width * (config.worldWidthMultiplier ?? 2.8),
+            size.width
+        )
         let worldSize = CGSize(width: worldWidth, height: size.height)
 
         let groundHeight = max(size.height * config.groundYRatio, 80)
@@ -225,13 +249,32 @@ final class GameScene: SKScene {
     }
 
     private func spawnPlayers(config: BattleConfigData) {
-        let configuredMonsters = selectedMonsters.isEmpty
+        let configuredMonsters =
+            selectedMonsters.isEmpty
             ? config.playerMonsters
-            : selectedMonsters.map { BattleUnitConfig(id: $0.monsterId, level: $0.level, slot: 0, hpMultiplier: nil, scaleMultiplier: nil) }
+            : selectedMonsters.map {
+                BattleUnitConfig(
+                    id: $0.monsterId,
+                    level: $0.level,
+                    slot: 0,
+                    hpMultiplier: nil,
+                    scaleMultiplier: nil,
+                    imageName: $0.imageName
+                )
+            }
 
-        let configuredTamers = selectedTamers.isEmpty
+        let configuredTamers =
+            selectedTamers.isEmpty
             ? config.supportTamers
-            : selectedTamers.map { BattleUnitConfig(id: $0.tamerId, level: $0.level, slot: 0, hpMultiplier: nil, scaleMultiplier: nil) }
+            : selectedTamers.map {
+                BattleUnitConfig(
+                    id: $0.tamerId,
+                    level: $0.level,
+                    slot: 0,
+                    hpMultiplier: nil,
+                    scaleMultiplier: nil
+                )
+            }
 
         let factory = unitFactory(config: config)
         playerUnits = factory.playerUnits(from: configuredMonsters)
@@ -242,9 +285,15 @@ final class GameScene: SKScene {
         let healthBonus = supportUnits.reduce(0) { $0 + $1.healthBonus }
 
         for index in playerUnits.indices {
-            playerUnits[index].attack = Int(Double(playerUnits[index].attack) * (1 + attackBonus))
-            playerUnits[index].defense = Int(Double(playerUnits[index].defense) * (1 + defenseBonus))
-            playerUnits[index].maxHP = Int(Double(playerUnits[index].maxHP) * (1 + healthBonus))
+            playerUnits[index].attack = Int(
+                Double(playerUnits[index].attack) * (1 + attackBonus)
+            )
+            playerUnits[index].defense = Int(
+                Double(playerUnits[index].defense) * (1 + defenseBonus)
+            )
+            playerUnits[index].maxHP = Int(
+                Double(playerUnits[index].maxHP) * (1 + healthBonus)
+            )
             playerUnits[index].currentHP = playerUnits[index].maxHP
         }
 
@@ -253,13 +302,32 @@ final class GameScene: SKScene {
     }
 
     private func refreshPlayerStats(config: BattleConfigData) {
-        let configuredMonsters = selectedMonsters.isEmpty
+        let configuredMonsters =
+            selectedMonsters.isEmpty
             ? config.playerMonsters
-            : selectedMonsters.map { BattleUnitConfig(id: $0.monsterId, level: $0.level, slot: 0, hpMultiplier: nil, scaleMultiplier: nil) }
+            : selectedMonsters.map {
+                BattleUnitConfig(
+                    id: $0.monsterId,
+                    level: $0.level,
+                    slot: 0,
+                    hpMultiplier: nil,
+                    scaleMultiplier: nil,
+                    imageName: $0.imageName
+                )
+            }
 
-        let configuredTamers = selectedTamers.isEmpty
+        let configuredTamers =
+            selectedTamers.isEmpty
             ? config.supportTamers
-            : selectedTamers.map { BattleUnitConfig(id: $0.tamerId, level: $0.level, slot: 0, hpMultiplier: nil, scaleMultiplier: nil) }
+            : selectedTamers.map {
+                BattleUnitConfig(
+                    id: $0.tamerId,
+                    level: $0.level,
+                    slot: 0,
+                    hpMultiplier: nil,
+                    scaleMultiplier: nil
+                )
+            }
 
         let factory = unitFactory(config: config)
         let refreshedSupport = factory.supportStats(from: configuredTamers)
@@ -269,16 +337,25 @@ final class GameScene: SKScene {
         let healthBonus = refreshedSupport.reduce(0) { $0 + $1.healthBonus }
 
         for index in playerUnits.indices {
-            guard let unitConfig = configuredMonsters.prefix(config.maxPlayerMonsters).first(where: { $0.id == playerUnits[index].id }),
-                  let stats = factory.monsterStats(from: unitConfig)
+            guard
+                let unitConfig = configuredMonsters.prefix(
+                    config.maxPlayerMonsters
+                ).first(where: { $0.id == playerUnits[index].id }),
+                let stats = factory.monsterStats(from: unitConfig)
             else {
                 continue
             }
 
             playerUnits[index].level = stats.level
-            playerUnits[index].attack = Int(Double(stats.attack) * (1 + attackBonus))
-            playerUnits[index].defense = Int(Double(stats.defense) * (1 + defenseBonus))
-            playerUnits[index].maxHP = Int(Double(stats.maxHP) * (1 + healthBonus))
+            playerUnits[index].attack = Int(
+                Double(stats.attack) * (1 + attackBonus)
+            )
+            playerUnits[index].defense = Int(
+                Double(stats.defense) * (1 + defenseBonus)
+            )
+            playerUnits[index].maxHP = Int(
+                Double(stats.maxHP) * (1 + healthBonus)
+            )
             playerUnits[index].currentHP = playerUnits[index].maxHP
             playerUnits[index].node.alpha = 1
         }
@@ -322,7 +399,11 @@ final class GameScene: SKScene {
         }
     }
 
-    private func runEntrance(config: BattleConfigData, includePlayers: Bool, completion: @escaping () -> Void) {
+    private func runEntrance(
+        config: BattleConfigData,
+        includePlayers: Bool,
+        completion: @escaping () -> Void
+    ) {
         let groundY = size.height * config.groundYRatio
         let playerSpacing = max(size.width * 0.13, 58)
         let enemySpacing = max(size.width * 0.13, 58)
@@ -336,7 +417,13 @@ final class GameScene: SKScene {
                     x: size.width * 0.28 + CGFloat(index) * playerSpacing,
                     y: groundedY(for: unit, groundY: groundY)
                 )
-                actions.append(.run { unit.node.run(.move(to: target, duration: config.walkDuration)) })
+                actions.append(
+                    .run {
+                        unit.node.run(
+                            .move(to: target, duration: config.walkDuration)
+                        )
+                    }
+                )
             }
 
             for (index, unit) in supportUnits.enumerated() {
@@ -344,7 +431,13 @@ final class GameScene: SKScene {
                     x: size.width * 0.18 + CGFloat(index) * supportSpacing,
                     y: groundedY(for: unit, groundY: groundY)
                 )
-                actions.append(.run { unit.node.run(.move(to: target, duration: config.walkDuration)) })
+                actions.append(
+                    .run {
+                        unit.node.run(
+                            .move(to: target, duration: config.walkDuration)
+                        )
+                    }
+                )
             }
         }
 
@@ -353,10 +446,22 @@ final class GameScene: SKScene {
                 x: size.width * 0.72 - CGFloat(index) * enemySpacing,
                 y: groundedY(for: unit, groundY: groundY)
             )
-            actions.append(.run { unit.node.run(.move(to: target, duration: config.walkDuration)) })
+            actions.append(
+                .run {
+                    unit.node.run(
+                        .move(to: target, duration: config.walkDuration)
+                    )
+                }
+            )
         }
 
-        run(.sequence(actions + [.wait(forDuration: config.walkDuration), .run(completion)]))
+        run(
+            .sequence(
+                actions + [
+                    .wait(forDuration: config.walkDuration), .run(completion),
+                ]
+            )
+        )
     }
 
     private func groundedY(for unit: BattleUnit, groundY: CGFloat) -> CGFloat {
@@ -384,15 +489,18 @@ final class GameScene: SKScene {
         enemyAttack()
         refreshHealthBars()
 
-        run(.sequence([
-            .wait(forDuration: config.attackInterval),
-            .run { [weak self] in self?.runCombatLoop() }
-        ]))
+        run(
+            .sequence([
+                .wait(forDuration: config.attackInterval),
+                .run { [weak self] in self?.runCombatLoop() },
+            ])
+        )
     }
 
     private func playerAttack() {
         for unit in playerUnits where unit.isAlive {
-            guard let target = BattleCombatSystem.firstAliveUnit(in: enemyUnits) else {
+            guard let target = BattleCombatSystem.firstAliveUnit(in: enemyUnits)
+            else {
                 return
             }
 
@@ -403,7 +511,9 @@ final class GameScene: SKScene {
 
     private func enemyAttack() {
         for unit in enemyUnits where unit.isAlive {
-            guard let target = BattleCombatSystem.firstAliveUnit(in: playerUnits) else {
+            guard
+                let target = BattleCombatSystem.firstAliveUnit(in: playerUnits)
+            else {
                 return
             }
 
@@ -415,27 +525,39 @@ final class GameScene: SKScene {
     private func animateAttack(attacker: BattleUnit, target: BattleUnit) {
         let originalPosition = attacker.node.position
         let direction: CGFloat = attacker.side == .player ? 1 : -1
-        let lunge = CGPoint(x: originalPosition.x + 24 * direction, y: originalPosition.y)
+        let lunge = CGPoint(
+            x: originalPosition.x + 24 * direction,
+            y: originalPosition.y
+        )
 
-        attacker.node.run(.sequence([
-            .move(to: lunge, duration: 0.12),
-            .move(to: originalPosition, duration: 0.16)
-        ]))
+        attacker.node.run(
+            .sequence([
+                .move(to: lunge, duration: 0.12),
+                .move(to: originalPosition, duration: 0.16),
+            ])
+        )
 
-        target.node.run(.sequence([
-            .colorize(with: .red, colorBlendFactor: 0.45, duration: 0.08),
-            .colorize(withColorBlendFactor: 0, duration: 0.12)
-        ]))
+        target.node.run(
+            .sequence([
+                .colorize(with: .red, colorBlendFactor: 0.45, duration: 0.08),
+                .colorize(withColorBlendFactor: 0, duration: 0.12),
+            ])
+        )
     }
 
-    private func applyDamageAndAnimateDefeat(from attacker: BattleUnit, to target: BattleUnit) {
+    private func applyDamageAndAnimateDefeat(
+        from attacker: BattleUnit,
+        to target: BattleUnit
+    ) {
         let result = BattleCombatSystem.applyDamage(from: attacker, to: target)
 
         if result.didDefeatTarget {
-            target.node.run(.sequence([
-                .fadeOut(withDuration: 0.25),
-                .removeFromParent()
-            ]))
+            target.node.run(
+                .sequence([
+                    .fadeOut(withDuration: 0.25),
+                    .removeFromParent(),
+                ])
+            )
         }
     }
 
@@ -445,19 +567,25 @@ final class GameScene: SKScene {
         onBattleWon?(wave.xpReward ?? 0)
 
         if wave.isBossWave {
-            showBossVictory(rewards: config.rewards, xpReward: wave.xpReward ?? 0)
+            showBossVictory(
+                rewards: config.rewards,
+                xpReward: wave.xpReward ?? 0
+            )
             onBossBattleWon?()
             currentWaveIndex = 0
             resetPlayerHealth()
-            run(.sequence([
-                .wait(forDuration: 1.65),
-                .run { [weak self] in
-                    self?.advanceEnvironmentAfterFight(config: config) { [weak self] in
-                        self?.removeRewardsAfterDelay()
-                        self?.startWave(at: 0)
-                    }
-                }
-            ]))
+            run(
+                .sequence([
+                    .wait(forDuration: 1.65),
+                    .run { [weak self] in
+                        self?.advanceEnvironmentAfterFight(config: config) {
+                            [weak self] in
+                            self?.removeRewardsAfterDelay()
+                            self?.startWave(at: 0)
+                        }
+                    },
+                ])
+            )
             return
         }
 
@@ -468,9 +596,14 @@ final class GameScene: SKScene {
         }
     }
 
-    private func advanceEnvironmentAfterFight(config: BattleConfigData, completion: @escaping () -> Void) {
+    private func advanceEnvironmentAfterFight(
+        config: BattleConfigData,
+        completion: @escaping () -> Void
+    ) {
         let threshold = max(config.backgroundTransitionFightCount ?? 3, 1)
-        let shouldChangeBackground = completedFightCount.isMultiple(of: threshold)
+        let shouldChangeBackground = completedFightCount.isMultiple(
+            of: threshold
+        )
 
         guard shouldChangeBackground else {
             scrollBackgroundToEdge(config: config, completion: completion)
@@ -496,44 +629,71 @@ final class GameScene: SKScene {
         }
     }
 
-    private func scrollBackgroundToEdge(config: BattleConfigData, completion: @escaping () -> Void) {
+    private func scrollBackgroundToEdge(
+        config: BattleConfigData,
+        completion: @escaping () -> Void
+    ) {
         guard let worldNode else {
             completion()
             return
         }
 
-        let maxOffset = max(size.width * ((config.worldWidthMultiplier ?? 2.8) - 1), 0)
-        let nextX = max(worldNode.position.x - size.width * (config.worldScrollStepRatio ?? 0.42), -maxOffset)
+        let maxOffset = max(
+            size.width * ((config.worldWidthMultiplier ?? 2.8) - 1),
+            0
+        )
+        let nextX = max(
+            worldNode.position.x - size.width
+                * (config.worldScrollStepRatio ?? 0.42),
+            -maxOffset
+        )
 
-        worldNode.run(.sequence([
-            .moveTo(x: nextX, duration: config.walkDuration),
-            .run(completion)
-        ]))
+        worldNode.run(
+            .sequence([
+                .moveTo(x: nextX, duration: config.walkDuration),
+                .run(completion),
+            ])
+        )
 
         for unit in playerUnits + supportUnits where unit.node.parent != nil {
-            unit.node.run(.sequence([
-                .moveBy(x: size.width * 0.08, y: 0, duration: config.walkDuration * 0.5),
-                .moveBy(x: -size.width * 0.04, y: 0, duration: config.walkDuration * 0.5)
-            ]))
+            unit.node.run(
+                .sequence([
+                    .moveBy(
+                        x: size.width * 0.08,
+                        y: 0,
+                        duration: config.walkDuration * 0.5
+                    ),
+                    .moveBy(
+                        x: -size.width * 0.04,
+                        y: 0,
+                        duration: config.walkDuration * 0.5
+                    ),
+                ])
+            )
         }
     }
 
-    private func fadeToBackground(config: BattleConfigData, completion: @escaping () -> Void) {
-        fadeNode?.run(.sequence([
-            .fadeIn(withDuration: config.fadeDuration),
-            .wait(forDuration: 0.35),
-            .run { [weak self] in
-                self?.playerUnits.forEach { $0.node.removeFromParent() }
-                self?.supportUnits.forEach { $0.node.removeFromParent() }
-                self?.enemyUnits.forEach { $0.node.removeFromParent() }
-                self?.playerUnits.removeAll()
-                self?.supportUnits.removeAll()
-                self?.enemyUnits.removeAll()
-                self?.showBackground(at: self?.currentBackgroundIndex ?? 0)
-                completion()
-            },
-            .fadeOut(withDuration: config.fadeDuration)
-        ]))
+    private func fadeToBackground(
+        config: BattleConfigData,
+        completion: @escaping () -> Void
+    ) {
+        fadeNode?.run(
+            .sequence([
+                .fadeIn(withDuration: config.fadeDuration),
+                .wait(forDuration: 0.35),
+                .run { [weak self] in
+                    self?.playerUnits.forEach { $0.node.removeFromParent() }
+                    self?.supportUnits.forEach { $0.node.removeFromParent() }
+                    self?.enemyUnits.forEach { $0.node.removeFromParent() }
+                    self?.playerUnits.removeAll()
+                    self?.supportUnits.removeAll()
+                    self?.enemyUnits.removeAll()
+                    self?.showBackground(at: self?.currentBackgroundIndex ?? 0)
+                    completion()
+                },
+                .fadeOut(withDuration: config.fadeDuration),
+            ])
+        )
     }
 
     private func endBattle() {
@@ -541,30 +701,34 @@ final class GameScene: SKScene {
             return
         }
 
-        fadeNode?.run(.sequence([
-            .fadeIn(withDuration: config.fadeDuration),
-            .wait(forDuration: 0.35),
-            .run { [weak self] in
-                self?.currentWaveIndex = 0
-                self?.playerUnits.forEach { $0.node.removeFromParent() }
-                self?.supportUnits.forEach { $0.node.removeFromParent() }
-                self?.enemyUnits.forEach { $0.node.removeFromParent() }
-                self?.playerUnits.removeAll()
-                self?.supportUnits.removeAll()
-                self?.enemyUnits.removeAll()
-                self?.startWave(at: 0)
-            },
-            .fadeOut(withDuration: config.fadeDuration)
-        ]))
+        fadeNode?.run(
+            .sequence([
+                .fadeIn(withDuration: config.fadeDuration),
+                .wait(forDuration: 0.35),
+                .run { [weak self] in
+                    self?.currentWaveIndex = 0
+                    self?.playerUnits.forEach { $0.node.removeFromParent() }
+                    self?.supportUnits.forEach { $0.node.removeFromParent() }
+                    self?.enemyUnits.forEach { $0.node.removeFromParent() }
+                    self?.playerUnits.removeAll()
+                    self?.supportUnits.removeAll()
+                    self?.enemyUnits.removeAll()
+                    self?.startWave(at: 0)
+                },
+                .fadeOut(withDuration: config.fadeDuration),
+            ])
+        )
     }
 
     private func removeRewardsAfterDelay() {
-        run(.sequence([
-            .wait(forDuration: 0.8),
-            .run { [weak self] in
-                self?.removeNodes(named: "reward")
-            }
-        ]))
+        run(
+            .sequence([
+                .wait(forDuration: 0.8),
+                .run { [weak self] in
+                    self?.removeNodes(named: "reward")
+                },
+            ])
+        )
     }
 
     private func showBossVictory(rewards: BattleRewardConfig, xpReward: Int) {

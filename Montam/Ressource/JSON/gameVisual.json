@@ -5,7 +5,11 @@
             "renderMode": "generated",
             "imageName": "icon_exp",
             "shape": "exp",
-            "colors": ["#1E66FF", "#21D6FF", "#6D4DFF"],
+            "colors": [
+                "#1E66FF",
+                "#21D6FF",
+                "#6D4DFF"
+            ],
             "glow": true,
             "animation": "pulse"
         },
@@ -14,7 +18,11 @@
             "renderMode": "generated",
             "imageName": "icon_coin",
             "shape": "coin",
-            "colors": ["#17D9FF", "#3577FF", "#1A2A86"],
+            "colors": [
+                "#17D9FF",
+                "#3577FF",
+                "#1A2A86"
+            ],
             "glow": true,
             "animation": null
         },
@@ -23,7 +31,11 @@
             "renderMode": "generated",
             "imageName": "icon_crystal",
             "shape": "crystal",
-            "colors": ["#6AFFD8", "#36B8FF", "#9C58FF"],
+            "colors": [
+                "#6AFFD8",
+                "#36B8FF",
+                "#9C58FF"
+            ],
             "glow": true,
             "animation": "pulse"
         },
@@ -32,7 +44,11 @@
             "renderMode": "generated",
             "imageName": "icon_ticket",
             "shape": "ticket",
-            "colors": ["#FF62D2", "#7C4DFF", "#21D6FF"],
+            "colors": [
+                "#FF62D2",
+                "#7C4DFF",
+                "#21D6FF"
+            ],
             "glow": true,
             "animation": null
         },
@@ -41,7 +57,11 @@
             "renderMode": "generated",
             "imageName": "icon_coin",
             "shape": "coin",
-            "colors": ["#FFE66D", "#FF9F1C", "#8A4B00"],
+            "colors": [
+                "#FFE66D",
+                "#FF9F1C",
+                "#8A4B00"
+            ],
             "glow": false,
             "animation": null
         }

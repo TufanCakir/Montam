@@ -1,6 +1,6 @@
 //
 //  SummonResultView.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 20.07.26.
 //
@@ -16,7 +16,7 @@ struct SummonResultView: View {
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
+        GridItem(.flexible(), spacing: 12),
     ]
 
     var body: some View {
@@ -24,13 +24,17 @@ struct SummonResultView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Beschwörungsergebnis")
-                        .font(.system(size: 28, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 28, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.white)
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
 
                     Text(title)
-                        .font(.system(size: 15, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 15, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.cyan)
                         .lineLimit(1)
                 }
@@ -46,12 +50,19 @@ struct SummonResultView: View {
                 .frame(height: 42)
                 .background(Color.cyan.opacity(0.9))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(.white.opacity(0.55), lineWidth: 2))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8).stroke(
+                        .white.opacity(0.55),
+                        lineWidth: 2
+                    )
+                )
             }
 
             ScrollView(showsIndicators: false) {
                 LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(Array(results.enumerated()), id: \.element.id) { index, item in
+                    ForEach(Array(results.enumerated()), id: \.element.id) {
+                        index,
+                        item in
                         SummonResultCard(item: item)
                             .opacity(index < revealedCount ? 1 : 0)
                             .scaleEffect(index < revealedCount ? 1 : 0.72)
@@ -120,7 +131,9 @@ private struct SummonResultCard: View {
             resultArtwork
                 .frame(height: 148)
                 .frame(maxWidth: .infinity)
-                .background(ResultCircleDecoration(accentColor: item.accentColor))
+                .background(
+                    ResultCircleDecoration(accentColor: item.accentColor)
+                )
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
             VStack(spacing: 2) {
@@ -141,13 +154,20 @@ private struct SummonResultCard: View {
         .padding(10)
         .background(
             LinearGradient(
-                colors: [Color.blue.opacity(0.86), item.accentColor.opacity(0.34)],
+                colors: [
+                    Color.blue.opacity(0.86), item.accentColor.opacity(0.34),
+                ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(item.accentColor.opacity(0.9), lineWidth: 2))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12).stroke(
+                item.accentColor.opacity(0.9),
+                lineWidth: 2
+            )
+        )
         .shadow(color: item.accentColor.opacity(0.35), radius: 8, x: 0, y: 0)
     }
 
@@ -173,7 +193,9 @@ private struct GeneratedSupportCardResult: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(
                     LinearGradient(
-                        colors: [item.accentColor.opacity(0.95), .blue.opacity(0.85)],
+                        colors: [
+                            item.accentColor.opacity(0.95), .blue.opacity(0.85),
+                        ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -260,9 +282,33 @@ private struct SummonResultBackground: View {
     SummonResultView(
         title: "Support Summon",
         results: [
-            SummonResultItem(title: "Kyro", subtitle: "Monster", rarity: "R", kind: .monster, imageName: "mon_kyro", accentColor: .blue, symbolId: "monster"),
-            SummonResultItem(title: "Kael", subtitle: "Tamer Support", rarity: "SSR", kind: .tamer, imageName: "tamer_kael", accentColor: .purple, symbolId: "support"),
-            SummonResultItem(title: "Support Karte", subtitle: "Bonuskarte", rarity: "SR", kind: .supportCard, imageName: nil, accentColor: .orange, symbolId: "cards")
+            SummonResultItem(
+                title: "Kael",
+                subtitle: "Tamer Support",
+                rarity: "SSR",
+                kind: .tamer,
+                imageName: "tamer_kael",
+                accentColor: .purple,
+                symbolId: "support"
+            ),
+            SummonResultItem(
+                title: "Kael",
+                subtitle: "Tamer Support",
+                rarity: "R",
+                kind: .tamer,
+                imageName: "tamer_kael",
+                accentColor: .blue,
+                symbolId: "support"
+            ),
+            SummonResultItem(
+                title: "Support Karte",
+                subtitle: "Bonuskarte",
+                rarity: "SR",
+                kind: .supportCard,
+                imageName: nil,
+                accentColor: .orange,
+                symbolId: "cards"
+            ),
         ],
         onClose: {}
     )

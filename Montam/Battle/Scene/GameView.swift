@@ -1,6 +1,6 @@
 //
 //  GameView.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 20.07.26.
 //
@@ -15,8 +15,11 @@ struct GameView: View {
     @Query private var saves: [GameSaveData]
     @Query private var ownedMonsters: [OwnedMonsterData]
     @Query private var ownedTamers: [OwnedTamerData]
-    private let monsterCatalog = JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-    private let progression = JSONDataLoader.load("battleConfig", as: GameProgressionData.self) ?? GameProgressionData()
+    private let monsterCatalog =
+        JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+    private let progression =
+        JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
+        ?? GameProgressionData()
 
     private let scene: GameScene = {
         let scene = GameScene()
@@ -57,24 +60,42 @@ struct GameView: View {
     private func runtimeSelectedMonsters() -> [RuntimeOwnedMonster] {
         ownedMonsters
             .filter(\.isSelected)
-            .map { RuntimeOwnedMonster(monsterId: $0.monsterId, level: $0.level, xp: $0.xp) }
+            .map {
+                RuntimeOwnedMonster(
+                    monsterId: $0.monsterId,
+                    level: $0.level,
+                    xp: $0.xp,
+                    imageName: $0.equippedImageName
+                )
+            }
     }
 
     private func runtimeSelectedTamers() -> [RuntimeOwnedTamer] {
         ownedTamers
             .filter(\.isSelected)
-            .map { RuntimeOwnedTamer(tamerId: $0.tamerId, level: $0.level, xp: $0.xp) }
+            .map {
+                RuntimeOwnedTamer(
+                    tamerId: $0.tamerId,
+                    level: $0.level,
+                    xp: $0.xp
+                )
+            }
     }
 
     private func levelUpIfNeeded(_ monster: OwnedMonsterData) {
-        while monster.level < progression.resolvedMaxLevel && monster.xp >= xpNeeded(for: monster.level) {
+        while monster.level < progression.resolvedMaxLevel
+            && monster.xp >= xpNeeded(for: monster.level)
+        {
             monster.xp -= xpNeeded(for: monster.level)
             monster.level += 1
         }
 
         if monster.level >= progression.resolvedMaxLevel {
             monster.level = progression.resolvedMaxLevel
-            monster.xp = min(monster.xp, xpNeeded(for: progression.resolvedMaxLevel))
+            monster.xp = min(
+                monster.xp,
+                xpNeeded(for: progression.resolvedMaxLevel)
+            )
         }
     }
 
@@ -92,11 +113,16 @@ struct GameView: View {
         save.playerXP = selected.first?.xp ?? save.playerXP
         save.playerMaxXP = xpNeeded(for: save.playerLevel)
         save.playerPower = selected.reduce(0) { total, owned in
-            guard let base = monsterCatalog.first(where: { $0.id == owned.monsterId }) else {
+            guard
+                let base = monsterCatalog.first(where: {
+                    $0.id == owned.monsterId
+                })
+            else {
                 return total
             }
 
-            return total + GameProgressionCalculator.power(for: base, level: owned.level)
+            return total
+                + GameProgressionCalculator.power(for: base, level: owned.level)
         }
     }
 }

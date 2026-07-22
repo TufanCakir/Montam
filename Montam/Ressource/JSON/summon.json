@@ -35,7 +35,8 @@
         "renderMode": "generated",
         "accentColor": "#35D875",
         "iconShape": "cards",
-        "description": "Erhalte dynamisch generierte Support-Karten für Kampfboni.",
+        "description":
+            "Erhalte dynamisch generierte Support-Karten für Kampfboni.",
         "singleCost": 1,
         "multiCost": 10,
         "guaranteedAfter": 40

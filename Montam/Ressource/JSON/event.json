@@ -4,25 +4,101 @@
         "category": "boss",
         "eventBackground": "beach_01",
         "title": "Kyro-Mauer",
-        "description": "Besiege Kyro und verdiene Belohnungen.",
+        "description": "Besiege Kyro und sammle Summon Tickets.",
         "enemyName": "kyro",
-        "rewardCurrency": "summon_ticket",
         "durationDays": 7,
-        "progress": "1/2",
+        "startDate": "2026-07-22",
+        "endDate": "2026-07-29",
+        "maxPlays": 3,
+        "resetIntervalHours": 24,
+        "battleXPReward": 45,
+        "rewards": [
+            {
+                "currency": "summon_ticket",
+                "amount": 2
+            },
+            {
+                "currency": "coins",
+                "amount": 500
+            }
+        ],
+        "progress": "1/3",
         "adProgress": null,
-        "timer": "57:21",
+        "timer": null,
         "locked": false
     },
     {
         "id": "event_hunt_01",
         "category": "hunt",
         "eventBackground": "generated_lava",
-        "title": "Jagd auf Kyro",
+        "title": "Kristall-Jagd",
         "description": "Besiege Kyro und sammle Kristalle.",
         "enemyName": "kyro",
-        "rewardCurrency": "crystal",
+        "durationDays": 14,
+        "startDate": "2026-07-22",
+        "endDate": "2026-07-29",
+        "maxPlays": 5,
+        "resetIntervalHours": 24,
+        "battleXPReward": 60,
+        "rewards": [
+            {
+                "currency": "crystals",
+                "amount": 35
+            },
+            {
+                "currency": "bits",
+                "amount": 50
+            }
+        ],
+        "progress": "0/5",
+        "adProgress": "0/2",
+        "timer": null,
+        "locked": false
+    },
+    {
+        "id": "event_hunt_02",
+        "category": "hunt",
+        "eventBackground": "beach_01",
+        "title": "Bit-Training",
+        "description": "Besiege Kyro und sammle Bits.",
+        "enemyName": "kyro",
         "durationDays": 7,
-        "progress": "0/2",
+        "startDate": "2026-07-22",
+        "endDate": "2026-07-29",
+        "maxPlays": 3,
+        "resetIntervalHours": 12,
+        "battleXPReward": 35,
+        "rewards": [
+            {
+                "currency": "bits",
+                "amount": 120
+            }
+        ],
+        "progress": "0/3",
+        "adProgress": "0/2",
+        "timer": null,
+        "locked": false
+    },
+    {
+        "id": "event_hunt_03",
+        "category": "hunt",
+        "eventBackground": "generated_lava",
+        "title": "Coin-Raid",
+        "description": "Besiege Kyro und sammle Coins.",
+        "enemyName": "kyro",
+        "durationDays": 14,
+        "startDate": "2026-07-22",
+        "endDate": "2026-07-29",
+        "maxPlays": null,
+        "resetIntervalHours": 24,
+        "battleXPReward": 50,
+        "rewards": [
+            {
+                "currency": "coins",
+                "amount": 1000
+            }
+        ],
+        "progress": null,
         "adProgress": "0/2",
         "timer": null,
         "locked": false

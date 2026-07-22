@@ -1,6 +1,8 @@
 //
 //  SummonViewModel.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Observation
@@ -22,15 +24,20 @@ final class SummonViewModel {
     var summonMessage: String?
 
     init() {
-        let loadedCategories = JSONDataLoader.load("summonCategory", as: [SummonCategoryData].self) ?? []
-        let loadedSummons = JSONDataLoader.load("summon", as: [SummonData].self) ?? []
+        let loadedCategories =
+            JSONDataLoader.load("summonCategory", as: [SummonCategoryData].self)
+            ?? []
+        let loadedSummons =
+            JSONDataLoader.load("summon", as: [SummonData].self) ?? []
 
         categories = loadedCategories
         summons = loadedSummons
-        summonPool = JSONDataLoader.load("summonPool", as: [SummonPoolData].self) ?? []
+        summonPool =
+            JSONDataLoader.load("summonPool", as: [SummonPoolData].self) ?? []
         monsters = JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
         tamers = JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
-        selectedCategoryId = loadedCategories.first?.id ?? loadedSummons.first?.category ?? ""
+        selectedCategoryId =
+            loadedCategories.first?.id ?? loadedSummons.first?.category ?? ""
     }
 
     var filteredSummons: [SummonData] {
@@ -39,12 +46,19 @@ final class SummonViewModel {
     }
 
     func moveCategory(by offset: Int) {
-        guard let currentIndex = categories.firstIndex(where: { $0.id == selectedCategoryId }) else {
+        guard
+            let currentIndex = categories.firstIndex(where: {
+                $0.id == selectedCategoryId
+            })
+        else {
             selectedCategoryId = categories.first?.id ?? selectedCategoryId
             return
         }
 
-        let nextIndex = min(max(currentIndex + offset, 0), max(categories.count - 1, 0))
+        let nextIndex = min(
+            max(currentIndex + offset, 0),
+            max(categories.count - 1, 0)
+        )
         selectedCategoryId = categories[nextIndex].id
     }
 
@@ -81,18 +95,23 @@ final class SummonViewModel {
         }
     }
 
-    private func makeResultItem(for summon: SummonData, index: Int, count: Int) -> SummonResultItem {
+    private func makeResultItem(for summon: SummonData, index: Int, count: Int)
+        -> SummonResultItem
+    {
         let accent = Color(hex: summon.accentColor ?? "") ?? .cyan
         let rarity = resultRarity(index: index, count: count)
 
-        if shouldSummonTamer(from: summon), let tamer = item(at: index, in: tamers) {
+        if let tamer = supportForResult(index: index) {
             return SummonResultItem(
                 title: tamer.name,
                 subtitle: "Tamer Support",
                 rarity: tamer.rarity ?? rarity,
                 kind: .tamer,
                 imageName: tamer.tamerName,
-                accentColor: rarityColor(tamer.rarity ?? rarity, fallback: accent),
+                accentColor: rarityColor(
+                    tamer.rarity ?? rarity,
+                    fallback: accent
+                ),
                 symbolId: summon.iconShape ?? "support"
             )
         }
@@ -109,18 +128,6 @@ final class SummonViewModel {
             )
         }
 
-        if let monster = monsterForResult(index: index) {
-            return SummonResultItem(
-                title: monster.name,
-                subtitle: "Monster",
-                rarity: monster.rarity ?? rarity,
-                kind: .monster,
-                imageName: monster.monsterName,
-                accentColor: rarityColor(monster.rarity ?? rarity, fallback: accent),
-                symbolId: summon.iconShape ?? "monster"
-            )
-        }
-
         return SummonResultItem(
             title: summon.title,
             subtitle: "Beschwörung",
@@ -132,18 +139,17 @@ final class SummonViewModel {
         )
     }
 
-    private func shouldSummonTamer(from summon: SummonData) -> Bool {
-        summon.iconShape == "support" || summon.bannerImage?.hasPrefix("tamer_") == true
-    }
-
     private func shouldSummonGeneratedCard(from summon: SummonData) -> Bool {
-        summon.iconShape == "cards" || summon.title.localizedCaseInsensitiveContains("karte")
+        summon.iconShape == "cards"
+            || summon.title.localizedCaseInsensitiveContains("karte")
     }
 
-    private func monsterForResult(index: Int) -> MonsterData? {
+    private func supportForResult(index: Int) -> TamerData? {
         let poolIds = summonPool.map(\.characterId)
-        let pooledMonsters = monsters.filter { poolIds.contains($0.monsterName) || poolIds.contains($0.id) }
-        let source = pooledMonsters.isEmpty ? monsters : pooledMonsters
+        let pooledTamers = tamers.filter {
+            poolIds.contains($0.tamerName) || poolIds.contains($0.id)
+        }
+        let source = pooledTamers.isEmpty ? tamers : pooledTamers
         return item(at: index, in: source)
     }
 

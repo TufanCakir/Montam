@@ -1,6 +1,6 @@
 //
 //  EventView.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 20.07.26.
 //
@@ -17,21 +17,6 @@ struct EventView: View {
     var body: some View {
         VStack(spacing: 0) {
             EventTitleBar()
-
-            HStack(spacing: 8) {
-                Text("Bis zum Zurücksetzen der Herausforderungsanzahl")
-                    .font(.system(size: 13, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.cyan.opacity(0.75))
-                Image(systemName: "clock.fill")
-                    .foregroundStyle(.yellow)
-                Text("08:10:07")
-                    .font(.system(size: 17, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.yellow)
-                Spacer()
-            }
-            .padding(.horizontal, 28)
-            .padding(.vertical, 12)
-            .background(Color(red: 0.0, green: 0.1, blue: 0.22))
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 22) {
@@ -71,7 +56,6 @@ private struct EventBattleView: View {
     @Query private var ownedMonsters: [OwnedMonsterData]
     @Query private var ownedTamers: [OwnedTamerData]
 
-    private let rewards = JSONDataLoader.load("eventReward", as: [EventRewardData].self)?.first
     private let scene: GameScene = {
         let scene = GameScene()
         scene.scaleMode = .resizeFill
@@ -103,12 +87,27 @@ private struct EventBattleView: View {
     private func configureScene() {
         scene.configureEvent(event)
         scene.configure(
-            selectedMonsters: ownedMonsters
+            selectedMonsters:
+                ownedMonsters
                 .filter(\.isSelected)
-                .map { RuntimeOwnedMonster(monsterId: $0.monsterId, level: $0.level, xp: $0.xp) },
-            selectedTamers: ownedTamers
+                .map {
+                    RuntimeOwnedMonster(
+                        monsterId: $0.monsterId,
+                        level: $0.level,
+                        xp: $0.xp,
+                        imageName: $0.equippedImageName
+                    )
+                },
+            selectedTamers:
+                ownedTamers
                 .filter(\.isSelected)
-                .map { RuntimeOwnedTamer(tamerId: $0.tamerId, level: $0.level, xp: $0.xp) }
+                .map {
+                    RuntimeOwnedTamer(
+                        tamerId: $0.tamerId,
+                        level: $0.level,
+                        xp: $0.xp
+                    )
+                }
         )
         scene.onBossBattleWon = {
             applyRewards()
@@ -119,13 +118,11 @@ private struct EventBattleView: View {
     }
 
     private func applyRewards() {
-        guard let save = saves.first else {
-            return
-        }
-
-        save.coins += rewards?.eventCoins ?? 0
-        save.crystals += rewards?.eventCrystals ?? 0
-        try? modelContext.save()
+        EventRewardService.applyRewards(
+            from: event,
+            saves: saves,
+            modelContext: modelContext
+        )
     }
 }
 
@@ -143,7 +140,11 @@ private struct EventTitleBar: View {
         }
         .frame(height: 56)
         .background(
-            LinearGradient(colors: [.cyan, .cyan.opacity(0.45), .cyan], startPoint: .leading, endPoint: .trailing)
+            LinearGradient(
+                colors: [.cyan, .cyan.opacity(0.45), .cyan],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
         )
     }
 }
@@ -156,8 +157,15 @@ private struct DungeonEventCard: View {
             rewardBadge
 
             ZStack(alignment: .trailing) {
-                LinearGradient(colors: [item.accent.opacity(0.65), .blue.opacity(0.62), .black.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
-                    .overlay(EventCardPattern().opacity(0.17))
+                LinearGradient(
+                    colors: [
+                        item.accent.opacity(0.65), .blue.opacity(0.62),
+                        .black.opacity(0.5),
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .overlay(EventCardPattern().opacity(0.17))
 
                 Image(item.enemyAsset)
                     .resizable()
@@ -168,7 +176,13 @@ private struct DungeonEventCard: View {
 
                 VStack(alignment: .leading, spacing: 7) {
                     Text(item.title)
-                        .font(.system(size: item.title.contains("\n") ? 23 : 27, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(
+                                size: item.title.contains("\n") ? 23 : 27,
+                                weight: .heavy,
+                                design: .rounded
+                            )
+                        )
                         .italic()
                         .foregroundStyle(.white)
                         .lineLimit(2)
@@ -176,7 +190,9 @@ private struct DungeonEventCard: View {
                         .shadow(color: .black, radius: 2, x: 2, y: 2)
 
                     Text(item.subtitle)
-                        .font(.system(size: 17, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 17, weight: .heavy, design: .rounded)
+                        )
                         .italic()
                         .foregroundStyle(.cyan)
                         .lineLimit(2)
@@ -185,18 +201,31 @@ private struct DungeonEventCard: View {
 
                     Spacer()
 
-                    HStack(spacing: 12) {
-                        if let timer = item.timer {
-                            Text(timer)
-                                .font(.system(size: 18, weight: .heavy, design: .rounded))
-                                .foregroundStyle(.green)
-                                .shadow(color: .black, radius: 1)
-                        }
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(item.dateText)
+                            .font(
+                                .system(
+                                    size: 12,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(.green)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .shadow(color: .black, radius: 1)
 
-                        EventCounter(iconId: item.rewardCurrency, text: item.progress, color: item.accent)
+                        HStack(spacing: 8) {
+                            EventLimitPill(text: item.playLimitText)
+                            EventRewardPills(rewards: item.rewards)
 
-                        if let adProgress = item.adProgress {
-                            EventCounter(iconId: "summon_ticket", text: adProgress, color: .white)
+                            if let adProgress = item.adProgress {
+                                EventCounter(
+                                    iconId: "summon_ticket",
+                                    text: adProgress,
+                                    color: .white
+                                )
+                            }
                         }
                     }
                 }
@@ -208,13 +237,20 @@ private struct DungeonEventCard: View {
                 if item.locked {
                     Color.black.opacity(0.55)
                     Text("Bald verfügbar")
-                        .font(.system(size: 24, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 24, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.white)
                         .shadow(color: .black, radius: 2)
                 }
             }
             .clipShape(EventSlantedCardShape())
-            .overlay(EventSlantedCardShape().stroke(.blue.opacity(0.95), lineWidth: 3))
+            .overlay(
+                EventSlantedCardShape().stroke(
+                    .blue.opacity(0.95),
+                    lineWidth: 3
+                )
+            )
         }
         .frame(height: item.category == "boss" ? 214 : 142)
         .shadow(color: .blue.opacity(0.55), radius: 0, x: 12, y: 12)
@@ -229,10 +265,14 @@ private struct DungeonEventCard: View {
                         .stroke(.cyan.opacity(0.95), lineWidth: 2)
                 )
 
-            GameResourceIcon(id: item.rewardCurrency, fallbackImage: nil)
-                .frame(width: 46, height: 46)
-                .shadow(color: .white.opacity(0.75), radius: 1)
-                .rotationEffect(.degrees(-12))
+            VStack(spacing: -8) {
+                ForEach(item.rewards.prefix(3)) { reward in
+                    GameResourceIcon(id: reward.currency, fallbackImage: nil)
+                        .frame(width: 34, height: 34)
+                        .shadow(color: .white.opacity(0.75), radius: 1)
+                        .rotationEffect(.degrees(-12))
+                }
+            }
         }
         .frame(width: 76)
         .padding(.vertical, 2)
@@ -258,7 +298,65 @@ private struct EventCounter: View {
         .frame(height: 32)
         .background(.blue.opacity(0.68))
         .clipShape(RoundedRectangle(cornerRadius: 4))
-        .overlay(RoundedRectangle(cornerRadius: 4).stroke(.cyan.opacity(0.5), lineWidth: 1))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4).stroke(
+                .cyan.opacity(0.5),
+                lineWidth: 1
+            )
+        )
+    }
+}
+
+private struct EventLimitPill: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 12, weight: .heavy, design: .rounded))
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.65)
+            .padding(.horizontal, 8)
+            .frame(height: 28)
+            .background(.black.opacity(0.28))
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay(
+                RoundedRectangle(cornerRadius: 4).stroke(
+                    .cyan.opacity(0.4),
+                    lineWidth: 1
+                )
+            )
+    }
+}
+
+private struct EventRewardPills: View {
+    let rewards: [EventRewardItem]
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(rewards.prefix(3)) { reward in
+                HStack(spacing: 4) {
+                    GameResourceIcon(id: reward.currency, fallbackImage: nil)
+                        .frame(width: 20, height: 20)
+                    Text(GameNumberFormatter.compact(reward.amount))
+                        .font(
+                            .system(size: 13, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                }
+                .padding(.horizontal, 7)
+                .frame(height: 28)
+                .background(.blue.opacity(0.68))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4).stroke(
+                        .cyan.opacity(0.5),
+                        lineWidth: 1
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -273,7 +371,10 @@ private struct EventCardPattern: View {
         HStack(spacing: 12) {
             ForEach(0..<28, id: \.self) { index in
                 Rectangle()
-                    .fill(index.isMultiple(of: 2) ? .white.opacity(0.35) : .black.opacity(0.24))
+                    .fill(
+                        index.isMultiple(of: 2)
+                            ? .white.opacity(0.35) : .black.opacity(0.24)
+                    )
                     .frame(width: 9, height: 130)
                     .rotationEffect(.degrees(18))
             }
@@ -287,10 +388,16 @@ private struct EventSlantedCardShape: Shape {
             path.move(to: CGPoint(x: 10, y: 0))
             path.addLine(to: CGPoint(x: rect.maxX - 16, y: 0))
             path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY * 0.82))
-            path.addQuadCurve(to: CGPoint(x: rect.maxX - 38, y: rect.maxY), control: CGPoint(x: rect.maxX - 8, y: rect.maxY))
+            path.addQuadCurve(
+                to: CGPoint(x: rect.maxX - 38, y: rect.maxY),
+                control: CGPoint(x: rect.maxX - 8, y: rect.maxY)
+            )
             path.addLine(to: CGPoint(x: 0, y: rect.maxY))
             path.addLine(to: CGPoint(x: 0, y: 14))
-            path.addQuadCurve(to: CGPoint(x: 10, y: 0), control: CGPoint(x: 0, y: 2))
+            path.addQuadCurve(
+                to: CGPoint(x: 10, y: 0),
+                control: CGPoint(x: 0, y: 2)
+            )
             path.closeSubpath()
         }
     }
@@ -302,7 +409,9 @@ private struct DungeonEventItem: Identifiable {
     let category: String
     let title: String
     let subtitle: String
-    let rewardCurrency: String
+    let rewards: [EventRewardItem]
+    let dateText: String
+    let playLimitText: String
     let enemyAsset: String
     let accent: Color
     let progress: String
@@ -324,15 +433,49 @@ private enum EventViewDataSource {
                 category: event.category,
                 title: event.title,
                 subtitle: event.description,
-                rewardCurrency: event.rewardCurrency,
+                rewards: event.rewards,
+                dateText: dateText(for: event),
+                playLimitText: playLimitText(for: event),
                 enemyAsset: enemy?.enemyName ?? event.enemyName,
                 accent: accent(for: event.category),
-                progress: event.progress ?? "0/0",
+                progress: event.progress ?? "0/\(event.maxPlays ?? 0)",
                 adProgress: event.adProgress,
                 timer: event.timer,
                 locked: event.locked ?? false
             )
         }
+    }
+
+    private static func playLimitText(for event: EventData) -> String {
+        if let maxPlays = event.maxPlays {
+            return "\(event.progress ?? "0/\(maxPlays)") Versuche"
+        }
+
+        return "Mehrfach"
+    }
+
+    private static func dateText(for event: EventData) -> String {
+        if let startDate = event.startDate, let endDate = event.endDate {
+            return
+                "\(formatGermanDate(startDate)) - \(formatGermanDate(endDate))"
+        }
+
+        return "\(event.durationDays) Tage"
+    }
+
+    private static func formatGermanDate(_ value: String) -> String {
+        let input = DateFormatter()
+        input.locale = Locale(identifier: "de_DE")
+        input.dateFormat = "yyyy-MM-dd"
+
+        guard let date = input.date(from: value) else {
+            return value
+        }
+
+        let output = DateFormatter()
+        output.locale = Locale(identifier: "de_DE")
+        output.dateFormat = "dd.MM.yyyy"
+        return output.string(from: date)
     }
 
     private static func accent(for category: String) -> Color {
@@ -344,8 +487,16 @@ private enum EventViewDataSource {
         }
     }
 
-    private static func loadJSON<T: Decodable>(_ fileName: String, as type: T.Type) -> T? {
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
+    private static func loadJSON<T: Decodable>(
+        _ fileName: String,
+        as type: T.Type
+    ) -> T? {
+        guard
+            let url = Bundle.main.url(
+                forResource: fileName,
+                withExtension: "json"
+            )
+        else {
             return nil
         }
 

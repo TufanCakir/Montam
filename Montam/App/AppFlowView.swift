@@ -1,6 +1,6 @@
 //
 //  AppFlowView.swift
-//  Monster Transorfmieren
+//  Montam
 //
 //  Created by Tufan Cakir on 21.07.26.
 //
@@ -22,7 +22,9 @@ struct AppFlowView: View {
             } onDataDeleted: {
                 resetToStart()
             }
-        } else if didFinishOnboarding || saves.first?.didCompleteOnboarding == true {
+        } else if didFinishOnboarding
+            || saves.first?.didCompleteOnboarding == true
+        {
             RootView {
                 resetToStart()
             }
@@ -48,10 +50,15 @@ struct OnboardingView: View {
     @Query private var ownedTamers: [OwnedTamerData]
     @State private var message: String?
 
-    private let monsters = JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-    private let tamers = JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
-    private let starterGift = JSONDataLoader.load("gift", as: [GiftData].self)?.first
-    private let progression = JSONDataLoader.load("battleConfig", as: OnboardingProgressionData.self) ?? OnboardingProgressionData()
+    private let monsters =
+        JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+    private let tamers =
+        JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
+    private let starterGift = JSONDataLoader.load("gift", as: [GiftData].self)?
+        .first
+    private let progression =
+        JSONDataLoader.load("battleConfig", as: OnboardingProgressionData.self)
+        ?? OnboardingProgressionData()
 
     var body: some View {
         VStack(spacing: 22) {
@@ -60,13 +67,18 @@ struct OnboardingView: View {
                 .foregroundStyle(.white)
                 .shadow(color: .black, radius: 2, x: 1, y: 2)
 
-            Text("Du startest mit Level 1. Tamer sind Supporter und geben deinem Monster Boni.")
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(.cyan)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+            Text(
+                "Du startest mit Level 1. Tamer sind Supporter und geben deinem Monster Boni."
+            )
+            .font(.system(size: 16, weight: .bold, design: .rounded))
+            .foregroundStyle(.cyan)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 32)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+            LazyVGrid(
+                columns: [GridItem(.flexible()), GridItem(.flexible())],
+                spacing: 16
+            ) {
                 ForEach(monsters, id: \.id) { monster in
                     Button {
                         startGame(with: monster)
@@ -78,18 +90,35 @@ struct OnboardingView: View {
                                 .frame(height: 150)
 
                             Text(monster.name)
-                                .font(.system(size: 22, weight: .heavy, design: .rounded))
+                                .font(
+                                    .system(
+                                        size: 22,
+                                        weight: .heavy,
+                                        design: .rounded
+                                    )
+                                )
                                 .foregroundStyle(.white)
 
                             Text("Lv. 1")
-                                .font(.system(size: 16, weight: .heavy, design: .rounded))
+                                .font(
+                                    .system(
+                                        size: 16,
+                                        weight: .heavy,
+                                        design: .rounded
+                                    )
+                                )
                                 .foregroundStyle(.green)
                         }
                         .padding(14)
                         .frame(maxWidth: .infinity)
                         .background(.blue.opacity(0.45))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(.cyan.opacity(0.75), lineWidth: 2))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12).stroke(
+                                .cyan.opacity(0.75),
+                                lineWidth: 2
+                            )
+                        )
                         .contentShape(RoundedRectangle(cornerRadius: 12))
                     }
                     .buttonStyle(.plain)
@@ -125,9 +154,13 @@ struct OnboardingView: View {
             ownedMonster.isSelected = false
         }
 
-        let selectedMonster = ownedMonsters.first { $0.monsterId == monster.id } ?? OwnedMonsterData(monsterId: monster.id)
+        let selectedMonster =
+            ownedMonsters.first { $0.monsterId == monster.id }
+            ?? OwnedMonsterData(monsterId: monster.id)
         selectedMonster.level = max(selectedMonster.level, 1)
         selectedMonster.isSelected = true
+        selectedMonster.equippedImageName =
+            selectedMonster.equippedImageName ?? monster.monsterName
 
         if selectedMonster.modelContext == nil {
             modelContext.insert(selectedMonster)
@@ -138,7 +171,9 @@ struct OnboardingView: View {
                 ownedTamer.isSelected = false
             }
 
-            let support = ownedTamers.first { $0.tamerId == firstTamer.id } ?? OwnedTamerData(tamerId: firstTamer.id)
+            let support =
+                ownedTamers.first { $0.tamerId == firstTamer.id }
+                ?? OwnedTamerData(tamerId: firstTamer.id)
             support.level = max(support.level, 1)
             support.isSelected = true
 
@@ -180,8 +215,10 @@ struct MonsterSelectView: View {
     @Query private var ownedMonsters: [OwnedMonsterData]
     @Query private var ownedTamers: [OwnedTamerData]
 
-    private let monsters = JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-    private let tamers = JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
+    private let monsters =
+        JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+    private let tamers =
+        JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
 
     var body: some View {
         ScrollView {
@@ -190,16 +227,21 @@ struct MonsterSelectView: View {
                     .font(.system(size: 30, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
 
-                Text("Auswahl gilt für den nächsten Kampf. Im laufenden Kampf wird nicht gewechselt.")
-                    .font(.system(size: 15, weight: .bold, design: .rounded))
-                    .foregroundStyle(.cyan)
+                Text(
+                    "Auswahl gilt für den nächsten Kampf. Im laufenden Kampf wird nicht gewechselt."
+                )
+                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .foregroundStyle(.cyan)
 
                 ForEach(monsters, id: \.id) { monster in
-                    let owned = ownedMonsters.first { $0.monsterId == monster.id }
+                    let owned = ownedMonsters.first {
+                        $0.monsterId == monster.id
+                    }
                     SelectionRow(
                         imageName: monster.monsterName,
                         title: monster.name,
-                        subtitle: owned.map { "Lv. \($0.level) · XP \($0.xp)" } ?? "Noch nicht besitzt",
+                        subtitle: owned.map { "Lv. \($0.level) · XP \($0.xp)" }
+                            ?? "Noch nicht besitzt",
                         isSelected: owned?.isSelected == true,
                         isEnabled: owned != nil
                     ) {
@@ -217,7 +259,9 @@ struct MonsterSelectView: View {
                     SelectionRow(
                         imageName: tamer.tamerName,
                         title: tamer.name,
-                        subtitle: owned.map { "Lv. \($0.level) · Support aktiv" } ?? "Noch nicht besitzt",
+                        subtitle: owned.map {
+                            "Lv. \($0.level) · Support aktiv"
+                        } ?? "Noch nicht besitzt",
                         isSelected: owned?.isSelected == true,
                         isEnabled: owned != nil
                     ) {
@@ -282,10 +326,14 @@ private struct SelectionRow: View {
 
                 VStack(alignment: .leading, spacing: 5) {
                     Text(title)
-                        .font(.system(size: 21, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 21, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.white)
                     Text(subtitle)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(
+                            .system(size: 14, weight: .bold, design: .rounded)
+                        )
                         .foregroundStyle(isEnabled ? .cyan : .gray)
                 }
 
@@ -303,7 +351,12 @@ private struct SelectionRow: View {
             .padding(12)
             .background(.blue.opacity(isSelected ? 0.68 : 0.36))
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(isSelected ? .yellow : .cyan.opacity(0.45), lineWidth: 2))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12).stroke(
+                    isSelected ? .yellow : .cyan.opacity(0.45),
+                    lineWidth: 2
+                )
+            )
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)

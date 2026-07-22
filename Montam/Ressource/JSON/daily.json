@@ -2,21 +2,29 @@
     {
         "day": 1,
         "coins": 500,
-        "crystals": 50
+        "crystals": 50,
+        "bits": 0,
+        "summonTickets": 0
     },
     {
         "day": 2,
         "coins": 700,
-        "crystals": 60
+        "crystals": 60,
+        "bits": 25,
+        "summonTickets": 0
     },
     {
         "day": 3,
         "coins": 900,
-        "crystals": 70
+        "crystals": 70,
+        "bits": 50,
+        "summonTickets": 1
     },
     {
         "day": 7,
         "coins": 2000,
-        "crystals": 150
+        "crystals": 150,
+        "bits": 150,
+        "summonTickets": 2
     }
 ]

@@ -1,6 +1,8 @@
 //
 //  TeamView.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SwiftData
@@ -37,8 +39,11 @@ struct TeamView: View {
         case .partner:
             PartnerTeamContent(
                 rows: viewModel.monsterRows(ownedMonsters: ownedMonsters),
-                evolution: viewModel.availableEvolution(ownedMonsters: ownedMonsters),
+                evolution: viewModel.availableEvolution(
+                    ownedMonsters: ownedMonsters
+                ),
                 onSelect: selectMonster,
+                onEquipAppearance: equipAppearance,
                 onEvolve: evolveActiveMonster
             )
         case .support:
@@ -47,9 +52,16 @@ struct TeamView: View {
                 onSelect: selectTamer
             )
         case .kamerad:
-            CompactTeamInfo(title: "Kamerad", message: "Vorbereitung läuft. Neue Kameraden erscheinen bald.")
+            CompactTeamInfo(
+                title: "Kamerad",
+                message: "Vorbereitung läuft. Neue Kameraden erscheinen bald."
+            )
         case .spSupport:
-            CompactTeamInfo(title: "SP-Support", message: "Vorbereitung läuft. Neue Support-Optionen erscheinen bald.")
+            CompactTeamInfo(
+                title: "SP-Support",
+                message:
+                    "Vorbereitung läuft. Neue Support-Optionen erscheinen bald."
+            )
         }
     }
 
@@ -72,6 +84,22 @@ struct TeamView: View {
     private func evolveActiveMonster(_ evolution: EvolutionData) {
         TeamInventoryService.evolveActiveMonster(
             evolution,
+            ownedMonsters: ownedMonsters,
+            modelContext: modelContext
+        )
+    }
+
+    private func equipAppearance(
+        _ appearance: TeamAppearanceRow,
+        monsterId: String
+    ) {
+        guard appearance.isUnlocked else {
+            return
+        }
+
+        TeamInventoryService.equipAppearance(
+            imageName: appearance.imageName,
+            monsterId: monsterId,
             ownedMonsters: ownedMonsters,
             modelContext: modelContext
         )

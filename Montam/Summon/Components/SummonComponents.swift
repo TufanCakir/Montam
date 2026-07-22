@@ -1,6 +1,8 @@
 //
 //  SummonComponents.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import SwiftUI
@@ -42,15 +44,32 @@ struct SummonCategoryPicker: View {
                         selectedCategoryId = category.id
                     } label: {
                         Text(category.title)
-                            .font(.system(size: 16, weight: .heavy, design: .rounded))
-                            .foregroundStyle(selectedCategoryId == category.id ? .black : .white)
+                            .font(
+                                .system(
+                                    size: 16,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(
+                                selectedCategoryId == category.id
+                                    ? .black : .white
+                            )
                             .lineLimit(1)
                             .minimumScaleFactor(0.72)
                             .padding(.horizontal, 18)
                             .frame(height: 34)
-                            .background(selectedCategoryId == category.id ? Color.yellow : Color.blue.opacity(0.78))
+                            .background(
+                                selectedCategoryId == category.id
+                                    ? Color.yellow : Color.blue.opacity(0.78)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(.black.opacity(0.6), lineWidth: 1.5))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8).stroke(
+                                    .black.opacity(0.6),
+                                    lineWidth: 1.5
+                                )
+                            )
                     }
                     .buttonStyle(.plain)
                 }
@@ -115,7 +134,9 @@ struct SummonActionButton: View {
                     GameResourceIcon(id: currency, fallbackImage: nil)
                         .frame(width: 24, height: 24)
                     Text("\(cost)")
-                        .font(.system(size: 19, weight: .black, design: .rounded))
+                        .font(
+                            .system(size: 19, weight: .black, design: .rounded)
+                        )
                 }
 
                 Text(count == 1 ? "1x beschwören" : "10x beschwören")
@@ -129,7 +150,12 @@ struct SummonActionButton: View {
             .frame(height: 58)
             .background(count == 10 ? Color.yellow : Color.cyan)
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(.black.opacity(0.78), lineWidth: 2))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10).stroke(
+                    .black.opacity(0.78),
+                    lineWidth: 2
+                )
+            )
             .shadow(color: .black.opacity(0.25), radius: 0, x: 2, y: 4)
         }
         .buttonStyle(.plain)
@@ -172,14 +198,18 @@ struct SummonLargeBannerCard: View {
             HStack(alignment: .center, spacing: 10) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(summon.title)
-                        .font(.system(size: 23, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 23, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.white)
                         .lineLimit(1)
                         .minimumScaleFactor(0.58)
                         .shadow(color: .black, radius: 2, x: 1, y: 2)
 
                     Text(summon.description ?? "")
-                        .font(.system(size: 13, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 13, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.cyan)
                         .lineLimit(2)
                         .minimumScaleFactor(0.72)
@@ -202,8 +232,11 @@ struct SummonLargeBannerCard: View {
                     .font(.system(size: 16, weight: .heavy, design: .rounded))
                     .foregroundStyle(.cyan)
 
-                ProgressView(value: 0, total: Double(max(summon.guaranteedAfter ?? 1, 1)))
-                    .tint(.green)
+                ProgressView(
+                    value: 0,
+                    total: Double(max(summon.guaranteedAfter ?? 1, 1))
+                )
+                .tint(.green)
 
                 Text("0/\(summon.guaranteedAfter ?? 0)")
                     .font(.system(size: 15, weight: .heavy, design: .rounded))
@@ -212,19 +245,32 @@ struct SummonLargeBannerCard: View {
             .padding(10)
             .background(Color.blue.opacity(0.42))
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(.cyan.opacity(0.55), lineWidth: 2))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8).stroke(
+                    .cyan.opacity(0.55),
+                    lineWidth: 2
+                )
+            )
         }
         .padding(12)
         .frame(maxWidth: .infinity)
         .background(
             LinearGradient(
-                colors: [.blue.opacity(0.58), .cyan.opacity(0.28), .white.opacity(0.12)],
+                colors: [
+                    .blue.opacity(0.58), .cyan.opacity(0.28),
+                    .white.opacity(0.12),
+                ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
         .clipShape(RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(.cyan.opacity(0.62), lineWidth: 2))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14).stroke(
+                .cyan.opacity(0.62),
+                lineWidth: 2
+            )
+        )
     }
 }
 
@@ -232,7 +278,9 @@ struct SummonBannerArtwork: View {
     let summon: SummonData
 
     var body: some View {
-        if summon.renderMode != "generated", let imageName = summon.bannerImage, !imageName.isEmpty {
+        if summon.renderMode != "generated", let imageName = summon.bannerImage,
+            !imageName.isEmpty
+        {
             Image(imageName)
                 .resizable()
                 .scaledToFit()
@@ -266,7 +314,12 @@ struct SummonBannerArtwork: View {
                 )
             )
             .frame(width: index == 1 ? 98 : 72, height: index == 1 ? 138 : 108)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(.white.opacity(0.75), lineWidth: 2))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10).stroke(
+                    .white.opacity(0.75),
+                    lineWidth: 2
+                )
+            )
             .overlay {
                 generatedSymbol
                     .foregroundStyle(.white)
@@ -280,8 +333,10 @@ struct SummonBannerArtwork: View {
         switch summon.iconShape {
         case "cards":
             VStack(spacing: -28) {
-                RoundedRectangle(cornerRadius: 4).stroke(lineWidth: 5).rotationEffect(.degrees(-14))
-                RoundedRectangle(cornerRadius: 4).stroke(lineWidth: 5).rotationEffect(.degrees(8))
+                RoundedRectangle(cornerRadius: 4).stroke(lineWidth: 5)
+                    .rotationEffect(.degrees(-14))
+                RoundedRectangle(cornerRadius: 4).stroke(lineWidth: 5)
+                    .rotationEffect(.degrees(8))
             }
         case "ticket":
             GameResourceIcon(id: summon.currency, fallbackImage: nil)

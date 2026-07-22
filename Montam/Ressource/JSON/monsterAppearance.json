@@ -1,0 +1,18 @@
+[
+    {
+        "id": "kyro_default",
+        "monsterId": "kyro",
+        "title": "Kyro",
+        "imageName": "mon_kyro",
+        "requiredLevel": 1,
+        "isDefault": true
+    },
+    {
+        "id": "kyro_prime_preview",
+        "monsterId": "kyro_plus",
+        "title": "Kyro Prime",
+        "imageName": "mon_kyro",
+        "requiredLevel": 20,
+        "isDefault": true
+    }
+]

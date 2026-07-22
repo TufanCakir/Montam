@@ -1,8 +1,12 @@
+//
+//  ShopComponents.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 import SwiftData
 import SwiftUI
-
-//  ShopComponents.swift
-//  Monster Transorfmieren
 
 enum ShopSection: CaseIterable, Identifiable {
     case pass
@@ -58,7 +62,11 @@ struct ShopTitleBar: View {
             .frame(maxWidth: .infinity)
             .frame(height: 56)
             .background(
-                LinearGradient(colors: [.cyan, .cyan.opacity(0.4), .cyan], startPoint: .leading, endPoint: .trailing)
+                LinearGradient(
+                    colors: [.cyan, .cyan.opacity(0.4), .cyan],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
             )
     }
 }
@@ -69,8 +77,14 @@ struct ShopWalletFilterBar: View {
 
     var body: some View {
         HStack {
-            ShopWalletValue(image: "icon_crystal", text: formatNumber(saves.first?.crystals ?? 0))
-            ShopWalletValue(image: "icon_coin", text: formatNumber(saves.first?.coins ?? 0))
+            ShopWalletValue(
+                image: "icon_crystal",
+                text: formatNumber(saves.first?.crystals ?? 0)
+            )
+            ShopWalletValue(
+                image: "icon_coin",
+                text: formatNumber(saves.first?.coins ?? 0)
+            )
 
             Spacer()
 
@@ -83,7 +97,9 @@ struct ShopWalletFilterBar: View {
             } label: {
                 HStack(spacing: 14) {
                     Text(selectedSection.title)
-                        .font(.system(size: 20, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 20, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.white)
                         .lineLimit(1)
                         .minimumScaleFactor(0.68)
@@ -146,7 +162,9 @@ struct ShopSideCategories: View {
                     Image(systemName: entry.1)
                         .font(.system(size: 24, weight: .heavy))
                     Text(entry.0)
-                        .font(.system(size: 12, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 12, weight: .heavy, design: .rounded)
+                        )
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                         .minimumScaleFactor(0.75)
@@ -155,7 +173,12 @@ struct ShopSideCategories: View {
                 .frame(width: 58, height: 118)
                 .background(Color.blue.opacity(0.74))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                .overlay(RoundedRectangle(cornerRadius: 10).stroke(.black.opacity(0.28), lineWidth: 1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10).stroke(
+                        .black.opacity(0.28),
+                        lineWidth: 1
+                    )
+                )
             }
         }
         .frame(width: entries.isEmpty ? 0 : 58)
@@ -172,7 +195,12 @@ struct ShopProductGridContent: View {
         if products.isEmpty {
             ShopEmptyContent(title: emptyTitle)
         } else {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 112, maximum: 164), spacing: 12)], spacing: 14) {
+            LazyVGrid(
+                columns: [
+                    GridItem(.adaptive(minimum: 112, maximum: 164), spacing: 12)
+                ],
+                spacing: 14
+            ) {
                 ForEach(products) { product in
                     ShopProductCard(
                         product: product,
@@ -216,7 +244,12 @@ struct ShopPassContent: View {
                     .frame(height: 48)
                     .background(Color.blue.opacity(0.82))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(.cyan.opacity(0.8), lineWidth: 2))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8).stroke(
+                            .cyan.opacity(0.8),
+                            lineWidth: 2
+                        )
+                    )
             }
             .buttonStyle(.plain)
         }
@@ -238,70 +271,112 @@ private struct ShopProductCard: View {
             onBuy(product)
         } label: {
             ZStack {
-            VStack(spacing: 0) {
-                ZStack(alignment: .topTrailing) {
-                    LinearGradient(colors: [.blue.opacity(0.72), .cyan.opacity(0.72)], startPoint: .top, endPoint: .bottom)
+                VStack(spacing: 0) {
+                    ZStack(alignment: .topTrailing) {
+                        LinearGradient(
+                            colors: [.blue.opacity(0.72), .cyan.opacity(0.72)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                         .overlay(ShopCardPattern().opacity(0.14))
 
-                    ShopProductIcon(visual: productVisual(from: product))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        ShopProductIcon(visual: productVisual(from: product))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                    if let badge = product.badge {
-                        Text(badge)
-                            .font(.system(size: 13, weight: .heavy, design: .rounded))
-                            .foregroundStyle(.blue)
-                            .padding()
-                            .background(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 3))
-                            .overlay(RoundedRectangle(cornerRadius: 3).stroke(.blue, lineWidth: 1))
-                            .offset(x: 5, y: -8)
+                        if let badge = product.badge {
+                            Text(badge)
+                                .font(
+                                    .system(
+                                        size: 13,
+                                        weight: .heavy,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(.blue)
+                                .padding()
+                                .background(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 3))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 3).stroke(
+                                        .blue,
+                                        lineWidth: 1
+                                    )
+                                )
+                                .offset(x: 5, y: -8)
+                        }
+
+                        Text(product.subtitle ?? product.title)
+                            .font(
+                                .system(
+                                    size: 18,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.65)
+                            .shadow(color: .black, radius: 1, x: 1, y: 1)
+                            .frame(
+                                maxWidth: .infinity,
+                                maxHeight: .infinity,
+                                alignment: .bottom
+                            )
+                            .padding(.horizontal, 4)
+                            .padding(.bottom, 8)
                     }
+                    .frame(height: 142)
 
-                    Text(product.subtitle ?? product.title)
-                        .font(.system(size: 18, weight: .heavy, design: .rounded))
-                        .foregroundStyle(.white)
+                    HStack(spacing: 8) {
+                        Text(price)
+                            .font(
+                                .system(
+                                    size: 18,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
+                            )
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.55)
+                            .foregroundStyle(.black.opacity(0.78))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 38)
+                    .background(.white.opacity(0.95))
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6).stroke(
+                        .cyan.opacity(0.8),
+                        lineWidth: 3
+                    )
+                )
+
+                if soldOut {
+                    Color.black.opacity(0.58)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    Text("GEKAUFT")
+                        .font(
+                            .system(size: 25, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.65)
-                        .shadow(color: .black, radius: 1, x: 1, y: 1)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                        .padding(.horizontal, 4)
-                        .padding(.bottom, 8)
+                        .padding(16)
+                        .background(
+                            Circle().stroke(.white.opacity(0.75), lineWidth: 3)
+                        )
+                        .rotationEffect(.degrees(-16))
                 }
-                .frame(height: 142)
-
-                HStack(spacing: 8) {
-                    Text(price)
-                        .font(.system(size: 18, weight: .heavy, design: .rounded))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.55)
-                        .foregroundStyle(.black.opacity(0.78))
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 38)
-                .background(.white.opacity(0.95))
             }
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .overlay(RoundedRectangle(cornerRadius: 6).stroke(.cyan.opacity(0.8), lineWidth: 3))
-
-            if soldOut {
-                Color.black.opacity(0.58)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                Text("GEKAUFT")
-                    .font(.system(size: 25, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.85))
-                    .multilineTextAlignment(.center)
-                    .padding(16)
-                    .background(Circle().stroke(.white.opacity(0.75), lineWidth: 3))
-                    .rotationEffect(.degrees(-16))
-            }
-        }
-        .frame(height: 180)
+            .frame(height: 180)
         }
         .buttonStyle(.plain)
     }
 
-    private func productVisual(from product: ShopProductData) -> ShopProductVisual {
+    private func productVisual(from product: ShopProductData)
+        -> ShopProductVisual
+    {
         switch product.visual {
         case "crystals":
             .diamonds
@@ -328,10 +403,13 @@ private struct ShopProductIcon: View {
             case .diamonds:
                 HStack(spacing: -12) {
                     ForEach(0..<4, id: \.self) { index in
-                        GameResourceIcon(id: "crystal", fallbackImage: "icon_crystal")
-                            .frame(width: 48, height: 48)
-                            .rotationEffect(.degrees(Double(index * 12 - 16)))
-                            .offset(y: CGFloat(index % 2 * 12))
+                        GameResourceIcon(
+                            id: "crystal",
+                            fallbackImage: "icon_crystal"
+                        )
+                        .frame(width: 48, height: 48)
+                        .rotationEffect(.degrees(Double(index * 12 - 16)))
+                        .offset(y: CGFloat(index % 2 * 12))
                     }
                 }
             case .emeralds:
@@ -346,9 +424,12 @@ private struct ShopProductIcon: View {
             case .tickets:
                 HStack(spacing: -16) {
                     ForEach(0..<4, id: \.self) { index in
-                        GameResourceIcon(id: "summon_ticket", fallbackImage: "icon_ticket")
-                            .frame(width: 42, height: 72)
-                            .rotationEffect(.degrees(Double(index * 7 - 10)))
+                        GameResourceIcon(
+                            id: "summon_ticket",
+                            fallbackImage: "icon_ticket"
+                        )
+                        .frame(width: 42, height: 72)
+                        .rotationEffect(.degrees(Double(index * 7 - 10)))
                     }
                 }
             case .farm:
@@ -365,7 +446,11 @@ private struct ShopProductIcon: View {
                     .fill(color.gradient)
                     .frame(width: 120, height: 78)
                     .rotationEffect(.degrees(8))
-                    .overlay(Image(systemName: "percent").font(.system(size: 38, weight: .heavy)).foregroundStyle(.white.opacity(0.85)))
+                    .overlay(
+                        Image(systemName: "percent").font(
+                            .system(size: 38, weight: .heavy)
+                        ).foregroundStyle(.white.opacity(0.85))
+                    )
             case .normal(let icon, let color):
                 Image(systemName: icon)
                     .font(.system(size: 74, weight: .heavy))
@@ -399,7 +484,13 @@ private struct ShopPassCard: View {
                     HStack(spacing: 8) {
                         if let badge = product.badge {
                             Text(badge)
-                                .font(.system(size: 12, weight: .heavy, design: .rounded))
+                                .font(
+                                    .system(
+                                        size: 12,
+                                        weight: .heavy,
+                                        design: .rounded
+                                    )
+                                )
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
@@ -407,24 +498,33 @@ private struct ShopPassCard: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 3))
                         }
 
-                        Text(product.purchaseType == .nonConsumable ? "EINMALIG" : "KAUFBAR")
-                            .font(.system(size: 12, weight: .heavy, design: .rounded))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(.cyan)
-                            .clipShape(RoundedRectangle(cornerRadius: 3))
+                        Text(
+                            product.purchaseType == .nonConsumable
+                                ? "EINMALIG" : "KAUFBAR"
+                        )
+                        .font(
+                            .system(size: 12, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.cyan)
+                        .clipShape(RoundedRectangle(cornerRadius: 3))
                     }
 
                     Text(product.title)
-                        .font(.system(size: 22, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 22, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(color)
                         .lineLimit(2)
                         .minimumScaleFactor(0.72)
                         .shadow(color: .black, radius: 1, x: 1, y: 1)
 
                     Text("✦ \(product.subtitle ?? product.title)")
-                        .font(.system(size: 13, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 13, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.white)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 7)
@@ -437,26 +537,41 @@ private struct ShopPassCard: View {
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.indigo.opacity(0.34).overlay(ShopGridPattern().opacity(0.18)))
+                .background(
+                    Color.indigo.opacity(0.34).overlay(
+                        ShopGridPattern().opacity(0.18)
+                    )
+                )
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 HStack(spacing: 0) {
                     ZStack {
-                        LinearGradient(colors: [.blue, .cyan], startPoint: .top, endPoint: .bottom)
+                        LinearGradient(
+                            colors: [.blue, .cyan],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                         ShopProductIcon(visual: .pass(color))
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 150)
 
                     Text(purchased ? "GEKAUFT" : price)
-                            .font(.system(size: 22, weight: .heavy, design: .rounded))
-                            .foregroundStyle(purchased ? .green : .red)
-                            .frame(width: 112)
-                            .frame(maxHeight: .infinity)
-                            .background(.white)
+                        .font(
+                            .system(size: 22, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(purchased ? .green : .red)
+                        .frame(width: 112)
+                        .frame(maxHeight: .infinity)
+                        .background(.white)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(.cyan.opacity(0.85), lineWidth: 3))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8).stroke(
+                        .cyan.opacity(0.85),
+                        lineWidth: 3
+                    )
+                )
             }
             .frame(maxWidth: .infinity)
         }
@@ -543,13 +658,22 @@ struct ShopSectionTabs: View {
                         Capsule()
                             .fill(selectedSection == section ? .cyan : .clear)
                             .frame(width: 90, height: 7)
-                        Text(section.title.replacingOccurrences(of: "-", with: "-\n").replacingOccurrences(of: " ", with: "\n"))
-                            .font(.system(size: 20, weight: .heavy, design: .rounded))
-                            .foregroundStyle(selectedSection == section ? .white : .cyan)
-                            .multilineTextAlignment(.center)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.65)
-                            .frame(maxWidth: .infinity, minHeight: 62)
+                        Text(
+                            section.title.replacingOccurrences(
+                                of: "-",
+                                with: "-\n"
+                            ).replacingOccurrences(of: " ", with: "\n")
+                        )
+                        .font(
+                            .system(size: 20, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(
+                            selectedSection == section ? .white : .cyan
+                        )
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.65)
+                        .frame(maxWidth: .infinity, minHeight: 62)
                     }
                 }
                 .buttonStyle(.plain)

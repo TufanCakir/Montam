@@ -1,3 +1,10 @@
+//
+//  TradeComponents.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
+//
+
 import SwiftUI
 
 struct TradeTitleBar: View {
@@ -24,11 +31,30 @@ struct TradeWalletPanel: View {
     let save: GameSaveData?
 
     var body: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-            TradeWalletTile(iconId: "coin", title: "Coins", amount: save?.coins ?? 0)
-            TradeWalletTile(iconId: "crystal", title: "Kristalle", amount: save?.crystals ?? 0)
-            TradeWalletTile(iconId: "summon_ticket", title: "Tickets", amount: save?.summonTickets ?? 0)
-            TradeWalletTile(iconId: "bit", title: "Bits", amount: save?.bits ?? 0)
+        LazyVGrid(
+            columns: [GridItem(.flexible()), GridItem(.flexible())],
+            spacing: 8
+        ) {
+            TradeWalletTile(
+                iconId: "coin",
+                title: "Coins",
+                amount: save?.coins ?? 0
+            )
+            TradeWalletTile(
+                iconId: "crystal",
+                title: "Kristalle",
+                amount: save?.crystals ?? 0
+            )
+            TradeWalletTile(
+                iconId: "summon_ticket",
+                title: "Tickets",
+                amount: save?.summonTickets ?? 0
+            )
+            TradeWalletTile(
+                iconId: "bit",
+                title: "Bits",
+                amount: save?.bits ?? 0
+            )
         }
     }
 }
@@ -107,16 +133,27 @@ private struct TradeOfferRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
-                TradeCurrencyBadge(currency: offer.rewardCurrency, amount: offer.rewardAmount)
+                TradeCurrencyBadge(
+                    currency: offer.rewardCurrency,
+                    amount: offer.rewardAmount
+                )
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(offer.title)
-                        .font(.system(size: 17, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 17, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.white)
                         .lineLimit(1)
                     if let subtitle = offer.subtitle {
                         Text(subtitle)
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .font(
+                                .system(
+                                    size: 12,
+                                    weight: .bold,
+                                    design: .rounded
+                                )
+                            )
                             .foregroundStyle(.cyan.opacity(0.85))
                             .lineLimit(2)
                             .minimumScaleFactor(0.75)
@@ -126,10 +163,15 @@ private struct TradeOfferRow: View {
                 Spacer()
 
                 HStack(spacing: 5) {
-                    GameResourceIcon(id: GameCurrency.iconId(for: offer.costCurrency), fallbackImage: nil)
-                        .frame(width: 20, height: 20)
+                    GameResourceIcon(
+                        id: GameCurrency.iconId(for: offer.costCurrency),
+                        fallbackImage: nil
+                    )
+                    .frame(width: 20, height: 20)
                     Text(GameNumberFormatter.compact(offer.costAmount))
-                        .font(.system(size: 14, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 14, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(isEnabled ? .white : .gray)
                 }
                 .padding(.horizontal, 8)
@@ -143,7 +185,10 @@ private struct TradeOfferRow: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(isEnabled ? .cyan.opacity(0.55) : .gray.opacity(0.3), lineWidth: 1)
+                    .stroke(
+                        isEnabled ? .cyan.opacity(0.55) : .gray.opacity(0.3),
+                        lineWidth: 1
+                    )
             )
             .opacity(isEnabled ? 1 : 0.65)
         }
@@ -157,8 +202,11 @@ private struct TradeCurrencyBadge: View {
 
     var body: some View {
         VStack(spacing: 3) {
-            GameResourceIcon(id: GameCurrency.iconId(for: currency), fallbackImage: nil)
-                .frame(width: 34, height: 34)
+            GameResourceIcon(
+                id: GameCurrency.iconId(for: currency),
+                fallbackImage: nil
+            )
+            .frame(width: 34, height: 34)
             Text("+\(GameNumberFormatter.compact(amount))")
                 .font(.system(size: 11, weight: .heavy, design: .rounded))
                 .foregroundStyle(.yellow)

@@ -1,8 +1,8 @@
 //
 //  GameSaveData.swift
-//  Monster Transorfmieren
+//  Montam
 //
-//  Created by Tufan Cakir on 21.07.26.
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Foundation
@@ -21,6 +21,9 @@ final class GameSaveData {
     var crystals: Int
     var summonTickets: Int
     var hasEventPass: Bool
+    var lastDailyClaimDate: Date?
+    var dailyLoginDay: Int
+    var claimedGiftIds: [String]
 
     init(
         createdAt: Date = .now,
@@ -33,7 +36,10 @@ final class GameSaveData {
         coins: Int = 0,
         crystals: Int = 0,
         summonTickets: Int = 0,
-        hasEventPass: Bool = false
+        hasEventPass: Bool = false,
+        lastDailyClaimDate: Date? = nil,
+        dailyLoginDay: Int = 0,
+        claimedGiftIds: [String] = []
     ) {
         self.createdAt = createdAt
         self.didCompleteOnboarding = didCompleteOnboarding
@@ -46,6 +52,9 @@ final class GameSaveData {
         self.crystals = crystals
         self.summonTickets = summonTickets
         self.hasEventPass = hasEventPass
+        self.lastDailyClaimDate = lastDailyClaimDate
+        self.dailyLoginDay = dailyLoginDay
+        self.claimedGiftIds = claimedGiftIds
     }
 }
 
@@ -55,12 +64,20 @@ final class OwnedMonsterData {
     var level: Int
     var xp: Int
     var isSelected: Bool
+    var equippedImageName: String?
 
-    init(monsterId: String, level: Int = 1, xp: Int = 0, isSelected: Bool = false) {
+    init(
+        monsterId: String,
+        level: Int = 1,
+        xp: Int = 0,
+        isSelected: Bool = false,
+        equippedImageName: String? = nil
+    ) {
         self.monsterId = monsterId
         self.level = level
         self.xp = xp
         self.isSelected = isSelected
+        self.equippedImageName = equippedImageName
     }
 }
 
@@ -71,7 +88,8 @@ final class OwnedTamerData {
     var xp: Int
     var isSelected: Bool
 
-    init(tamerId: String, level: Int = 1, xp: Int = 0, isSelected: Bool = false) {
+    init(tamerId: String, level: Int = 1, xp: Int = 0, isSelected: Bool = false)
+    {
         self.tamerId = tamerId
         self.level = level
         self.xp = xp

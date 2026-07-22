@@ -1,6 +1,8 @@
 //
 //  BattleConfigData.swift
-//  Monster Transorfmieren
+//  Montam
+//
+//  Created by Tufan Cakir on 20.07.26.
 //
 
 import Foundation
@@ -40,6 +42,23 @@ struct BattleUnitConfig: Decodable {
     let slot: Int
     let hpMultiplier: Double?
     let scaleMultiplier: Double?
+    let imageName: String?
+
+    init(
+        id: String,
+        level: Int?,
+        slot: Int,
+        hpMultiplier: Double?,
+        scaleMultiplier: Double?,
+        imageName: String? = nil
+    ) {
+        self.id = id
+        self.level = level
+        self.slot = slot
+        self.hpMultiplier = hpMultiplier
+        self.scaleMultiplier = scaleMultiplier
+        self.imageName = imageName
+    }
 }
 
 struct BattleRewardConfig: Decodable {
@@ -52,30 +71,54 @@ struct BattleRewardConfig: Decodable {
 
 extension BattleConfigData {
     func configuredForEvent(_ event: EventData) -> BattleConfigData {
-        let eventRewards = JSONDataLoader.load("eventReward", as: [EventRewardData].self)?.first
+        let rewardCoins = event.rewards
+            .filter { GameCurrency.normalized($0.currency) == "coins" }
+            .reduce(0) { $0 + $1.amount }
+        let rewardCrystals = event.rewards
+            .filter { GameCurrency.normalized($0.currency) == "crystals" }
+            .reduce(0) { $0 + $1.amount }
+        let eventXP = event.battleXPReward ?? rewards.eventExp
         let reward = BattleRewardConfig(
             coinIcon: rewards.coinIcon,
             crystalIcon: rewards.crystalIcon,
-            coins: eventRewards?.eventCoins ?? rewards.coins,
-            crystals: eventRewards?.eventCrystals ?? rewards.crystals,
-            eventExp: eventRewards?.eventExp ?? rewards.eventExp
+            coins: rewardCoins,
+            crystals: rewardCrystals,
+            eventExp: eventXP
         )
 
         let normalWave = BattleWaveData(
             backgroundIndex: 0,
             isBossWave: false,
-            xpReward: max((eventRewards?.eventExp ?? rewards.eventExp) / 3, 1),
+            xpReward: max(eventXP / 3, 1),
             enemies: [
-                BattleUnitConfig(id: event.enemyName, level: 1, slot: 0, hpMultiplier: nil, scaleMultiplier: nil),
-                BattleUnitConfig(id: event.enemyName, level: 1, slot: 1, hpMultiplier: nil, scaleMultiplier: nil)
+                BattleUnitConfig(
+                    id: event.enemyName,
+                    level: 1,
+                    slot: 0,
+                    hpMultiplier: nil,
+                    scaleMultiplier: nil
+                ),
+                BattleUnitConfig(
+                    id: event.enemyName,
+                    level: 1,
+                    slot: 1,
+                    hpMultiplier: nil,
+                    scaleMultiplier: nil
+                ),
             ]
         )
         let bossWave = BattleWaveData(
             backgroundIndex: 0,
             isBossWave: true,
-            xpReward: eventRewards?.eventExp ?? rewards.eventExp,
+            xpReward: eventXP,
             enemies: [
-                BattleUnitConfig(id: event.enemyName, level: 3, slot: 0, hpMultiplier: 1.7, scaleMultiplier: 1.35)
+                BattleUnitConfig(
+                    id: event.enemyName,
+                    level: 3,
+                    slot: 0,
+                    hpMultiplier: 1.7,
+                    scaleMultiplier: 1.35
+                )
             ]
         )
 
