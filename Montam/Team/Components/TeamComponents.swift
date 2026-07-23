@@ -10,8 +10,6 @@ import SwiftUI
 enum TeamSection: CaseIterable, Identifiable {
     case partner
     case support
-    case kamerad
-    case spSupport
 
     var id: Self { self }
 
@@ -19,8 +17,6 @@ enum TeamSection: CaseIterable, Identifiable {
         switch self {
         case .partner: "Partner"
         case .support: "Support"
-        case .kamerad: "Kamerad"
-        case .spSupport: "SP-Support"
         }
     }
 }
@@ -36,7 +32,7 @@ struct PartnerTeamContent: View {
         if rows.isEmpty {
             CompactTeamInfo(
                 title: "Kein Partner",
-                message: "Wähle oder beschwöre zuerst ein Monster."
+                message: "Partner werden aus deinen Spieldaten geladen."
             )
         } else {
             VStack(spacing: 10) {
@@ -259,7 +255,11 @@ private struct ActiveMonsterPanel: View {
             TeamXPBar(value: row.xp, maxValue: row.maxXP)
 
             if let evolution {
-                TeamEvolutionButton(evolution: evolution, onEvolve: onEvolve)
+                TeamEvolutionButton(
+                    sourceImageName: row.imageName,
+                    evolution: evolution,
+                    onEvolve: onEvolve
+                )
             }
 
             if !row.appearances.isEmpty {
@@ -283,6 +283,7 @@ private struct ActiveMonsterPanel: View {
 }
 
 private struct TeamEvolutionButton: View {
+    let sourceImageName: String
     let evolution: TeamEvolutionState
     let onEvolve: (EvolutionData) -> Void
 
@@ -290,10 +291,12 @@ private struct TeamEvolutionButton: View {
         Button {
             onEvolve(evolution.evolution)
         } label: {
-            HStack(spacing: 8) {
-                RemoteAssetImage(imageName: evolution.evolution.targetImageName)
-                    .scaledToFit()
-                    .frame(width: 34, height: 34)
+            HStack(spacing: 10) {
+                EvolutionSwapIcon(
+                    sourceImageName: sourceImageName,
+                    targetImageName: evolution.evolution.targetImageName
+                )
+
                 VStack(alignment: .leading, spacing: 1) {
                     Text(
                         evolution.canEvolve
@@ -327,6 +330,80 @@ private struct TeamEvolutionButton: View {
         }
         .buttonStyle(.plain)
         .disabled(!evolution.canEvolve)
+    }
+}
+
+private struct EvolutionSwapIcon: View {
+    let sourceImageName: String
+    let targetImageName: String
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.black.opacity(0.22))
+                .frame(width: 48, height: 48)
+                .overlay(
+                    Circle().stroke(.white.opacity(0.65), lineWidth: 1)
+                )
+
+            HStack(spacing: -8) {
+                RemoteAssetImage(imageName: sourceImageName)
+                    .scaledToFit()
+                    .frame(width: 31, height: 31)
+                    .clipShape(Circle())
+
+                RemoteAssetImage(imageName: targetImageName)
+                    .scaledToFit()
+                    .frame(width: 31, height: 31)
+                    .clipShape(Circle())
+            }
+        }
+    }
+}
+
+struct TeamEvolutionPreviewOverlay: View {
+    let preview: TeamEvolutionPreview
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.42)
+                .ignoresSafeArea()
+
+            VStack(spacing: 12) {
+                Text("Entwicklung")
+                    .font(.system(size: 22, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+
+                HStack(spacing: 14) {
+                    RemoteAssetImage(imageName: preview.sourceImageName)
+                        .scaledToFit()
+                        .frame(width: 94, height: 94)
+
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 24, weight: .black))
+                        .foregroundStyle(.cyan)
+
+                    RemoteAssetImage(imageName: preview.targetImageName)
+                        .scaledToFit()
+                        .frame(width: 104, height: 104)
+                }
+
+                Text(preview.targetName)
+                    .font(.system(size: 18, weight: .black, design: .rounded))
+                    .foregroundStyle(.cyan)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+            .padding(18)
+            .frame(maxWidth: 320)
+            .background(Color.blue.opacity(0.88))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(.cyan.opacity(0.85), lineWidth: 2)
+            )
+            .shadow(color: .black.opacity(0.45), radius: 14, y: 8)
+        }
     }
 }
 

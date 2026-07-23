@@ -16,6 +16,7 @@ final class GameSaveData {
     var playerPower: Int
     var playerXP: Int
     var playerMaxXP: Int
+    var currentStage: Int = 1
     var bits: Int
     var coins: Int
     var crystals: Int
@@ -24,6 +25,7 @@ final class GameSaveData {
     var lastDailyClaimDate: Date?
     var dailyLoginDay: Int
     var claimedGiftIds: [String]
+    var claimedMissionRewardIds: [String] = []
 
     init(
         createdAt: Date = .now,
@@ -32,6 +34,7 @@ final class GameSaveData {
         playerPower: Int = 0,
         playerXP: Int = 0,
         playerMaxXP: Int = 100,
+        currentStage: Int = 1,
         bits: Int = 0,
         coins: Int = 0,
         crystals: Int = 0,
@@ -39,7 +42,8 @@ final class GameSaveData {
         hasEventPass: Bool = false,
         lastDailyClaimDate: Date? = nil,
         dailyLoginDay: Int = 0,
-        claimedGiftIds: [String] = []
+        claimedGiftIds: [String] = [],
+        claimedMissionRewardIds: [String] = []
     ) {
         self.createdAt = createdAt
         self.didCompleteOnboarding = didCompleteOnboarding
@@ -47,6 +51,7 @@ final class GameSaveData {
         self.playerPower = playerPower
         self.playerXP = playerXP
         self.playerMaxXP = playerMaxXP
+        self.currentStage = currentStage
         self.bits = bits
         self.coins = coins
         self.crystals = crystals
@@ -55,6 +60,7 @@ final class GameSaveData {
         self.lastDailyClaimDate = lastDailyClaimDate
         self.dailyLoginDay = dailyLoginDay
         self.claimedGiftIds = claimedGiftIds
+        self.claimedMissionRewardIds = claimedMissionRewardIds
     }
 }
 

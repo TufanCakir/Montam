@@ -20,33 +20,33 @@ struct PlayerStatusBar: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: 7) {
+        HStack(alignment: .center, spacing: 5) {
             VStack(spacing: 0) {
                 RemoteAssetImage(imageName: activeMonsterImageName)
                     .scaledToFit()
-                    .padding(4)
-                    .frame(width: 38, height: 38)
+                    .padding(3)
+                    .frame(width: 34, height: 34)
                     .background(.cyan.opacity(0.84))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8).stroke(
+                        RoundedRectangle(cornerRadius: 7).stroke(
                             .orange,
                             lineWidth: 2
                         )
                     )
 
                 Text("TLv.\(save?.playerLevel ?? 1)")
-                    .font(.system(size: 9, weight: .heavy, design: .rounded))
+                    .font(.system(size: 8, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .shadow(color: .black, radius: 1, x: 1, y: 1)
             }
-            .frame(width: 42, height: 52)
+            .frame(width: 38, height: 46)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("× \(formatNumber(save?.playerPower ?? 0))")
-                    .font(.system(size: 15, weight: .heavy, design: .rounded))
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white.opacity(0.95))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -65,10 +65,11 @@ struct PlayerStatusBar: View {
                         )
                         .foregroundStyle(.green.opacity(0.92))
                         .lineLimit(1)
-                        .minimumScaleFactor(0.7)
+                        .minimumScaleFactor(0.55)
                     }
-                    .frame(height: 10)
+                    .frame(height: 8)
             }
+            .frame(width: 118, alignment: .leading)
             .layoutPriority(2)
 
             PlayerStatusCurrency(
@@ -82,7 +83,7 @@ struct PlayerStatusBar: View {
                 amount: formatNumber(save?.crystals ?? 0)
             )
         }
-        .frame(height: 56)
+        .frame(height: 48)
     }
 
     private var progressValue: Double {
@@ -123,20 +124,20 @@ private struct PlayerStatusCurrency: View {
     var body: some View {
         HStack(spacing: 3) {
             GameResourceIcon(id: iconId, fallbackImage: fallbackImage)
-                .frame(width: 22, height: 22)
+                .frame(width: 19, height: 19)
 
             Text(amount)
-                .font(.system(size: 13, weight: .heavy, design: .rounded))
+                .font(.system(size: 12, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.55)
 
             Text("+")
-                .font(.system(size: 16, weight: .heavy, design: .rounded))
+                .font(.system(size: 14, weight: .heavy, design: .rounded))
                 .foregroundStyle(.cyan)
         }
-        .padding(.horizontal, 4)
-        .frame(width: 78, height: 30)
+        .padding(.horizontal, 3)
+        .frame(width: 62, height: 27)
         .background(.blue.opacity(0.45))
         .clipShape(RoundedRectangle(cornerRadius: 5))
         .overlay(

@@ -8,27 +8,57 @@
 import SwiftUI
 
 struct SummonTitleBar: View {
+    let ticketCount: Int
+    let crystalCount: Int
+
     var body: some View {
         HStack(spacing: 10) {
-            Text("Spezialbeschwörung")
-                .font(.system(size: 25, weight: .heavy, design: .rounded))
-                .foregroundStyle(.cyan)
-                .lineLimit(1)
-                .minimumScaleFactor(0.68)
-                .shadow(color: .black.opacity(0.55), radius: 2, x: 1, y: 2)
-
-            Text("i")
-                .font(.system(size: 16, weight: .black, design: .rounded))
-                .foregroundStyle(.blue)
-                .frame(width: 24, height: 24)
-                .background(.cyan)
-                .clipShape(Circle())
-
             Spacer()
+
+            SummonWalletPill(
+                iconId: "summon_ticket",
+                fallbackImage: "icon_ticket",
+                value: ticketCount
+            )
+
+            SummonWalletPill(
+                iconId: "crystal",
+                fallbackImage: "icon_crystal",
+                value: crystalCount
+            )
         }
         .padding(.horizontal, 18)
-        .frame(height: 48)
+        .frame(height: 42)
         .background(Color.black.opacity(0.12))
+    }
+}
+
+private struct SummonWalletPill: View {
+    let iconId: String
+    let fallbackImage: String
+    let value: Int
+
+    var body: some View {
+        HStack(spacing: 7) {
+            GameResourceIcon(id: iconId, fallbackImage: fallbackImage)
+                .frame(width: 24, height: 24)
+
+            Text(GameNumberFormatter.compact(value))
+                .font(.system(size: 16, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .padding(.horizontal, 10)
+        .frame(height: 32)
+        .background(Color.black.opacity(0.34))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8).stroke(
+                .cyan.opacity(0.42),
+                lineWidth: 1
+            )
+        )
     }
 }
 

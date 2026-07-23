@@ -46,82 +46,164 @@ enum RootTab: CaseIterable, Identifiable {
 struct RootGameHeader: View {
     var body: some View {
         PlayerStatusBar()
-            .padding(.horizontal)
-            .frame(
-                maxWidth: .infinity,
-                maxHeight: .infinity,
-                alignment: .bottom
-            )
-            .background(AppScreenBackground())
+            .padding(.top)
+            .offset(y: 20)
     }
 }
 
-struct RootTopActionButtons: View {
-    let onDailyTap: () -> Void
-    let onGiftTap: () -> Void
-    let onNewsTap: () -> Void
-    let onSettingsTap: () -> Void
-
-    private let columns = [
-        GridItem(.fixed(32), spacing: 6),
-        GridItem(.fixed(32), spacing: 6),
-    ]
+struct RootQuickMenuButton: View {
+    let action: () -> Void
 
     var body: some View {
         VStack {
+            Spacer()
+
             HStack {
                 Spacer()
 
-                LazyVGrid(columns: columns, spacing: 6) {
-                    RootTopActionButton(
-                        systemName: "calendar",
-                        action: onDailyTap
-                    )
-
-                    RootTopActionButton(
-                        systemName: "gift.fill",
-                        action: onGiftTap
-                    )
-
-                    RootTopActionButton(
-                        systemName: "newspaper.fill",
-                        action: onNewsTap
-                    )
-
-                    RootTopActionButton(
-                        systemName: "gear",
-                        action: onSettingsTap
-                    )
+                Button(action: action) {
+                    Image(systemName: "square.grid.2x2.fill")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundStyle(.cyan)
+                        .frame(width: 46, height: 46)
+                        .background(.black.opacity(0.42))
+                        .clipShape(RoundedRectangle(cornerRadius: 13))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 13).stroke(
+                                .cyan.opacity(0.68),
+                                lineWidth: 2
+                            )
+                        )
+                        .shadow(color: .black.opacity(0.35), radius: 5)
                 }
-                .frame(width: 70)
+                .buttonStyle(.plain)
+                .padding(.trailing, 16)
+                .padding(.bottom, 96)
             }
-            .padding(.horizontal)
-            .padding(.top, 100)
-
-            Spacer()
         }
         .ignoresSafeArea()
     }
 }
 
-private struct RootTopActionButton: View {
+struct RootQuickMenuPanel: View {
+    let onDailyTap: () -> Void
+    let onGiftTap: () -> Void
+    let onNewsTap: () -> Void
+    let onMissionTap: () -> Void
+    let onSettingsTap: () -> Void
+    let onClose: () -> Void
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10),
+    ]
+
+    var body: some View {
+        VStack {
+            Spacer()
+
+            VStack(spacing: 12) {
+                HStack {
+                    Text("Menü")
+                        .font(
+                            .system(size: 22, weight: .black, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    Button(action: onClose) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 13, weight: .black))
+                            .foregroundStyle(.cyan)
+                            .frame(width: 30, height: 30)
+                            .background(.black.opacity(0.28))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                LazyVGrid(columns: columns, spacing: 10) {
+                    RootQuickMenuItem(
+                        title: "Daily",
+                        systemName: "calendar",
+                        action: onDailyTap
+                    )
+
+                    RootQuickMenuItem(
+                        title: "Geschenke",
+                        systemName: "gift.fill",
+                        action: onGiftTap
+                    )
+
+                    RootQuickMenuItem(
+                        title: "News",
+                        systemName: "newspaper.fill",
+                        action: onNewsTap
+                    )
+
+                    RootQuickMenuItem(
+                        title: "Mission",
+                        systemName: "list.bullet.rectangle.fill",
+                        action: onMissionTap
+                    )
+
+                    RootQuickMenuItem(
+                        title: "Optionen",
+                        systemName: "gear",
+                        action: onSettingsTap
+                    )
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: 340)
+            .background(RootChromeBackground())
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18).stroke(
+                    .cyan.opacity(0.6),
+                    lineWidth: 2
+                )
+            )
+            .shadow(color: .black.opacity(0.48), radius: 14, y: 8)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 106)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+private struct RootQuickMenuItem: View {
+    let title: String
     let systemName: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 14, weight: .black))
-                .foregroundStyle(.cyan)
-                .frame(width: 32, height: 32)
-                .background(Color.black.opacity(0.34))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8).stroke(
-                        .cyan.opacity(0.5),
-                        lineWidth: 1
-                    )
+            HStack(spacing: 9) {
+                Image(systemName: systemName)
+                    .font(.system(size: 16, weight: .black))
+                    .foregroundStyle(.cyan)
+                    .frame(width: 26, height: 26)
+
+                Text(title)
+                    .font(.system(size: 15, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 10)
+            .frame(height: 46)
+            .background(.blue.opacity(0.36))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10).stroke(
+                    .cyan.opacity(0.35),
+                    lineWidth: 1
                 )
+            )
         }
         .buttonStyle(.plain)
     }
@@ -132,32 +214,31 @@ struct RootGameFooter: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            AppScreenBackground()
-
-            VStack(spacing: 2) {
-                RootFooterWave()
-                    .fill(.blue.opacity(0.72))
-                    .overlay(
-                        RootFooterWave().stroke(
-                            .cyan.opacity(0.72),
-                            lineWidth: 2
-                        )
-                    )
-
-                RootLinePattern()
-                    .opacity(0.65)
-            }
+            RootChromeBackground()
 
             HStack(alignment: .bottom, spacing: 0) {
                 ForEach(RootTab.allCases) { tab in
                     RootFooterButton(tab: tab, isSelected: selectedTab == tab) {
                         selectedTab = tab
                     }
-                    .padding(.horizontal, 5)
+                    .padding(.horizontal, 8)
                 }
             }
-            .padding(.bottom, 22)
+            .padding()
         }
+    }
+}
+
+private struct RootChromeBackground: View {
+    var body: some View {
+        LinearGradient(
+            colors: [
+                Color(red: 0, green: 0.05, blue: 0.18),
+                Color(red: 0, green: 0.12, blue: 0.34),
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 }
 
@@ -168,21 +249,21 @@ private struct RootFooterButton: View {
 
     private var offsetY: CGFloat {
         switch tab {
-        case .tamer: 6
-        case .montam: 9
-        case .dungeon: 12
-        case .game: 20
-        case .summon: 12
-        case .shop: 9
-        case .trade: 6
+        case .tamer: 3
+        case .montam: 5
+        case .dungeon: 7
+        case .game: 13
+        case .summon: 7
+        case .shop: 5
+        case .trade: 3
         }
     }
 
     private var iconSize: CGFloat {
         switch tab {
-        case .game: 58
-        case .dungeon, .summon: 34
-        default: 34
+        case .game: 50
+        case .dungeon, .summon: 30
+        default: 30
         }
     }
 
@@ -213,17 +294,14 @@ private struct RootFooterButton: View {
                 if !tab.title.isEmpty {
                     Text(tab.title)
                         .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
+                            .system(size: 6, weight: .heavy, design: .rounded)
                         )
                         .foregroundStyle(isSelected ? .white : .cyan)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.65)
                 }
             }
-            .frame(width: iconSize, height: iconSize)
         }
+        .padding(.bottom, 8)
         .offset(y: offsetY)
-        .padding(.bottom, 20)
     }
 
     private var tileBackground: some ShapeStyle {
@@ -231,21 +309,11 @@ private struct RootFooterButton: View {
             return AnyShapeStyle(
                 RadialGradient(
                     colors: [
-                        .cyan.opacity(0.95), .blue.opacity(0.78), .indigo,
+                        .blue.opacity(0.95), .blue.opacity(0.78), .indigo,
                     ],
                     center: .center,
                     startRadius: 8,
                     endRadius: 44
-                )
-            )
-        }
-
-        if tab == .shop && isSelected {
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [.white, .yellow.opacity(0.9)],
-                    startPoint: .top,
-                    endPoint: .bottom
                 )
             )
         }
@@ -260,41 +328,6 @@ private struct RootFooterButton: View {
                 endPoint: .bottom
             )
         )
-    }
-}
-
-private struct RootLinePattern: View {
-    var body: some View {
-        VStack(spacing: 3) {
-            ForEach(0..<28, id: \.self) { _ in
-                Rectangle()
-                    .fill(.cyan.opacity(0.35))
-                    .frame(height: 1)
-            }
-        }
-    }
-}
-
-private struct RootFooterWave: Shape {
-    func path(in rect: CGRect) -> Path {
-        Path { path in
-            path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.height * 0.18))
-            path.addQuadCurve(
-                to: CGPoint(x: rect.width * 0.34, y: rect.height * 0.38),
-                control: CGPoint(x: rect.width * 0.18, y: rect.height * 0.8)
-            )
-            path.addQuadCurve(
-                to: CGPoint(x: rect.width * 0.66, y: rect.height * 0.38),
-                control: CGPoint(x: rect.width * 0.5, y: rect.minY)
-            )
-            path.addQuadCurve(
-                to: CGPoint(x: rect.maxX, y: rect.height * 0.18),
-                control: CGPoint(x: rect.width * 0.82, y: rect.height * 0.8)
-            )
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-            path.closeSubpath()
-        }
     }
 }
 

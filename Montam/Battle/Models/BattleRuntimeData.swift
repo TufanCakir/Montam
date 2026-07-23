@@ -38,3 +38,9 @@ struct RuntimeOwnedTamer {
     let level: Int
     let xp: Int
 }
+
+struct BattleWaveReward {
+    let xp: Int
+    let coins: Int
+    let crystals: Int
+}

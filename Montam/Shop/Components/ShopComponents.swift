@@ -12,7 +12,6 @@ enum ShopSection: CaseIterable, Identifiable {
     case pass
     case premiumCurrency
     case item
-    case normal
 
     var id: Self { self }
 
@@ -21,7 +20,6 @@ enum ShopSection: CaseIterable, Identifiable {
         case .pass: "Pass"
         case .premiumCurrency: "Premium-Währung"
         case .item: "Item"
-        case .normal: "Normaler Shop"
         }
     }
 
@@ -30,7 +28,6 @@ enum ShopSection: CaseIterable, Identifiable {
         case .pass: "pass"
         case .premiumCurrency: "premiumCurrency"
         case .item: "item"
-        case .normal: "normal"
         }
     }
 }
@@ -77,14 +74,21 @@ struct ShopWalletFilterBar: View {
 
     var body: some View {
         HStack {
-            ShopWalletValue(
-                image: "icon_crystal",
-                text: formatNumber(saves.first?.crystals ?? 0)
-            )
-            ShopWalletValue(
-                image: "icon_coin",
-                text: formatNumber(saves.first?.coins ?? 0)
-            )
+            if selectedSection == .item {
+                ShopWalletValue(
+                    image: "icon_bit",
+                    text: formatNumber(saves.first?.bits ?? 0)
+                )
+            } else {
+                ShopWalletValue(
+                    image: "icon_crystal",
+                    text: formatNumber(saves.first?.crystals ?? 0)
+                )
+                ShopWalletValue(
+                    image: "icon_coin",
+                    text: formatNumber(saves.first?.coins ?? 0)
+                )
+            }
 
             Spacer()
 
@@ -116,7 +120,7 @@ struct ShopWalletFilterBar: View {
                 .clipShape(RoundedRectangle(cornerRadius: 7))
             }
         }
-        .padding(.horizontal, 36)
+        .padding(.horizontal, 28)
         .frame(height: 54)
         .background(Color.blue.opacity(0.45))
     }
@@ -150,8 +154,6 @@ struct ShopSideCategories: View {
             [("Kristall", "seal")]
         case .item:
             [("Item", "calendar.badge.clock")]
-        case .normal:
-            [("Shop", "storefront")]
         }
     }
 
@@ -189,6 +191,7 @@ struct ShopProductGridContent: View {
     let products: [ShopProductData]
     let emptyTitle: String
     @ObservedObject var store: StoreKitShopManager
+    let priceTitle: (ShopProductData) -> String
     let onBuy: (ShopProductData) -> Void
 
     var body: some View {
@@ -204,7 +207,7 @@ struct ShopProductGridContent: View {
                 ForEach(products) { product in
                     ShopProductCard(
                         product: product,
-                        price: store.localizedPrice(for: product),
+                        price: priceTitle(product),
                         soldOut: store.isPurchased(product),
                         onBuy: onBuy
                     )
@@ -215,10 +218,34 @@ struct ShopProductGridContent: View {
     }
 }
 
+struct ItemShopContent: View {
+    let products: [ItemShopProductData]
+    let onBuy: (ItemShopProductData) -> Void
+
+    var body: some View {
+        if products.isEmpty {
+            ShopEmptyContent(title: "Neue Items erscheinen bald.")
+        } else {
+            LazyVGrid(
+                columns: [
+                    GridItem(.adaptive(minimum: 132, maximum: 190), spacing: 12)
+                ],
+                spacing: 14
+            ) {
+                ForEach(products) { product in
+                    ItemShopProductCard(product: product, onBuy: onBuy)
+                        .frame(maxWidth: 190)
+                }
+            }
+        }
+    }
+}
+
 struct ShopPassContent: View {
     let products: [ShopProductData]
     @ObservedObject var store: StoreKitShopManager
     let onBuy: (ShopProductData) -> Void
+    let priceTitle: (ShopProductData) -> String
     let onRestore: () -> Void
 
     var body: some View {
@@ -229,7 +256,7 @@ struct ShopPassContent: View {
                 ForEach(products) { product in
                     ShopPassCard(
                         product: product,
-                        price: store.localizedPrice(for: product),
+                        price: priceTitle(product),
                         purchased: store.isPurchased(product),
                         onBuy: onBuy
                     )
@@ -253,6 +280,110 @@ struct ShopPassContent: View {
             }
             .buttonStyle(.plain)
         }
+    }
+}
+
+private struct ItemShopProductCard: View {
+    let product: ItemShopProductData
+    let onBuy: (ItemShopProductData) -> Void
+
+    var body: some View {
+        Button {
+            onBuy(product)
+        } label: {
+            VStack(spacing: 0) {
+                ZStack(alignment: .topTrailing) {
+                    LinearGradient(
+                        colors: [.blue.opacity(0.7), .cyan.opacity(0.68)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .overlay(ShopCardPattern().opacity(0.14))
+
+                    ShopProductIcon(visual: productVisual(from: product.visual))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    if let badge = product.badge {
+                        Text(badge)
+                            .font(
+                                .system(size: 12, weight: .heavy, design: .rounded)
+                            )
+                            .foregroundStyle(.blue)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 5)
+                            .background(.white.opacity(0.94))
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .padding(8)
+                    }
+                }
+                .frame(height: 132)
+
+                VStack(alignment: .leading, spacing: 7) {
+                    Text(product.title)
+                        .font(
+                            .system(size: 18, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.65)
+
+                    Text(product.subtitle ?? rewardTitle)
+                        .font(
+                            .system(size: 13, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.cyan)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.72)
+
+                    HStack(spacing: 7) {
+                        GameResourceIcon(
+                            id: GameCurrency.iconId(for: product.priceCurrency),
+                            fallbackImage: "icon_\(GameCurrency.iconId(for: product.priceCurrency))"
+                        )
+                        .frame(width: 24, height: 24)
+
+                        Text("\(product.priceAmount)")
+                            .font(
+                                .system(size: 18, weight: .heavy, design: .rounded)
+                            )
+                            .foregroundStyle(.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 34)
+                    .background(Color.black.opacity(0.34))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.indigo.opacity(0.4))
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.cyan.opacity(0.82), lineWidth: 2)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var rewardTitle: String {
+        if let tickets = product.rewards.summonTickets {
+            return "+\(tickets) Tickets"
+        }
+
+        if let crystals = product.rewards.crystals {
+            return "+\(crystals) Kristalle"
+        }
+
+        if let coins = product.rewards.coins {
+            return "+\(coins) Coins"
+        }
+
+        if let bits = product.rewards.bits {
+            return "+\(bits) Bits"
+        }
+
+        return "Item"
     }
 }
 
@@ -280,7 +411,7 @@ private struct ShopProductCard: View {
                         )
                         .overlay(ShopCardPattern().opacity(0.14))
 
-                        ShopProductIcon(visual: productVisual(from: product))
+                        ShopProductIcon(visual: productVisual(from: product.visual))
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                         if let badge = product.badge {
@@ -374,23 +505,22 @@ private struct ShopProductCard: View {
         .buttonStyle(.plain)
     }
 
-    private func productVisual(from product: ShopProductData)
-        -> ShopProductVisual
-    {
-        switch product.visual {
-        case "crystals":
-            .diamonds
-        case "coins":
-            .emeralds
-        case "pass":
-            .pass(.purple)
-        case "tickets":
-            .tickets
-        case "farm":
-            .farm
-        default:
-            .normal("shippingbox.fill", .cyan)
-        }
+}
+
+private func productVisual(from visual: String) -> ShopProductVisual {
+    switch visual {
+    case "crystals":
+        .diamonds
+    case "coins":
+        .emeralds
+    case "pass":
+        .pass(.purple)
+    case "tickets":
+        .tickets
+    case "farm":
+        .farm
+    default:
+        .normal("shippingbox.fill", .cyan)
     }
 }
 
@@ -710,6 +840,7 @@ private struct ShopWalletValue: View {
         switch image {
         case "icon_coin": "coin"
         case "icon_crystal": "crystal"
+        case "icon_bit": "bit"
         case "icon_exp": "exp"
         default: "crystal"
         }

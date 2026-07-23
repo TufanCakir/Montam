@@ -13,10 +13,7 @@ struct GiftBoxPanel: View {
 
     @Environment(\.modelContext) private var modelContext
     @Query private var saves: [GameSaveData]
-
-    private var gifts: [GiftData] {
-        GiftBoxService.availableGifts(save: saves.first)
-    }
+    @State private var gifts: [GiftData] = []
 
     var body: some View {
         VStack(spacing: 0) {
@@ -34,6 +31,7 @@ struct GiftBoxPanel: View {
                                 saves: saves,
                                 modelContext: modelContext
                             )
+                            reloadGifts()
                         }
 
                         GiftActionButton(title: "Leeren", color: .red) {
@@ -41,6 +39,7 @@ struct GiftBoxPanel: View {
                                 saves: saves,
                                 modelContext: modelContext
                             )
+                            reloadGifts()
                         }
                     }
 
@@ -53,6 +52,7 @@ struct GiftBoxPanel: View {
                                         saves: saves,
                                         modelContext: modelContext
                                     )
+                                    reloadGifts()
                                 }
                             }
                         }
@@ -71,6 +71,13 @@ struct GiftBoxPanel: View {
                 lineWidth: 3
             )
         )
+        .onAppear {
+            reloadGifts()
+        }
+    }
+
+    private func reloadGifts() {
+        gifts = GiftBoxService.availableGifts(save: saves.first)
     }
 
     private var panelHeader: some View {

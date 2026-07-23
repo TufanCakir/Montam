@@ -27,9 +27,9 @@ struct AppScreenBackground: View {
 private struct AppScreenLinePattern: View {
     var body: some View {
         VStack(spacing: 3) {
-            ForEach(0..<80, id: \.self) { _ in
+            ForEach(0..<28, id: \.self) { _ in
                 Rectangle()
-                    .fill(.cyan.opacity(0.22))
+                    .fill(.cyan.opacity(0.16))
                     .frame(height: 1)
             }
         }

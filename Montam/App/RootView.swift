@@ -20,53 +20,43 @@ struct RootView: View {
     @State private var isGiftPresented = false
     @State private var isSettingsPresented = false
     @State private var isNewsPresented = false
+    @State private var isMissionPresented = false
+    @State private var isQuickMenuPresented = false
+
+    private let headerHeight: CGFloat = 92
+    private let footerHeight: CGFloat = 86
 
     private var isModalPresented: Bool {
-        isDailyPresented || isGiftPresented || isSettingsPresented || isNewsPresented
+        isDailyPresented
+            || isGiftPresented
+            || isSettingsPresented
+            || isNewsPresented
+            || isMissionPresented
+            || isQuickMenuPresented
     }
 
     var body: some View {
         ZStack {
+            layeredRootContent
+
             VStack(spacing: 0) {
                 RootGameHeader()
-                    .frame(height: 94)
+                    .frame(height: headerHeight)
                     .ignoresSafeArea(.container, edges: .top)
 
-                rootContent
+                Spacer(minLength: 0)
 
                 RootGameFooter(selectedTab: $selectedTab)
-                    .frame(height: 98)
+                    .frame(height: footerHeight)
                     .ignoresSafeArea(.container, edges: .bottom)
             }
-            .blur(radius: isModalPresented ? 8 : 0)
 
-            RootTopActionButtons(
-                onDailyTap: {
-                    withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-                        isDailyPresented = true
-                    }
-                },
-                onGiftTap: {
-                    withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-                        isGiftPresented = true
-                    }
-                },
-                onNewsTap: {
-                    withAnimation(
-                        .spring(response: 0.28, dampingFraction: 0.86)
-                    ) {
-                        isNewsPresented = true
-                    }
-                },
-                onSettingsTap: {
-                    withAnimation(
-                        .spring(response: 0.28, dampingFraction: 0.86)
-                    ) {
-                        isSettingsPresented = true
-                    }
+            if selectedTab == .game && !isModalPresented {
+                RootQuickMenuButton {
+                    presentModal(.quickMenu)
                 }
-            )
-            .opacity(isModalPresented ? 0 : 1)
+                .transition(.scale.combined(with: .opacity))
+            }
 
             if isModalPresented {
                 Color.black.opacity(0.62)
@@ -74,6 +64,28 @@ struct RootView: View {
                     .onTapGesture {
                         closeModals()
                     }
+            }
+
+            if isQuickMenuPresented {
+                RootQuickMenuPanel(
+                    onDailyTap: {
+                        presentModal(.daily)
+                    },
+                    onGiftTap: {
+                        presentModal(.gift)
+                    },
+                    onNewsTap: {
+                        presentModal(.news)
+                    },
+                    onMissionTap: {
+                        presentModal(.mission)
+                    },
+                    onSettingsTap: {
+                        presentModal(.settings)
+                    },
+                    onClose: closeModals
+                )
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
 
             if isSettingsPresented {
@@ -94,6 +106,11 @@ struct RootView: View {
                     .transition(.scale.combined(with: .opacity))
             }
 
+            if isMissionPresented {
+                MissionPanel(onClose: closeModals)
+                    .transition(.scale.combined(with: .opacity))
+            }
+
             if isDailyPresented {
                 DailyLoginPanel(onClose: closeModals)
                     .transition(.scale.combined(with: .opacity))
@@ -104,7 +121,6 @@ struct RootView: View {
                     .transition(.scale.combined(with: .opacity))
             }
         }
-        .background(rootBackground)
         .ignoresSafeArea()
         .onAppear {
             RootSaveMigrationService.migrateLegacyMonsterIds(
@@ -126,13 +142,36 @@ struct RootView: View {
             isGiftPresented = false
             isSettingsPresented = false
             isNewsPresented = false
+            isMissionPresented = false
+            isQuickMenuPresented = false
+        }
+    }
+
+    private func presentModal(_ modal: RootModal) {
+        withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
+            isQuickMenuPresented = false
+
+            switch modal {
+            case .daily:
+                isDailyPresented = true
+            case .gift:
+                isGiftPresented = true
+            case .news:
+                isNewsPresented = true
+            case .mission:
+                isMissionPresented = true
+            case .settings:
+                isSettingsPresented = true
+            case .quickMenu:
+                isQuickMenuPresented = true
+            }
         }
     }
 
     private func presentDailyIfNeeded() {
         guard selectedTab == .game,
-              !didShowDailyLogin,
-              DailyLoginService.availableReward(saves: saves) != nil
+            !didShowDailyLogin,
+            DailyLoginService.availableReward(saves: saves) != nil
         else {
             return
         }
@@ -146,6 +185,26 @@ struct RootView: View {
     }
 
     @ViewBuilder
+    private var layeredRootContent: some View {
+        if selectedTab == .game {
+            rootContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+        } else {
+            ZStack {
+                AppScreenBackground()
+                    .ignoresSafeArea()
+
+                rootContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.top, headerHeight)
+                    .padding(.bottom, footerHeight)
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    @ViewBuilder
     private var rootContent: some View {
         switch selectedTab {
         case .tamer:
@@ -155,7 +214,7 @@ struct RootView: View {
         case .dungeon:
             EventView()
         case .game:
-            GameView()
+            GameView(isPaused: isModalPresented)
         case .summon:
             SummonView()
         case .shop:
@@ -164,11 +223,15 @@ struct RootView: View {
             TradeView()
         }
     }
+}
 
-    @ViewBuilder
-    private var rootBackground: some View {
-        Color.clear
-    }
+private enum RootModal {
+    case daily
+    case gift
+    case news
+    case mission
+    case settings
+    case quickMenu
 }
 
 #Preview {

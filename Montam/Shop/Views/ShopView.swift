@@ -23,7 +23,7 @@ struct ShopView: View {
                 HStack(alignment: .top, spacing: 10) {
                     ShopSideCategories(
                         section: viewModel.selectedSection,
-                        hasProducts: !viewModel.selectedProducts.isEmpty
+                        hasProducts: hasProductsInSelectedSection
                     )
 
                     shopContent
@@ -62,6 +62,7 @@ struct ShopView: View {
                 products: viewModel.selectedProducts,
                 store: store,
                 onBuy: buy,
+                priceTitle: priceTitle,
                 onRestore: restorePurchases
             )
         case .premiumCurrency:
@@ -69,26 +70,48 @@ struct ShopView: View {
                 products: viewModel.selectedProducts,
                 emptyTitle: "Keine Premium-Produkte",
                 store: store,
+                priceTitle: priceTitle,
                 onBuy: buy
             )
         case .item:
-            ShopProductGridContent(
-                products: viewModel.selectedProducts,
-                emptyTitle: "Keine Item-Produkte",
-                store: store,
-                onBuy: buy
-            )
-        case .normal:
-            ShopProductGridContent(
-                products: viewModel.selectedProducts,
-                emptyTitle: "Keine Normal-Shop-Produkte",
-                store: store,
-                onBuy: buy
+            ItemShopContent(
+                products: viewModel.selectedItemProducts,
+                onBuy: buyItem
             )
         }
     }
 
+    private var hasProductsInSelectedSection: Bool {
+        switch viewModel.selectedSection {
+        case .item:
+            !viewModel.selectedItemProducts.isEmpty
+        case .pass, .premiumCurrency:
+            !viewModel.selectedProducts.isEmpty
+        }
+    }
+
+    private func buyItem(_ product: ItemShopProductData) {
+        let didBuy = ShopInventoryService.purchaseItemProduct(
+            product,
+            saves: saves,
+            modelContext: modelContext
+        )
+        viewModel.purchaseMessage =
+            didBuy ? "Item gekauft." : "Nicht genug Währung."
+    }
+
     private func buy(_ product: ShopProductData) {
+        if product.purchaseType == .softCurrency {
+            let didBuy = ShopInventoryService.purchaseSoftCurrencyProduct(
+                product,
+                saves: saves,
+                modelContext: modelContext
+            )
+            viewModel.purchaseMessage =
+                didBuy ? "Item gekauft." : "Nicht genug Währung."
+            return
+        }
+
         Task {
             let result = await store.purchase(product)
 
@@ -120,6 +143,10 @@ struct ShopView: View {
             )
             viewModel.purchaseMessage = "Käufe wurden wiederhergestellt."
         }
+    }
+
+    private func priceTitle(_ product: ShopProductData) -> String {
+        viewModel.priceTitle(for: product, store: store)
     }
 }
 

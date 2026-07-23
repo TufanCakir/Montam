@@ -18,7 +18,10 @@ struct SummonView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SummonTitleBar()
+            SummonTitleBar(
+                ticketCount: saves.first?.summonTickets ?? 0,
+                crystalCount: saves.first?.crystals ?? 0
+            )
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 14) {

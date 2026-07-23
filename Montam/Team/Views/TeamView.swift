@@ -15,10 +15,13 @@ struct TeamView: View {
 
     @State private var selectedSection = TeamSection.partner
     @State private var viewModel = TeamViewModel()
+    @State private var evolutionPreview: TeamEvolutionPreview?
 
     var body: some View {
         VStack(spacing: 0) {
-            TeamTitleBar(section: selectedSection)
+            if selectedSection != .partner {
+                TeamTitleBar(section: selectedSection)
+            }
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 12) {
@@ -31,6 +34,19 @@ struct TeamView: View {
             TeamSectionTabs(selectedSection: $selectedSection)
         }
         .background(TeamBackground())
+        .overlay {
+            if let evolutionPreview {
+                TeamEvolutionPreviewOverlay(preview: evolutionPreview)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
+        .onAppear {
+            TeamInventoryService.syncJSONCompanions(
+                ownedMonsters: ownedMonsters,
+                ownedTamers: ownedTamers,
+                modelContext: modelContext
+            )
+        }
     }
 
     @ViewBuilder
@@ -50,17 +66,6 @@ struct TeamView: View {
             SupportTeamContent(
                 rows: viewModel.tamerRows(ownedTamers: ownedTamers),
                 onSelect: selectTamer
-            )
-        case .kamerad:
-            CompactTeamInfo(
-                title: "Kamerad",
-                message: "Vorbereitung läuft. Neue Kameraden erscheinen bald."
-            )
-        case .spSupport:
-            CompactTeamInfo(
-                title: "SP-Support",
-                message:
-                    "Vorbereitung läuft. Neue Support-Optionen erscheinen bald."
             )
         }
     }
@@ -82,11 +87,28 @@ struct TeamView: View {
     }
 
     private func evolveActiveMonster(_ evolution: EvolutionData) {
+        let currentImageName =
+            ownedMonsters.first(where: \.isSelected)?.equippedImageName
+            ?? viewModel.activeMonsterImageName(ownedMonsters: ownedMonsters)
+            ?? evolution.sourceMonsterId
+        evolutionPreview = TeamEvolutionPreview(
+            sourceImageName: currentImageName,
+            targetImageName: evolution.targetImageName,
+            targetName: evolution.displayName
+        )
+
         TeamInventoryService.evolveActiveMonster(
             evolution,
             ownedMonsters: ownedMonsters,
             modelContext: modelContext
         )
+
+        Task {
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            await MainActor.run {
+                evolutionPreview = nil
+            }
+        }
     }
 
     private func equipAppearance(

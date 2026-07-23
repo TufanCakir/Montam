@@ -20,18 +20,20 @@ final class GameScene: SKScene {
     private var worldNode: SKNode?
     private var currentBackgroundData: BackgroundData?
     private var fadeNode: SKSpriteNode?
-    private var stageHUDNode: SKNode?
     private var playerUnits: [BattleUnit] = []
     private var supportUnits: [BattleUnit] = []
     private var enemyUnits: [BattleUnit] = []
     private var selectedMonsters: [RuntimeOwnedMonster] = []
     private var selectedTamers: [RuntimeOwnedTamer] = []
     private var currentWaveIndex = 0
+    private var globalStage = 1
     private var currentBackgroundIndex = 0
     private var completedFightCount = 0
     private var didStartBattle = false
     private var eventData: EventData?
-    var onBattleWon: ((Int) -> Void)?
+    var onStageChanged: ((BattleStageState) -> Void)?
+    var onStageCompleted: ((Int) -> Void)?
+    var onBattleWon: ((BattleWaveReward) -> Void)?
     var onBossBattleWon: (() -> Void)?
 
     func configureEvent(_ event: EventData?) {
@@ -59,6 +61,11 @@ final class GameScene: SKScene {
     ) {
         self.selectedMonsters = selectedMonsters
         self.selectedTamers = selectedTamers
+    }
+
+    func updateProgressStage(_ stage: Int) {
+        globalStage = max(stage, 1)
+        publishStageState(config: battleConfig)
     }
 
     override func didMove(to view: SKView) {
@@ -129,7 +136,7 @@ final class GameScene: SKScene {
         if currentBackgroundData == nil {
             showBackground(at: currentBackgroundIndex)
         }
-        updateStageHUD(config: config)
+        publishStageState(config: config)
 
         if playerUnits.isEmpty {
             spawnPlayers(config: config)
@@ -239,23 +246,24 @@ final class GameScene: SKScene {
     private func layoutFadeNode() {
         fadeNode?.size = size
         fadeNode?.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        updateStageHUD(config: battleConfig)
     }
 
-    private func updateStageHUD(config: BattleConfigData?) {
-        stageHUDNode?.removeFromParent()
-
-        guard let config, size != .zero else {
+    private func publishStageState(config: BattleConfigData?) {
+        guard let config,
+            config.waves.indices.contains(currentWaveIndex)
+        else {
             return
         }
 
-        let root = BattleHUDFactory.stageNode(
-            config: config,
+        let state = BattleStageState(
+            stageNumber: globalStage,
             currentWaveIndex: currentWaveIndex,
-            sceneSize: size
+            totalWaves: config.waves.count,
+            isBossWave: config.waves[currentWaveIndex].isBossWave
         )
-        stageHUDNode = root
-        addChild(root)
+        DispatchQueue.main.async { [weak self] in
+            self?.onStageChanged?(state)
+        }
     }
 
     private func spawnPlayers(config: BattleConfigData) {
@@ -382,7 +390,10 @@ final class GameScene: SKScene {
                 y: groundedY(for: unit, groundY: groundY)
                     + formationYOffset(index: index, count: playerUnits.count)
             )
-            unit.node.position = positionWithOffsets(unit.node.position, unit: unit)
+            unit.node.position = positionWithOffsets(
+                unit.node.position,
+                unit: unit
+            )
             unit.node.zPosition = zPosition(for: unit, index: index)
         }
 
@@ -391,7 +402,10 @@ final class GameScene: SKScene {
                 x: -config.edgeXPadding - CGFloat(index) * supportSpacing,
                 y: groundedY(for: unit, groundY: groundY)
             )
-            unit.node.position = positionWithOffsets(unit.node.position, unit: unit)
+            unit.node.position = positionWithOffsets(
+                unit.node.position,
+                unit: unit
+            )
             unit.node.zPosition = CGFloat(10 + index)
         }
     }
@@ -410,7 +424,10 @@ final class GameScene: SKScene {
                 y: groundedY(for: unit, groundY: groundY)
                     + formationYOffset(index: index, count: enemyUnits.count)
             )
-            unit.node.position = positionWithOffsets(unit.node.position, unit: unit)
+            unit.node.position = positionWithOffsets(
+                unit.node.position,
+                unit: unit
+            )
             unit.node.zPosition = zPosition(for: unit, index: index)
         }
     }
@@ -441,7 +458,10 @@ final class GameScene: SKScene {
                 actions.append(
                     .run {
                         unit.node.run(
-                            .move(to: adjustedTarget, duration: config.walkDuration)
+                            .move(
+                                to: adjustedTarget,
+                                duration: config.walkDuration
+                            )
                         )
                     }
                 )
@@ -457,7 +477,10 @@ final class GameScene: SKScene {
                 actions.append(
                     .run {
                         unit.node.run(
-                            .move(to: adjustedTarget, duration: config.walkDuration)
+                            .move(
+                                to: adjustedTarget,
+                                duration: config.walkDuration
+                            )
                         )
                     }
                 )
@@ -638,7 +661,15 @@ final class GameScene: SKScene {
     private func completeWave(config: BattleConfigData) {
         let wave = config.waves[currentWaveIndex]
         completedFightCount += 1
-        onBattleWon?(wave.xpReward ?? 0)
+        globalStage += 1
+        onStageCompleted?(globalStage)
+        onBattleWon?(
+            BattleWaveReward(
+                xp: wave.xpReward ?? 0,
+                coins: config.rewards.coins,
+                crystals: wave.isBossWave ? config.rewards.crystals : 0
+            )
+        )
 
         if wave.isBossWave {
             showBossVictory(
@@ -854,8 +885,8 @@ final class GameScene: SKScene {
     }
 }
 
-private extension Array {
-    subscript(safe index: Int) -> Element? {
+extension Array {
+    fileprivate subscript(safe index: Int) -> Element? {
         indices.contains(index) ? self[index] : nil
     }
 }

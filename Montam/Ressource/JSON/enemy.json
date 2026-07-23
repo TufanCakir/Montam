@@ -7,10 +7,10 @@
         "rarity": "normal",
         "level": 1,
         "hp": 100,
-        "attack": 50,
+        "attack": 100,
         "defense": 34,
         "enemyGrowthRate": 1.12,
-        "yOffset": -280,
+        "yOffset": -250,
         "xOffset": 0,
         "zOffset": 0
     }

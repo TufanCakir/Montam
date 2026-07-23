@@ -5,10 +5,10 @@
         "name": "Kyro",
         "rarity": "rare",
         "hp": 1000,
-        "attack": 200,
+        "attack": 100,
         "defense": 45,
         "monsterGrowthRate": 1.065,
-        "yOffset": -280,
+        "yOffset": -250,
         "xOffset": -100,
         "zOffset": 180
     },
@@ -18,10 +18,10 @@
         "name": "Pyron",
         "rarity": "epic",
         "hp": 1000,
-        "attack": 200,
+        "attack": 100,
         "defense": 58,
         "monsterGrowthRate": 1.07,
-        "yOffset": -280,
+        "yOffset": -250,
         "xOffset": -100,
         "zOffset": 180
     }

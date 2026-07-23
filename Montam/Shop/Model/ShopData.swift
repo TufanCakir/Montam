@@ -20,6 +20,8 @@ struct ShopProductData: Codable, Identifiable {
     let subtitle: String?
     let visual: String
     let badge: String?
+    let priceCurrency: String?
+    let priceAmount: Int?
     let sortOrder: Int
     let rewards: ShopProductRewards
 }
@@ -27,6 +29,7 @@ struct ShopProductData: Codable, Identifiable {
 enum ShopPurchaseType: String, Codable {
     case consumable
     case nonConsumable
+    case softCurrency
 }
 
 struct ShopProductRewards: Codable {

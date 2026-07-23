@@ -21,7 +21,6 @@ struct StartView: View {
     var body: some View {
         ZStack {
             mainContent
-                .blur(radius: isMenuPresented || isSettingsPresented ? 8 : 0)
 
             if isMenuPresented || isSettingsPresented {
                 Color.black.opacity(0.62)
@@ -126,7 +125,7 @@ struct StartView: View {
                     .font(.system(size: 15, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: .black, radius: 2, x: 1, y: 2)
-                
+
                 Text(AppBundleInfo.versionDisplay)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(.blue)
@@ -134,7 +133,7 @@ struct StartView: View {
                     .background(.black)
                     .clipShape(Capsule())
             }
-        
+
             Spacer()
 
             Button {

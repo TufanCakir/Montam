@@ -48,6 +48,12 @@ struct TeamEvolutionState {
     let currentLevel: Int
 }
 
+struct TeamEvolutionPreview: Equatable {
+    let sourceImageName: String
+    let targetImageName: String
+    let targetName: String
+}
+
 @Observable
 final class TeamViewModel {
     private let monsters =
@@ -185,5 +191,15 @@ final class TeamViewModel {
             canEvolve: active.level >= evolution.requiredLevel,
             currentLevel: active.level
         )
+    }
+
+    func activeMonsterImageName(ownedMonsters: [OwnedMonsterData]) -> String? {
+        guard let active = ownedMonsters.first(where: \.isSelected),
+            let monster = monsters.first(where: { $0.id == active.monsterId })
+        else {
+            return nil
+        }
+
+        return active.equippedImageName ?? monster.monsterName
     }
 }

@@ -1,0 +1,55 @@
+{
+    "products": [
+        {
+            "id": "item_ticket_single",
+            "title": "Beschwörungsticket",
+            "subtitle": "+1 Support-Ticket",
+            "visual": "tickets",
+            "badge": "SUPPORT",
+            "priceCurrency": "bits",
+            "priceAmount": 20,
+            "sortOrder": 10,
+            "rewards": {
+                "bits": null,
+                "summonTickets": 1,
+                "crystals": null,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_coin_pack",
+            "title": "Coin-Paket",
+            "subtitle": "+500 Coins",
+            "visual": "coins",
+            "badge": "ITEM",
+            "priceCurrency": "bits",
+            "priceAmount": 15,
+            "sortOrder": 20,
+            "rewards": {
+                "bits": null,
+                "summonTickets": null,
+                "crystals": null,
+                "coins": 500,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_crystal_pack",
+            "title": "Kristall-Paket",
+            "subtitle": "+10 Kristalle",
+            "visual": "crystals",
+            "badge": "ITEM",
+            "priceCurrency": "bits",
+            "priceAmount": 50,
+            "sortOrder": 30,
+            "rewards": {
+                "bits": null,
+                "summonTickets": null,
+                "crystals": 10,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        }
+    ]
+}

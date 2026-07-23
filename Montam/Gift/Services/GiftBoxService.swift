@@ -36,9 +36,22 @@ enum GiftBoxService {
         saves: [GameSaveData],
         modelContext: ModelContext
     ) {
-        for gift in gifts {
-            claim(gift: gift, saves: saves, modelContext: modelContext)
+        let save = saves.first ?? GameSaveData(didCompleteOnboarding: true)
+
+        if save.modelContext == nil {
+            modelContext.insert(save)
         }
+
+        for gift in gifts {
+            guard !save.claimedGiftIds.contains(gift.id) else {
+                continue
+            }
+
+            apply(gift: gift, to: save)
+            save.claimedGiftIds.append(gift.id)
+        }
+
+        try? modelContext.save()
     }
 
     static func clearGiftBox(

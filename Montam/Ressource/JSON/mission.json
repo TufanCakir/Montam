@@ -1,0 +1,52 @@
+[
+    {
+        "id": "reach_stage_loop",
+        "title": "Stage-Aufstieg",
+        "description": "Erreiche weitere Stages.",
+        "kind": "reachStage",
+        "target": 5,
+        "repeatStep": 5,
+        "rewards": [
+            {
+                "id": "stage_coin_reward",
+                "resourceId": "coins",
+                "amount": 150
+            },
+            {
+                "id": "stage_ticket_reward",
+                "resourceId": "summon_ticket",
+                "amount": 1
+            }
+        ]
+    },
+    {
+        "id": "reach_level_loop",
+        "title": "Tamer-Training",
+        "description": "Erhöhe dein Spielerlevel.",
+        "kind": "reachPlayerLevel",
+        "target": 10,
+        "repeatStep": 10,
+        "rewards": [
+            {
+                "id": "level_crystal_reward",
+                "resourceId": "crystals",
+                "amount": 10
+            }
+        ]
+    },
+    {
+        "id": "power_growth_loop",
+        "title": "Kraftprobe",
+        "description": "Steigere deine Kampfkraft.",
+        "kind": "reachPower",
+        "target": 1000,
+        "repeatStep": 1000,
+        "rewards": [
+            {
+                "id": "power_bits_reward",
+                "resourceId": "bits",
+                "amount": 25
+            }
+        ]
+    }
+]
