@@ -5,17 +5,12 @@
 //  Created by Tufan Cakir on 20.07.26.
 //
 
-import SpriteKit
-import SwiftData
 import SwiftUI
 
 struct GameView: View {
     let isPaused: Bool
+    let store: GameStore
 
-    @Environment(\.modelContext) private var modelContext
-    @Query private var saves: [GameSaveData]
-    @Query private var ownedMonsters: [OwnedMonsterData]
-    @Query private var ownedTamers: [OwnedTamerData]
     @State private var stageState = BattleStageState.empty
     private let monsterCatalog =
         JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
@@ -23,16 +18,11 @@ struct GameView: View {
         JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
         ?? GameProgressionData()
 
-    private let scene: GameScene = {
-        let scene = GameScene()
-        scene.scaleMode = .resizeFill
-        return scene
-    }()
+    private let scene = BattleSceneContainer.makeScene()
 
     var body: some View {
         ZStack(alignment: .top) {
-            SpriteView(scene: scene)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            BattleSceneContainer(scene: scene)
 
             BattleStageOverlay(state: stageState)
                 .padding(.top, 112)
@@ -41,10 +31,10 @@ struct GameView: View {
             configureScene()
         }
         .onChange(of: isPaused) { _, isPaused in
-            scene.isPaused = isPaused
+            BattleSceneContainer.setPaused(isPaused, scene: scene)
         }
         .onDisappear {
-            scene.isPaused = true
+            BattleSceneContainer.setPaused(true, scene: scene)
         }
     }
 
@@ -54,112 +44,30 @@ struct GameView: View {
         }
 
         scene.onStageCompleted = { nextStage in
-            let save = saves.first ?? GameSaveData(didCompleteOnboarding: true)
-
-            if save.modelContext == nil {
-                modelContext.insert(save)
-            }
-
-            save.currentStage = nextStage
+            store.updateStage(nextStage)
         }
 
-        scene.updateProgressStage(saves.first?.currentStage ?? 1)
+        scene.updateProgressStage(store.currentStage)
 
         scene.onBattleWon = { reward in
-            let save = saves.first ?? GameSaveData(didCompleteOnboarding: true)
-
-            if save.modelContext == nil {
-                modelContext.insert(save)
-            }
-
-            for monster in ownedMonsters where monster.isSelected {
-                monster.xp += reward.xp
-                levelUpIfNeeded(monster)
-            }
-
-            save.coins += reward.coins
-            save.crystals += reward.crystals
-            refreshSavedPlayerStats(save: save)
-            scene.updateRuntimeSelection(
-                selectedMonsters: runtimeSelectedMonsters(),
-                selectedTamers: runtimeSelectedTamers()
+            store.applyBattleReward(
+                reward,
+                monsterCatalog: monsterCatalog,
+                progression: progression
             )
-
-            try? modelContext.save()
+            scene.updateRuntimeSelection(
+                selectedMonsters: store.runtimeSelectedMonsters(),
+                selectedTamers: store.runtimeSelectedTamers()
+            )
         }
 
         scene.configure(
-            selectedMonsters: runtimeSelectedMonsters(),
-            selectedTamers: runtimeSelectedTamers()
+            selectedMonsters: store.runtimeSelectedMonsters(),
+            selectedTamers: store.runtimeSelectedTamers()
         )
-    }
-
-    private func runtimeSelectedMonsters() -> [RuntimeOwnedMonster] {
-        ownedMonsters
-            .filter(\.isSelected)
-            .map {
-                RuntimeOwnedMonster(
-                    monsterId: $0.monsterId,
-                    level: $0.level,
-                    xp: $0.xp,
-                    imageName: $0.equippedImageName
-                )
-            }
-    }
-
-    private func runtimeSelectedTamers() -> [RuntimeOwnedTamer] {
-        ownedTamers
-            .filter(\.isSelected)
-            .map {
-                RuntimeOwnedTamer(
-                    tamerId: $0.tamerId,
-                    level: $0.level,
-                    xp: $0.xp
-                )
-            }
-    }
-
-    private func levelUpIfNeeded(_ monster: OwnedMonsterData) {
-        while monster.level < progression.resolvedMaxLevel
-            && monster.xp >= xpNeeded(for: monster.level)
-        {
-            monster.xp -= xpNeeded(for: monster.level)
-            monster.level += 1
-        }
-
-        if monster.level >= progression.resolvedMaxLevel {
-            monster.level = progression.resolvedMaxLevel
-            monster.xp = min(
-                monster.xp,
-                xpNeeded(for: progression.resolvedMaxLevel)
-            )
-        }
-    }
-
-    private func xpNeeded(for level: Int) -> Int {
-        GameProgressionCalculator.xpNeeded(for: level, progression: progression)
-    }
-
-    private func refreshSavedPlayerStats(save: GameSaveData) {
-        let selected = ownedMonsters.filter(\.isSelected)
-        save.playerLevel = selected.map(\.level).max() ?? save.playerLevel
-        save.playerXP = selected.first?.xp ?? save.playerXP
-        save.playerMaxXP = xpNeeded(for: save.playerLevel)
-        save.playerPower = selected.reduce(0) { total, owned in
-            guard
-                let base = monsterCatalog.first(where: {
-                    $0.id == owned.monsterId
-                })
-            else {
-                return total
-            }
-
-            return total
-                + GameProgressionCalculator.power(for: base, level: owned.level)
-        }
     }
 }
 
 #Preview {
-    GameView(isPaused: false)
+    RootView()
 }

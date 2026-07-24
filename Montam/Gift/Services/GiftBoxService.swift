@@ -70,9 +70,6 @@ enum GiftBoxService {
     }
 
     private static func apply(gift: GiftData, to save: GameSaveData) {
-        save.coins += gift.coins
-        save.crystals += gift.crystals
-        save.bits += gift.bits ?? 0
-        save.summonTickets += gift.summonTickets ?? 0
+        gift.rewards.forEach { GameCurrency.apply($0, to: save) }
     }
 }

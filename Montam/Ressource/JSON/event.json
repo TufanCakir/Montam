@@ -2,7 +2,7 @@
     {
         "id": "event_boss_level_01",
         "category": "boss",
-        "eventBackground": "beach_01",
+        "eventBackground": "bg_beach_01",
         "title": "Kyro-Mauer",
         "description": "Besiege Kyro und sammle Summon Tickets.",
         "enemyName": "mon_kyro",
@@ -30,7 +30,7 @@
     {
         "id": "event_hunt_01",
         "category": "hunt",
-        "eventBackground": "generated_lava",
+        "eventBackground": "bg_lava_01",
         "title": "Kristall-Jagd",
         "description": "Besiege Kyro und sammle Kristalle.",
         "enemyName": "mon_kyro",
@@ -58,7 +58,7 @@
     {
         "id": "event_hunt_02",
         "category": "hunt",
-        "eventBackground": "beach_01",
+        "eventBackground": "bg_beach_01",
         "title": "Bit-Training",
         "description": "Besiege Kyro und sammle Bits.",
         "enemyName": "mon_kyro",
@@ -82,7 +82,7 @@
     {
         "id": "event_hunt_03",
         "category": "hunt",
-        "eventBackground": "generated_lava",
+        "eventBackground": "bg_lava_01",
         "title": "Coin-Raid",
         "description": "Besiege Kyro und sammle Coins.",
         "enemyName": "mon_kyro",

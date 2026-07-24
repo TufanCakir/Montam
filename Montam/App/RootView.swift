@@ -14,6 +14,7 @@ struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var saves: [GameSaveData]
     @Query private var ownedMonsters: [OwnedMonsterData]
+    @Query private var ownedTamers: [OwnedTamerData]
     @State private var selectedTab = RootTab.game
     @State private var didShowDailyLogin = false
     @State private var isDailyPresented = false
@@ -23,8 +24,17 @@ struct RootView: View {
     @State private var isMissionPresented = false
     @State private var isQuickMenuPresented = false
 
-    private let headerHeight: CGFloat = 92
-    private let footerHeight: CGFloat = 86
+    private let monsterCatalog =
+        JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+
+    private var gameStore: GameStore {
+        GameStore(
+            modelContext: modelContext,
+            saves: saves,
+            ownedMonsters: ownedMonsters,
+            ownedTamers: ownedTamers
+        )
+    }
 
     private var isModalPresented: Bool {
         isDailyPresented
@@ -40,14 +50,18 @@ struct RootView: View {
             layeredRootContent
 
             VStack(spacing: 0) {
-                RootGameHeader()
-                    .frame(height: headerHeight)
+                RootGameHeader(
+                    status: gameStore.playerStatusState(
+                        monsters: monsterCatalog
+                    )
+                )
+                    .frame(height: RootLayoutMetrics.headerHeight)
                     .ignoresSafeArea(.container, edges: .top)
 
                 Spacer(minLength: 0)
 
                 RootGameFooter(selectedTab: $selectedTab)
-                    .frame(height: footerHeight)
+                    .frame(height: RootLayoutMetrics.footerHeight)
                     .ignoresSafeArea(.container, edges: .bottom)
             }
 
@@ -197,8 +211,8 @@ struct RootView: View {
 
                 rootContent
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.top, headerHeight)
-                    .padding(.bottom, footerHeight)
+                    .padding(.top, RootLayoutMetrics.headerHeight)
+                    .padding(.bottom, RootLayoutMetrics.footerHeight)
             }
             .ignoresSafeArea()
         }
@@ -208,17 +222,17 @@ struct RootView: View {
     private var rootContent: some View {
         switch selectedTab {
         case .tamer:
-            MonsterSelectView()
+            MonsterSelectView(store: gameStore)
         case .montam:
-            TeamView()
+            TeamView(store: gameStore)
         case .dungeon:
             EventView()
         case .game:
-            GameView(isPaused: isModalPresented)
+            GameView(isPaused: isModalPresented, store: gameStore)
         case .summon:
-            SummonView()
+            SummonView(store: gameStore)
         case .shop:
-            ShopView()
+            ShopView(gameStore: gameStore)
         case .trade:
             TradeView()
         }

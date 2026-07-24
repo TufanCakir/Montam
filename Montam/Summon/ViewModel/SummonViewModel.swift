@@ -41,7 +41,11 @@ final class SummonViewModel {
     }
 
     var filteredSummons: [SummonData] {
-        let matching = summons.filter { $0.category == selectedCategoryId }
+        summons(for: selectedCategoryId)
+    }
+
+    func summons(for categoryId: String) -> [SummonData] {
+        let matching = summons.filter { $0.category == categoryId }
         return matching.isEmpty ? summons : matching
     }
 
@@ -98,33 +102,27 @@ final class SummonViewModel {
     private func makeResultItem(for summon: SummonData, index: Int, count: Int)
         -> SummonResultItem
     {
-        let accent = Color(hex: summon.accentColor ?? "") ?? .cyan
         let rarity = resultRarity(index: index, count: count)
 
-        if let tamer = supportForResult(index: index) {
+        if shouldUseTamerPool(for: summon), let tamer = supportForResult(index: index) {
             return SummonResultItem(
                 title: tamer.name,
                 subtitle: "Tamer Support",
                 rarity: tamer.rarity ?? rarity,
                 kind: .tamer,
                 imageName: tamer.tamerName,
-                accentColor: rarityColor(
-                    tamer.rarity ?? rarity,
-                    fallback: accent
-                ),
-                symbolId: summon.iconShape ?? "support"
+                accentColor: rarityColor(tamer.rarity ?? rarity)
             )
         }
 
-        if shouldSummonGeneratedCard(from: summon) {
+        if let monster = monsterForResult(summon: summon, index: index) {
             return SummonResultItem(
-                title: "\(summon.title) \(index + 1)",
-                subtitle: summon.description ?? "Support-Karte",
-                rarity: rarity,
-                kind: .supportCard,
-                imageName: nil,
-                accentColor: rarityColor(rarity, fallback: accent),
-                symbolId: summon.iconShape ?? "cards"
+                title: monster.name,
+                subtitle: "Monster",
+                rarity: monster.rarity ?? rarity,
+                kind: .monster,
+                imageName: monster.monsterName,
+                accentColor: rarityColor(monster.rarity ?? rarity)
             )
         }
 
@@ -132,16 +130,27 @@ final class SummonViewModel {
             title: summon.title,
             subtitle: "Beschwörung",
             rarity: rarity,
-            kind: .supportCard,
+            kind: .monster,
             imageName: summon.bannerImage,
-            accentColor: rarityColor(rarity, fallback: accent),
-            symbolId: summon.iconShape ?? "ticket"
+            accentColor: rarityColor(rarity)
         )
     }
 
-    private func shouldSummonGeneratedCard(from summon: SummonData) -> Bool {
-        summon.iconShape == "cards"
-            || summon.title.localizedCaseInsensitiveContains("karte")
+    private func shouldUseTamerPool(for summon: SummonData) -> Bool {
+        summon.category == "support" || summon.category == "empfohlen"
+    }
+
+    private func monsterForResult(summon: SummonData, index: Int) -> MonsterData? {
+        if let exact = monsters.first(where: { $0.monsterName == summon.bannerImage }) {
+            return exact
+        }
+
+        let poolIds = summonPool.map(\.characterId)
+        let pooledMonsters = monsters.filter {
+            poolIds.contains($0.monsterName) || poolIds.contains($0.id)
+        }
+        let source = pooledMonsters.isEmpty ? monsters : pooledMonsters
+        return item(at: index, in: source)
     }
 
     private func supportForResult(index: Int) -> TamerData? {
@@ -170,9 +179,9 @@ final class SummonViewModel {
         return cycle[index % cycle.count]
     }
 
-    private func rarityColor(_ rarity: String, fallback: Color) -> Color {
+    private func rarityColor(_ rarity: String) -> Color {
         switch rarity.lowercased() {
-        case "ur", "legendary":
+        case "ur", "legendary", "epic":
             return .orange
         case "ssr":
             return .purple
@@ -181,7 +190,7 @@ final class SummonViewModel {
         case "r":
             return .green
         default:
-            return fallback
+            return .cyan
         }
     }
 }

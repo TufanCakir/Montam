@@ -7,6 +7,24 @@
 
 import SwiftUI
 
+enum RootLayoutMetrics {
+    static let headerHeight: CGFloat = 92
+    static let footerHeight: CGFloat = 108
+    static let screenInset: CGFloat = 16
+    static let chromeOpacity = 0.82
+
+    static let quickButtonSize: CGFloat = 46
+    static let quickButtonTopPadding: CGFloat = headerHeight + 20
+
+    static let quickMenuMaxWidth: CGFloat = 340
+    static let quickMenuBottomPadding: CGFloat = footerHeight + 20
+    static let quickMenuItemHeight: CGFloat = 46
+
+    static let footerIconSize: CGFloat = 30
+    static let footerGameIconSize: CGFloat = 50
+    static let footerItemWidth: CGFloat = 44
+}
+
 enum RootTab: CaseIterable, Identifiable {
     case tamer
     case montam
@@ -30,24 +48,29 @@ enum RootTab: CaseIterable, Identifiable {
         }
     }
 
-    var iconName: String {
+    var systemImageName: String {
         switch self {
-        case .tamer: "tamer"
-        case .montam: "montam"
-        case .dungeon: "dungeon"
-        case .game: "game"
-        case .summon: "summon"
-        case .shop: "shop"
-        case .trade: "trade"
+        case .tamer: "person.crop.circle.fill"
+        case .montam: "pawprint.fill"
+        case .dungeon: "door.left.hand.open"
+        case .game: "globe.europe.africa.fill"
+        case .summon: "sparkles"
+        case .shop: "storefront.fill"
+        case .trade: "arrow.left.arrow.right.circle.fill"
         }
     }
 }
 
 struct RootGameHeader: View {
+    let status: PlayerStatusBarState
+
     var body: some View {
-        PlayerStatusBar()
-            .padding(.top)
-            .offset(y: 20)
+        VStack {
+            Spacer()
+
+            PlayerStatusBar(state: status)
+        }
+        .offset(y: 50)
     }
 }
 
@@ -56,8 +79,6 @@ struct RootQuickMenuButton: View {
 
     var body: some View {
         VStack {
-            Spacer()
-
             HStack {
                 Spacer()
 
@@ -65,23 +86,20 @@ struct RootQuickMenuButton: View {
                     Image(systemName: "square.grid.2x2.fill")
                         .font(.system(size: 18, weight: .black))
                         .foregroundStyle(.cyan)
-                        .frame(width: 46, height: 46)
-                        .background(.black.opacity(0.42))
-                        .clipShape(RoundedRectangle(cornerRadius: 13))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 13).stroke(
-                                .cyan.opacity(0.68),
-                                lineWidth: 2
-                            )
+                        .frame(
+                            width: RootLayoutMetrics.quickButtonSize,
+                            height: RootLayoutMetrics.quickButtonSize
                         )
-                        .shadow(color: .black.opacity(0.35), radius: 5)
+                        .rootIconSurface(cornerRadius: 13)
                 }
                 .buttonStyle(.plain)
-                .padding(.trailing, 16)
-                .padding(.bottom, 96)
             }
+
+            Spacer(minLength: 0)
         }
-        .ignoresSafeArea()
+        .padding(.top, RootLayoutMetrics.quickButtonTopPadding)
+        .padding(.trailing, RootLayoutMetrics.screenInset)
+        .offset(y: 50)
     }
 }
 
@@ -100,16 +118,10 @@ struct RootQuickMenuPanel: View {
 
     var body: some View {
         VStack {
-            Spacer()
+            Spacer(minLength: 0)
 
-            VStack(spacing: 12) {
+            VStack(spacing: 10) {
                 HStack {
-                    Text("Menü")
-                        .font(
-                            .system(size: 22, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-
                     Spacer()
 
                     Button(action: onClose) {
@@ -117,8 +129,7 @@ struct RootQuickMenuPanel: View {
                             .font(.system(size: 13, weight: .black))
                             .foregroundStyle(.cyan)
                             .frame(width: 30, height: 30)
-                            .background(.black.opacity(0.28))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .rootIconSurface(cornerRadius: 8)
                     }
                     .buttonStyle(.plain)
                 }
@@ -156,20 +167,11 @@ struct RootQuickMenuPanel: View {
                 }
             }
             .padding(14)
-            .frame(maxWidth: 340)
-            .background(RootChromeBackground())
-            .clipShape(RoundedRectangle(cornerRadius: 18))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18).stroke(
-                    .cyan.opacity(0.6),
-                    lineWidth: 2
-                )
-            )
-            .shadow(color: .black.opacity(0.48), radius: 14, y: 8)
-            .padding(.horizontal, 18)
-            .padding(.bottom, 106)
+            .frame(maxWidth: RootLayoutMetrics.quickMenuMaxWidth)
+            .rootPanelSurface(cornerRadius: 18)
+            .padding(.horizontal, RootLayoutMetrics.screenInset)
+            .padding(.bottom, RootLayoutMetrics.quickMenuBottomPadding)
         }
-        .ignoresSafeArea()
     }
 }
 
@@ -195,7 +197,7 @@ private struct RootQuickMenuItem: View {
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 10)
-            .frame(height: 46)
+            .frame(height: RootLayoutMetrics.quickMenuItemHeight)
             .background(.blue.opacity(0.36))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(
@@ -216,15 +218,15 @@ struct RootGameFooter: View {
         ZStack(alignment: .bottom) {
             RootChromeBackground()
 
-            HStack(alignment: .bottom, spacing: 0) {
+            HStack(alignment: .bottom, spacing: 4) {
                 ForEach(RootTab.allCases) { tab in
                     RootFooterButton(tab: tab, isSelected: selectedTab == tab) {
                         selectedTab = tab
                     }
-                    .padding(.horizontal, 8)
                 }
             }
-            .padding()
+            .padding(.horizontal, RootLayoutMetrics.screenInset)
+            .padding(.bottom, 26)
         }
     }
 }
@@ -261,24 +263,33 @@ private struct RootFooterButton: View {
 
     private var iconSize: CGFloat {
         switch tab {
-        case .game: 50
-        case .dungeon, .summon: 30
-        default: 30
+        case .game:
+            RootLayoutMetrics.footerGameIconSize
+        case .dungeon, .summon:
+            RootLayoutMetrics.footerIconSize
+        default:
+            RootLayoutMetrics.footerIconSize
         }
+    }
+
+    private var cornerRadius: CGFloat {
+        tab == .game ? 25 : 11
     }
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 0) {
-                GeneratedTabIcon(id: tab.iconName, isSelected: isSelected)
+            VStack(spacing: 2) {
+                Image(systemName: tab.systemImageName)
+                    .resizable()
+                    .scaledToFit()
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(isSelected ? .white : .cyan)
                     .padding(tab == .game ? 10 : 8)
                     .frame(width: iconSize, height: iconSize)
                     .background(tileBackground)
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: tab == .game ? 42 : 11)
-                    )
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                     .overlay(
-                        RoundedRectangle(cornerRadius: tab == .game ? 42 : 11)
+                        RoundedRectangle(cornerRadius: cornerRadius)
                             .stroke(
                                 isSelected
                                     ? .white.opacity(0.78) : .cyan.opacity(0.6),
@@ -287,20 +298,19 @@ private struct RootFooterButton: View {
                     )
                     .shadow(
                         color: tab == .game
-                            ? .purple.opacity(0.85) : .black.opacity(0.45),
-                        radius: tab == .game ? 12 : 3
+                            ? .purple.opacity(0.65) : .black.opacity(0.35),
+                        radius: tab == .game ? 8 : 3
                     )
 
-                if !tab.title.isEmpty {
-                    Text(tab.title)
-                        .font(
-                            .system(size: 6, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(isSelected ? .white : .cyan)
-                }
+                Text(tab.title)
+                    .font(.system(size: 6, weight: .heavy, design: .rounded))
+                    .foregroundStyle(isSelected ? .white : .cyan)
+                    .frame(height: 8)
+                    .opacity(tab.title.isEmpty ? 0 : 1)
             }
+            .frame(width: RootLayoutMetrics.footerItemWidth)
         }
-        .padding(.bottom, 8)
+        .buttonStyle(.plain)
         .offset(y: offsetY)
     }
 
@@ -328,6 +338,28 @@ private struct RootFooterButton: View {
                 endPoint: .bottom
             )
         )
+    }
+}
+
+private extension View {
+    func rootIconSurface(cornerRadius: CGFloat) -> some View {
+        background(.black.opacity(0.34))
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(.cyan.opacity(0.55), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.28), radius: 4)
+    }
+
+    func rootPanelSurface(cornerRadius: CGFloat) -> some View {
+        background(RootChromeBackground())
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(.cyan.opacity(0.55), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.42), radius: 12, y: 6)
     }
 }
 

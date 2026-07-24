@@ -18,26 +18,8 @@
     "xpExponentialGrowth": 1.075,
     "backgroundSequence": [
         "bg_beach_01",
-        "pixel_night_city",
         "bg_lava_01",
-        "generated_mountain",
-        "bg_ice_01",
-
-        "pixel_city_mix",
-        "beach_01",
-        "generated_lava",
-        "pixel_rooftop_city",
-        "ice_01",
-
-        "lava_01",
-        "pixel_ocean",
-        "generated_ice",
-        "beach_02",
-        "pixel_lava",
-
-        "lava_02",
-        "pixel_ice",
-        "pixel_start_night_city"
+        "bg_ice_01"
     ],
     "playerMonsters": [
         {

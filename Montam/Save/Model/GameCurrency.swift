@@ -35,4 +35,19 @@ enum GameCurrency {
         default: currency
         }
     }
+
+    static func apply(_ reward: RewardData, to save: GameSaveData) {
+        switch normalized(reward.resourceId) {
+        case "coins":
+            save.coins += reward.amount
+        case "crystals":
+            save.crystals += reward.amount
+        case "bits":
+            save.bits += reward.amount
+        case "summon_ticket":
+            save.summonTickets += reward.amount
+        default:
+            return
+        }
+    }
 }

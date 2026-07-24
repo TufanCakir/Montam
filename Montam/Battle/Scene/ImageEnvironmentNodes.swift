@@ -1,0 +1,54 @@
+//
+//  ImageEnvironmentNodes.swift
+//  Montam
+//
+//  Created by Tufan Cakir on 24.07.26.
+//
+
+import SpriteKit
+import UIKit
+
+enum ImageEnvironmentNodes {
+    static func backgroundNode(for data: BackgroundData, size: CGSize) -> SKNode {
+        guard let imageName = data.resolvedBackgroundImageName else {
+            return fallbackBackgroundNode(size: size)
+        }
+
+        let node = SKSpriteNode(texture: texture(named: imageName))
+        node.name = "background"
+        node.size = size
+        node.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        return node
+    }
+
+    static func groundNode(
+        for data: BackgroundData,
+        size: CGSize,
+        groundHeight: CGFloat
+    ) -> SKNode {
+        let root = SKNode()
+        root.name = "ground"
+        return root
+    }
+
+    private static func fallbackBackgroundNode(size: CGSize) -> SKNode {
+        let node = SKSpriteNode(
+            color: SKColor(red: 0.03, green: 0.06, blue: 0.16, alpha: 1),
+            size: size
+        )
+        node.name = "background"
+        node.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        return node
+    }
+
+    private static func texture(named imageName: String) -> SKTexture {
+        let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
+        if FileManager.default.fileExists(atPath: cachedURL.path()),
+            let image = UIImage(contentsOfFile: cachedURL.path())
+        {
+            return SKTexture(image: image)
+        }
+
+        return SKTexture(imageNamed: imageName)
+    }
+}

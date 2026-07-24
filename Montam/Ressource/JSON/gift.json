@@ -3,10 +3,23 @@
         "id": "starter_gift",
         "title": "Starter-Geschenk",
         "message": "Danke fürs Spielen.",
-        "coins": 500,
-        "crystals": 50,
-        "bits": 0,
-        "summonTickets": 1,
+        "rewards": [
+            {
+                "id": "starter_coin",
+                "resourceId": "coin",
+                "amount": 500
+            },
+            {
+                "id": "starter_crystal",
+                "resourceId": "crystal",
+                "amount": 50
+            },
+            {
+                "id": "starter_ticket",
+                "resourceId": "summon_ticket",
+                "amount": 1
+            }
+        ],
         "expiresAt": null
     }
 ]

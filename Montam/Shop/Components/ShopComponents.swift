@@ -5,7 +5,6 @@
 //  Created by Tufan Cakir on 20.07.26.
 //
 
-import SwiftData
 import SwiftUI
 
 enum ShopSection: CaseIterable, Identifiable {
@@ -47,6 +46,12 @@ struct ShopBackground: View {
     }
 }
 
+struct ShopWalletState {
+    let coins: Int
+    let crystals: Int
+    let bits: Int
+}
+
 struct ShopTitleBar: View {
     let title: String
 
@@ -69,7 +74,7 @@ struct ShopTitleBar: View {
 }
 
 struct ShopWalletFilterBar: View {
-    @Query private var saves: [GameSaveData]
+    let wallet: ShopWalletState
     @Binding var selectedSection: ShopSection
 
     var body: some View {
@@ -77,16 +82,16 @@ struct ShopWalletFilterBar: View {
             if selectedSection == .item {
                 ShopWalletValue(
                     image: "icon_bit",
-                    text: formatNumber(saves.first?.bits ?? 0)
+                    text: formatNumber(wallet.bits)
                 )
             } else {
                 ShopWalletValue(
                     image: "icon_crystal",
-                    text: formatNumber(saves.first?.crystals ?? 0)
+                    text: formatNumber(wallet.crystals)
                 )
                 ShopWalletValue(
                     image: "icon_coin",
-                    text: formatNumber(saves.first?.coins ?? 0)
+                    text: formatNumber(wallet.coins)
                 )
             }
 

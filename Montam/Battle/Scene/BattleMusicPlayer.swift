@@ -9,13 +9,15 @@ import AVFoundation
 import Foundation
 
 final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
+    static let shared = BattleMusicPlayer()
+
     private var playlist: [URL] = []
     private var player: AVAudioPlayer?
     private var settingsObserver: NSObjectProtocol?
     private var currentIndex = 0
     private var currentFileNames: [String] = []
 
-    override init() {
+    private override init() {
         super.init()
         settingsObserver = NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,

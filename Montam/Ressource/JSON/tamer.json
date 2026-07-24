@@ -8,8 +8,8 @@
         "supportAttackBonus": 0.18,
         "supportDefenseBonus": 0.08,
         "supportHealthBonus": 0.15,
-        "yOffset": -250,
-        "xOffset": -30,
+        "yOffset": -300,
+        "xOffset": -50,
         "zOffset": 180
     }
 ]

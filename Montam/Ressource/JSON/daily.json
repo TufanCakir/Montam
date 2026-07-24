@@ -1,30 +1,87 @@
 [
     {
         "day": 1,
-        "coins": 500,
-        "crystals": 50,
-        "bits": 0,
-        "summonTickets": 0
+        "rewards": [
+            {
+                "id": "day_1_coin",
+                "resourceId": "coin",
+                "amount": 500
+            },
+            {
+                "id": "day_1_crystal",
+                "resourceId": "crystal",
+                "amount": 50
+            }
+        ]
     },
     {
         "day": 2,
-        "coins": 700,
-        "crystals": 60,
-        "bits": 25,
-        "summonTickets": 0
+        "rewards": [
+            {
+                "id": "day_2_coin",
+                "resourceId": "coin",
+                "amount": 700
+            },
+            {
+                "id": "day_2_crystal",
+                "resourceId": "crystal",
+                "amount": 60
+            },
+            {
+                "id": "day_2_bit",
+                "resourceId": "bit",
+                "amount": 25
+            }
+        ]
     },
     {
         "day": 3,
-        "coins": 900,
-        "crystals": 70,
-        "bits": 50,
-        "summonTickets": 1
+        "rewards": [
+            {
+                "id": "day_3_coin",
+                "resourceId": "coin",
+                "amount": 900
+            },
+            {
+                "id": "day_3_crystal",
+                "resourceId": "crystal",
+                "amount": 70
+            },
+            {
+                "id": "day_3_bit",
+                "resourceId": "bit",
+                "amount": 50
+            },
+            {
+                "id": "day_3_ticket",
+                "resourceId": "summon_ticket",
+                "amount": 1
+            }
+        ]
     },
     {
         "day": 7,
-        "coins": 2000,
-        "crystals": 150,
-        "bits": 150,
-        "summonTickets": 2
+        "rewards": [
+            {
+                "id": "day_7_coin",
+                "resourceId": "coin",
+                "amount": 2000
+            },
+            {
+                "id": "day_7_crystal",
+                "resourceId": "crystal",
+                "amount": 150
+            },
+            {
+                "id": "day_7_bit",
+                "resourceId": "bit",
+                "amount": 150
+            },
+            {
+                "id": "day_7_ticket",
+                "resourceId": "summon_ticket",
+                "amount": 2
+            }
+        ]
     }
 ]

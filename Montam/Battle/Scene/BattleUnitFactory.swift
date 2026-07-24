@@ -8,6 +8,13 @@
 import SpriteKit
 import UIKit
 
+enum BattleSpriteScale {
+    static let playerMonster: CGFloat = 0.50
+    static let tamer: CGFloat = 0.50
+    static let enemy: CGFloat = 0.50
+    static let boss: CGFloat = 0.80
+}
+
 struct BattleUnitFactory {
     let monsters: [MonsterData]
     let tamers: [TamerData]
@@ -31,7 +38,9 @@ struct BattleUnitFactory {
     }
 
     func enemyUnits(from wave: BattleWaveData) -> [BattleUnit] {
-        wave.enemies.compactMap { unit(from: $0, side: .enemy) }
+        wave.enemies.compactMap {
+            unit(from: $0, side: .enemy, isBoss: wave.isBossWave)
+        }
     }
 
     func supportStats(from configuredTamers: [BattleUnitConfig])
@@ -67,6 +76,16 @@ struct BattleUnitFactory {
     private func unit(from config: BattleUnitConfig, side: BattleSide)
         -> BattleUnit?
     {
+        unit(from: config, side: side, isBoss: false)
+    }
+
+    private func unit(
+        from config: BattleUnitConfig,
+        side: BattleSide,
+        isBoss: Bool
+    )
+        -> BattleUnit?
+    {
         switch side {
         case .player:
             guard let monster = monsters.first(where: { $0.id == config.id })
@@ -82,6 +101,7 @@ struct BattleUnitFactory {
             let node = makeSprite(
                 imageName: config.imageName ?? monster.monsterName,
                 side: side,
+                role: .playerMonster,
                 scaleMultiplier: config.scaleMultiplier ?? 1
             )
             return BattleUnit(
@@ -111,6 +131,7 @@ struct BattleUnitFactory {
             let node = makeSprite(
                 imageName: config.imageName ?? enemy.imageName ?? enemy.enemyName,
                 side: side,
+                role: isBoss ? .boss : .enemy,
                 scaleMultiplier: config.scaleMultiplier ?? 1
             )
             return BattleUnit(
@@ -140,7 +161,8 @@ struct BattleUnitFactory {
         let node = makeSprite(
             imageName: tamer.tamerName,
             side: .support,
-            scaleMultiplier: config.scaleMultiplier ?? 0.82
+            role: .tamer,
+            scaleMultiplier: config.scaleMultiplier ?? 1
         )
         return BattleUnit(
             node: node,
@@ -163,6 +185,7 @@ struct BattleUnitFactory {
     private func makeSprite(
         imageName: String,
         side: BattleSide,
+        role: BattleSpriteRole,
         scaleMultiplier: Double
     ) -> SKSpriteNode {
         let texture = Self.texture(named: imageName)
@@ -172,7 +195,11 @@ struct BattleUnitFactory {
         let maxHeight = sceneSize.height * maxSpriteHeightRatio(for: side)
         let textureHeight = max(texture.size().height, 1)
         let baseScale = maxHeight / textureHeight
-        node.setScale(baseScale * CGFloat(scaleMultiplier))
+        node.setScale(
+            baseScale
+                * roleScale(for: role)
+                * CGFloat(scaleMultiplier)
+        )
 
         if side == .enemy {
             node.xScale = -abs(node.xScale)
@@ -202,4 +229,25 @@ struct BattleUnitFactory {
             battleConfig.enemySpriteMaxHeightRatio ?? 0.22
         }
     }
+
+    private func roleScale(for role: BattleSpriteRole) -> CGFloat {
+        switch role {
+        case .playerMonster:
+            BattleSpriteScale.playerMonster
+        case .tamer:
+            BattleSpriteScale.tamer
+        case .enemy:
+            BattleSpriteScale.enemy
+        case .boss:
+            BattleSpriteScale.boss
+        }
+    }
 }
+
+private enum BattleSpriteRole {
+    case playerMonster
+    case tamer
+    case enemy
+    case boss
+}
+

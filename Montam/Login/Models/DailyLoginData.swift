@@ -10,8 +10,9 @@ import Foundation
 struct DailyLoginData: Codable, Identifiable {
     var id: Int { day }
     let day: Int
-    let coins: Int
-    let crystals: Int
-    let bits: Int?
-    let summonTickets: Int?
+    let rewards: [RewardData]
+
+    var primaryReward: RewardData? {
+        rewards.first { $0.amount > 0 }
+    }
 }

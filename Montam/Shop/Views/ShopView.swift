@@ -5,19 +5,21 @@
 //  Created by Tufan Cakir on 20.07.26.
 //
 
-import SwiftData
 import SwiftUI
 
 struct ShopView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var saves: [GameSaveData]
-    @StateObject private var store = StoreKitShopManager()
+    let gameStore: GameStore
+
+    @StateObject private var paymentStore = StoreKitShopManager()
     @State private var viewModel = ShopViewModel()
 
     var body: some View {
         VStack(spacing: 0) {
             ShopTitleBar(title: viewModel.selectedSection.title)
-            ShopWalletFilterBar(selectedSection: $viewModel.selectedSection)
+            ShopWalletFilterBar(
+                wallet: gameStore.shopWallet,
+                selectedSection: $viewModel.selectedSection
+            )
 
             ScrollView(.vertical, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 10) {
@@ -43,14 +45,10 @@ struct ShopView: View {
             }
         }
         .task {
-            await viewModel.loadIfNeeded(store: store)
+            await viewModel.loadIfNeeded(store: paymentStore)
         }
-        .onChange(of: store.purchasedProductIds) { _, productIds in
-            ShopInventoryService.syncEntitlements(
-                productIds: productIds,
-                saves: saves,
-                modelContext: modelContext
-            )
+        .onChange(of: paymentStore.purchasedProductIds) { _, productIds in
+            gameStore.syncShopEntitlements(productIds: productIds)
         }
     }
 
@@ -60,7 +58,7 @@ struct ShopView: View {
         case .pass:
             ShopPassContent(
                 products: viewModel.selectedProducts,
-                store: store,
+                store: paymentStore,
                 onBuy: buy,
                 priceTitle: priceTitle,
                 onRestore: restorePurchases
@@ -69,7 +67,7 @@ struct ShopView: View {
             ShopProductGridContent(
                 products: viewModel.selectedProducts,
                 emptyTitle: "Keine Premium-Produkte",
-                store: store,
+                store: paymentStore,
                 priceTitle: priceTitle,
                 onBuy: buy
             )
@@ -91,37 +89,25 @@ struct ShopView: View {
     }
 
     private func buyItem(_ product: ItemShopProductData) {
-        let didBuy = ShopInventoryService.purchaseItemProduct(
-            product,
-            saves: saves,
-            modelContext: modelContext
-        )
+        let didBuy = gameStore.purchaseItem(product)
         viewModel.purchaseMessage =
             didBuy ? "Item gekauft." : "Nicht genug Währung."
     }
 
     private func buy(_ product: ShopProductData) {
         if product.purchaseType == .softCurrency {
-            let didBuy = ShopInventoryService.purchaseSoftCurrencyProduct(
-                product,
-                saves: saves,
-                modelContext: modelContext
-            )
+            let didBuy = gameStore.purchaseSoftCurrencyProduct(product)
             viewModel.purchaseMessage =
                 didBuy ? "Item gekauft." : "Nicht genug Währung."
             return
         }
 
         Task {
-            let result = await store.purchase(product)
+            let result = await paymentStore.purchase(product)
 
             switch result {
             case .purchased(let product):
-                ShopInventoryService.applyRewards(
-                    from: product,
-                    saves: saves,
-                    modelContext: modelContext
-                )
+                gameStore.applyShopRewards(from: product)
                 viewModel.purchaseMessage = "Kauf abgeschlossen."
             case .pending:
                 viewModel.purchaseMessage = "Kauf wartet auf Bestätigung."
@@ -135,21 +121,19 @@ struct ShopView: View {
 
     private func restorePurchases() {
         Task {
-            await store.restorePurchases()
-            ShopInventoryService.syncEntitlements(
-                productIds: store.purchasedProductIds,
-                saves: saves,
-                modelContext: modelContext
+            await paymentStore.restorePurchases()
+            gameStore.syncShopEntitlements(
+                productIds: paymentStore.purchasedProductIds
             )
             viewModel.purchaseMessage = "Käufe wurden wiederhergestellt."
         }
     }
 
     private func priceTitle(_ product: ShopProductData) -> String {
-        viewModel.priceTitle(for: product, store: store)
+        viewModel.priceTitle(for: product, store: paymentStore)
     }
 }
 
 #Preview {
-    ShopView()
+    RootView()
 }

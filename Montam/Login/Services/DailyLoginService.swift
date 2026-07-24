@@ -41,10 +41,7 @@ enum DailyLoginService {
             modelContext.insert(save)
         }
 
-        save.coins += reward.coins
-        save.crystals += reward.crystals
-        save.bits += reward.bits ?? 0
-        save.summonTickets += reward.summonTickets ?? 0
+        reward.rewards.forEach { GameCurrency.apply($0, to: save) }
         save.dailyLoginDay = reward.day
         save.lastDailyClaimDate = .now
         try? modelContext.save()

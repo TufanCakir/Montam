@@ -5,13 +5,10 @@
 //  Created by Tufan Cakir on 20.07.26.
 //
 
-import SwiftData
 import SwiftUI
 
 struct TeamView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var ownedMonsters: [OwnedMonsterData]
-    @Query private var ownedTamers: [OwnedTamerData]
+    let store: GameStore
 
     @State private var selectedSection = TeamSection.partner
     @State private var viewModel = TeamViewModel()
@@ -41,11 +38,7 @@ struct TeamView: View {
             }
         }
         .onAppear {
-            TeamInventoryService.syncJSONCompanions(
-                ownedMonsters: ownedMonsters,
-                ownedTamers: ownedTamers,
-                modelContext: modelContext
-            )
+            store.syncJSONCompanions()
         }
     }
 
@@ -54,9 +47,11 @@ struct TeamView: View {
         switch selectedSection {
         case .partner:
             PartnerTeamContent(
-                rows: viewModel.monsterRows(ownedMonsters: ownedMonsters),
+                rows: viewModel.monsterRows(
+                    ownedMonsters: store.ownedMonsters
+                ),
                 evolution: viewModel.availableEvolution(
-                    ownedMonsters: ownedMonsters
+                    ownedMonsters: store.ownedMonsters
                 ),
                 onSelect: selectMonster,
                 onEquipAppearance: equipAppearance,
@@ -64,32 +59,26 @@ struct TeamView: View {
             )
         case .support:
             SupportTeamContent(
-                rows: viewModel.tamerRows(ownedTamers: ownedTamers),
+                rows: viewModel.tamerRows(ownedTamers: store.ownedTamers),
                 onSelect: selectTamer
             )
         }
     }
 
     private func selectMonster(_ id: String) {
-        TeamInventoryService.selectMonster(
-            id: id,
-            ownedMonsters: ownedMonsters,
-            modelContext: modelContext
-        )
+        store.selectMonster(id: id)
     }
 
     private func selectTamer(_ id: String) {
-        TeamInventoryService.selectTamer(
-            id: id,
-            ownedTamers: ownedTamers,
-            modelContext: modelContext
-        )
+        store.selectTamer(id: id)
     }
 
     private func evolveActiveMonster(_ evolution: EvolutionData) {
         let currentImageName =
-            ownedMonsters.first(where: \.isSelected)?.equippedImageName
-            ?? viewModel.activeMonsterImageName(ownedMonsters: ownedMonsters)
+            store.ownedMonsters.first(where: \.isSelected)?.equippedImageName
+            ?? viewModel.activeMonsterImageName(
+                ownedMonsters: store.ownedMonsters
+            )
             ?? evolution.sourceMonsterId
         evolutionPreview = TeamEvolutionPreview(
             sourceImageName: currentImageName,
@@ -97,11 +86,7 @@ struct TeamView: View {
             targetName: evolution.displayName
         )
 
-        TeamInventoryService.evolveActiveMonster(
-            evolution,
-            ownedMonsters: ownedMonsters,
-            modelContext: modelContext
-        )
+        store.evolveActiveMonster(evolution)
 
         Task {
             try? await Task.sleep(nanoseconds: 1_200_000_000)
@@ -119,15 +104,13 @@ struct TeamView: View {
             return
         }
 
-        TeamInventoryService.equipAppearance(
+        store.equipAppearance(
             imageName: appearance.imageName,
-            monsterId: monsterId,
-            ownedMonsters: ownedMonsters,
-            modelContext: modelContext
+            monsterId: monsterId
         )
     }
 }
 
 #Preview {
-    TeamView()
+    RootView()
 }

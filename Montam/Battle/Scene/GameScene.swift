@@ -14,7 +14,7 @@ final class GameScene: SKScene {
     private var monsters: [MonsterData] = []
     private var tamers: [TamerData] = []
     private var enemies: [EnemyData] = []
-    private let musicPlayer = BattleMusicPlayer()
+    private let musicPlayer = BattleMusicPlayer.shared
 
     private var skyNode: SKNode?
     private var worldNode: SKNode?
@@ -197,7 +197,7 @@ final class GameScene: SKScene {
         let worldSize = CGSize(width: worldWidth, height: size.height)
 
         if currentBackgroundData.resolvedBackgroundImageName == nil {
-            let sky = GeneratedEnvironmentNodes.backgroundNode(
+            let sky = ImageEnvironmentNodes.backgroundNode(
                 for: currentBackgroundData,
                 size: size
             )
@@ -206,7 +206,7 @@ final class GameScene: SKScene {
             skyNode = sky
             addChild(sky)
         } else {
-            let scrollingBackground = GeneratedEnvironmentNodes.backgroundNode(
+            let scrollingBackground = ImageEnvironmentNodes.backgroundNode(
                 for: currentBackgroundData,
                 size: worldSize
             )
@@ -215,7 +215,7 @@ final class GameScene: SKScene {
         }
 
         let groundHeight = max(size.height * config.groundYRatio, 80)
-        let ground = GeneratedEnvironmentNodes.groundNode(
+        let ground = ImageEnvironmentNodes.groundNode(
             for: currentBackgroundData,
             size: worldSize,
             groundHeight: groundHeight

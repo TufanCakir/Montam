@@ -108,7 +108,6 @@ struct SummonResultItem: Identifiable {
     let kind: Kind
     let imageName: String?
     let accentColor: Color
-    let symbolId: String
 }
 
 private struct SummonResultCard: View {
@@ -178,58 +177,29 @@ private struct SummonResultCard: View {
                 .scaledToFit()
                 .padding(8)
         } else {
-            GeneratedSupportCardResult(item: item)
-                .padding(18)
+            ResultFallbackIcon(item: item)
+                .padding(28)
         }
     }
 }
 
-private struct GeneratedSupportCardResult: View {
+private struct ResultFallbackIcon: View {
     let item: SummonResultItem
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            item.accentColor.opacity(0.95), .blue.opacity(0.85),
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .rotationEffect(.degrees(-7))
-
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(.white.opacity(0.75), lineWidth: 3)
-                .rotationEffect(.degrees(-7))
-
-            cardSymbol
-                .foregroundStyle(.white)
-                .frame(width: 76, height: 76)
-        }
-        .frame(width: 116, height: 150)
+        Image(systemName: systemName)
+            .resizable()
+            .scaledToFit()
+            .symbolRenderingMode(.hierarchical)
+            .foregroundStyle(item.accentColor)
+            .frame(width: 96, height: 96)
     }
 
-    @ViewBuilder
-    private var cardSymbol: some View {
-        switch item.symbolId {
-        case "cards":
-            VStack(spacing: -30) {
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(lineWidth: 6)
-                    .rotationEffect(.degrees(-12))
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(lineWidth: 6)
-                    .rotationEffect(.degrees(10))
-            }
-        case "ticket":
-            GameResourceIcon(id: "summon_ticket", fallbackImage: nil)
-        case "monster":
-            GeneratedTabIcon(id: "montam", isSelected: true)
-        default:
-            ResultSparkShape()
+    private var systemName: String {
+        switch item.kind {
+        case .monster: "pawprint.fill"
+        case .tamer: "person.fill"
+        case .supportCard: "rectangle.stack.fill"
         }
     }
 }
@@ -287,8 +257,7 @@ private struct SummonResultBackground: View {
                 rarity: "SSR",
                 kind: .tamer,
                 imageName: "tamer_kael",
-                accentColor: .purple,
-                symbolId: "support"
+                accentColor: .purple
             ),
             SummonResultItem(
                 title: "Kael",
@@ -296,8 +265,7 @@ private struct SummonResultBackground: View {
                 rarity: "R",
                 kind: .tamer,
                 imageName: "tamer_kael",
-                accentColor: .blue,
-                symbolId: "support"
+                accentColor: .blue
             ),
             SummonResultItem(
                 title: "Support Karte",
@@ -305,8 +273,7 @@ private struct SummonResultBackground: View {
                 rarity: "SR",
                 kind: .supportCard,
                 imageName: nil,
-                accentColor: .orange,
-                symbolId: "cards"
+                accentColor: .orange
             ),
         ],
         onClose: {}

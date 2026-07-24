@@ -136,13 +136,9 @@ private struct GiftCard: View {
             }
 
             HStack(spacing: 8) {
-                GiftReward(iconId: "coins", amount: gift.coins)
-                GiftReward(iconId: "crystals", amount: gift.crystals)
-                GiftReward(iconId: "bits", amount: gift.bits ?? 0)
-                GiftReward(
-                    iconId: "summon_ticket",
-                    amount: gift.summonTickets ?? 0
-                )
+                ForEach(gift.rewards.filter { $0.amount > 0 }) { reward in
+                    GiftReward(reward: reward)
+                }
             }
 
             GiftActionButton(title: "Abholen", color: .cyan, action: onClaim)
@@ -161,14 +157,17 @@ private struct GiftCard: View {
 }
 
 private struct GiftReward: View {
-    let iconId: String
-    let amount: Int
+    let reward: RewardData
 
     var body: some View {
         HStack(spacing: 4) {
-            GameResourceIcon(id: iconId, fallbackImage: nil)
-                .frame(width: 20, height: 20)
-            Text(GameNumberFormatter.compact(amount))
+            GameResourceIcon(
+                id: GameCurrency.iconId(for: reward.resourceId),
+                fallbackImage: nil
+            )
+            .frame(width: 20, height: 20)
+
+            Text(GameNumberFormatter.compact(reward.amount))
                 .font(.system(size: 12, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
         }

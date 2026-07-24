@@ -16,7 +16,7 @@ struct StartView: View {
     @State private var isSettingsPresented = false
     @State private var menuMessage: String?
     @State private var isLogoOpen = false
-    @State private var background = PixelEnvironmentCatalog.randomBackground()
+    @State private var backgroundImageName = Self.randomBackgroundImageName()
 
     var body: some View {
         ZStack {
@@ -71,32 +71,30 @@ struct StartView: View {
     }
 
     private var mainContent: some View {
-        ZStack {
-            PixelEnvironmentView(
-                data: background,
-                groundRatio: 0.28
-            )
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
 
-            VStack(spacing: 0) {
+            RevealingLogo(progress: isLogoOpen ? 1 : 0)
+                .frame(maxWidth: 340)
+                .frame(height: 150)
+                .padding(.horizontal, 34)
 
-                Spacer()
+            Spacer(minLength: 0)
 
-                RevealingLogo(progress: isLogoOpen ? 1 : 0)
-                    .padding(.horizontal, 34)
-
-                Spacer()
-
-                Button(action: onStart) {
-                    startPrompt
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 100)
-                .padding(.bottom, 84)
-
-                bottomRow
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 48)
+            Button(action: onStart) {
+                startPrompt
             }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 82)
+            .padding(.bottom, 76)
+
+            bottomRow
+                .padding(.horizontal, 32)
+                .padding(.bottom, 48)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            StartBackgroundImage(imageName: backgroundImageName)
         }
     }
 
@@ -104,8 +102,7 @@ struct StartView: View {
         Text("Touch To Start")
             .font(.system(size: 25, weight: .heavy, design: .rounded))
             .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical)
+            .padding()
             .background(
                 LinearGradient(
                     colors: [.clear, .blue.opacity(0.80), .clear],
@@ -119,12 +116,8 @@ struct StartView: View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 16) {
                 MontamBadge()
-                    .frame(width: 54, height: 54)
+                    .frame(width: 50, height: 50)
 
-                Text("© 2026 Tufan Cakir. All rights reserved.")
-                    .font(.system(size: 15, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white)
-                    .shadow(color: .black, radius: 2, x: 1, y: 2)
 
                 Text(AppBundleInfo.versionDisplay)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
@@ -132,6 +125,12 @@ struct StartView: View {
                     .frame(width: 142, height: 28)
                     .background(.black)
                     .clipShape(Capsule())
+                
+                
+                Text("© 2026 Tufan Cakir. All rights reserved.")
+                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black, radius: 2, x: 1, y: 2)
             }
 
             Spacer()
@@ -180,6 +179,36 @@ struct StartView: View {
                 menuMessage = nil
             }
         }
+    }
+
+    private static func randomBackgroundImageName() -> String? {
+        let backgrounds = JSONDataLoader.load("background", as: [BackgroundData].self) ?? []
+        return backgrounds.compactMap(\.resolvedBackgroundImageName).randomElement()
+    }
+}
+
+private struct StartBackgroundImage: View {
+    let imageName: String?
+
+    var body: some View {
+        GeometryReader { geometry in
+            if let imageName {
+                RemoteAssetImage(imageName: imageName)
+                    .scaledToFill()
+                    .frame(
+                        width: geometry.size.width,
+                        height: geometry.size.height
+                    )
+                    .clipped()
+            } else {
+                AppScreenBackground()
+                    .frame(
+                        width: geometry.size.width,
+                        height: geometry.size.height
+                    )
+            }
+        }
+        .ignoresSafeArea()
     }
 }
 
@@ -338,7 +367,7 @@ private struct RevealingLogo: View {
     var body: some View {
         Image("montam_logo")
             .resizable()
-            .scaledToFit()
+            .scaledToFill()
             .opacity(0.18)
             .overlay(alignment: .leading) {
                 GeometryReader { geometry in
@@ -379,7 +408,6 @@ private struct RevealingLogo: View {
                         )
                 }
             }
-            .shadow(color: .black.opacity(0.42), radius: 10, x: 0, y: 8)
     }
 }
 

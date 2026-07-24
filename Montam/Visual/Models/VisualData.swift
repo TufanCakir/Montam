@@ -13,15 +13,5 @@ struct GameVisualCatalogData: Codable {
 
 struct GameVisualResourceData: Codable, Identifiable {
     let id: String
-    let renderMode: VisualRenderMode
-    let imageName: String?
-    let shape: String
-    let colors: [String]
-    let glow: Bool
-    let animation: String?
-}
-
-enum VisualRenderMode: String, Codable {
-    case generated
-    case image
+    let imageName: String
 }

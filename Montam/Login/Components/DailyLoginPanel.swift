@@ -168,35 +168,11 @@ private struct DailyDayCell: View {
     }
 
     private var rewardIconId: String {
-        if (reward.summonTickets ?? 0) > 0 {
-            return "summon_ticket"
-        }
-
-        if (reward.bits ?? 0) > 0 {
-            return "bits"
-        }
-
-        if reward.crystals > 0 {
-            return "crystals"
-        }
-
-        return "coins"
+        reward.primaryReward.map { GameCurrency.iconId(for: $0.resourceId) } ?? "reward"
     }
 
     private var rewardAmount: Int {
-        if let tickets = reward.summonTickets, tickets > 0 {
-            return tickets
-        }
-
-        if let bits = reward.bits, bits > 0 {
-            return bits
-        }
-
-        if reward.crystals > 0 {
-            return reward.crystals
-        }
-
-        return reward.coins
+        reward.primaryReward?.amount ?? 0
     }
 
     private var titleColor: Color {
@@ -233,13 +209,9 @@ private struct DailyRewardCard: View {
                 .font(.system(size: 24, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
 
-            RewardRow(iconId: "coins", amount: reward.coins)
-            RewardRow(iconId: "crystals", amount: reward.crystals)
-            RewardRow(iconId: "bits", amount: reward.bits ?? 0)
-            RewardRow(
-                iconId: "summon_ticket",
-                amount: reward.summonTickets ?? 0
-            )
+            ForEach(reward.rewards.filter { $0.amount > 0 }) { item in
+                RewardRow(reward: item)
+            }
 
             Text("Zum Abholen tippen")
                 .font(.system(size: 14, weight: .heavy, design: .rounded))
@@ -274,14 +246,17 @@ private struct DailyEmptyState: View {
 }
 
 private struct RewardRow: View {
-    let iconId: String
-    let amount: Int
+    let reward: RewardData
 
     var body: some View {
         HStack(spacing: 10) {
-            GameResourceIcon(id: iconId, fallbackImage: nil)
-                .frame(width: 28, height: 28)
-            Text(GameNumberFormatter.compact(amount))
+            GameResourceIcon(
+                id: GameCurrency.iconId(for: reward.resourceId),
+                fallbackImage: nil
+            )
+            .frame(width: 28, height: 28)
+
+            Text(GameNumberFormatter.compact(reward.amount))
                 .font(.system(size: 18, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
             Spacer()

@@ -5,58 +5,44 @@
 //  Created by Tufan Cakir on 20.07.26.
 //
 
-import SwiftData
 import SwiftUI
 
 struct SummonView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var saves: [GameSaveData]
-    @Query private var ownedMonsters: [OwnedMonsterData]
-    @Query private var ownedTamers: [OwnedTamerData]
+    let store: GameStore
 
     @State private var viewModel = SummonViewModel()
 
     var body: some View {
-        VStack(spacing: 0) {
-            SummonTitleBar(
-                ticketCount: saves.first?.summonTickets ?? 0,
-                crystalCount: saves.first?.crystals ?? 0
-            )
+        ZStack {
+            SummonScreenBackground()
 
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 14) {
-                    SummonCategoryPicker(
-                        categories: viewModel.categories,
-                        selectedCategoryId: $viewModel.selectedCategoryId
-                    )
+            VStack(spacing: SummonLayoutMetrics.sectionSpacing) {
+                SummonHeader(
+                    ticketCount: store.summonTickets,
+                    crystalCount: store.crystals
+                )
 
-                    if viewModel.filteredSummons.isEmpty {
-                        SummonEmptyState()
-                    } else {
-                        SummonBannerPageList(
-                            summons: viewModel.filteredSummons,
+                SummonCategoryPicker(
+                    categories: viewModel.categories,
+                    summons: viewModel.summons,
+                    selectedCategoryId: $viewModel.selectedCategoryId
+                )
+
+                TabView(selection: $viewModel.selectedCategoryId) {
+                    ForEach(viewModel.categories) { category in
+                        SummonCategoryPage(
+                            summons: viewModel.summons(for: category.id),
                             onSummon: performSummon
                         )
+                        .tag(category.id)
                     }
                 }
-                .padding(.horizontal, 22)
-                .padding(.top, 14)
-                .padding(.bottom, 12)
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
-            .overlay(alignment: .leading) {
-                SummonSideChevron(systemName: "chevron.left") {
-                    viewModel.moveCategory(by: -1)
-                }
-                .padding(.leading, 6)
-            }
-            .overlay(alignment: .trailing) {
-                SummonSideChevron(systemName: "chevron.right") {
-                    viewModel.moveCategory(by: 1)
-                }
-                .padding(.trailing, 6)
-            }
+            .padding(.horizontal, SummonLayoutMetrics.screenPadding)
+            .padding(.top, SummonLayoutMetrics.topPadding)
+            .padding(.bottom, SummonLayoutMetrics.bottomPadding)
         }
-        .background(SummonGeneratedBackground())
         .fullScreenCover(isPresented: $viewModel.isShowingSummonResult) {
             SummonResultView(
                 title: viewModel.summonResultTitle,
@@ -73,13 +59,10 @@ struct SummonView: View {
     }
 
     private func performSummon(_ summon: SummonData, count: Int) {
-        let cost =
-            count == 10 ? (summon.multiCost ?? 0) : (summon.singleCost ?? 0)
-        let didSpend = SummonInventoryService.spend(
+        let cost = count == 10 ? summon.multiCost : summon.singleCost
+        let didSpend = store.spendSummon(
             cost: cost,
-            currency: summon.currency,
-            saves: saves,
-            modelContext: modelContext
+            currency: summon.currency
         )
 
         guard didSpend else {
@@ -90,13 +73,10 @@ struct SummonView: View {
         }
 
         let results = viewModel.makeResults(for: summon, count: count)
-        SummonInventoryService.applyResults(
+        store.applySummonResults(
             results,
             monsters: viewModel.monsters,
-            tamers: viewModel.tamers,
-            ownedMonsters: ownedMonsters,
-            ownedTamers: ownedTamers,
-            modelContext: modelContext
+            tamers: viewModel.tamers
         )
 
         viewModel.summonResults = results
@@ -105,6 +85,6 @@ struct SummonView: View {
     }
 }
 
-#Preview {
-    SummonView()
+#Preview("Summon") {
+    SummonView(store: .preview)
 }

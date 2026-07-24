@@ -8,8 +8,8 @@
         "attack": 100,
         "defense": 45,
         "monsterGrowthRate": 1.065,
-        "yOffset": -250,
-        "xOffset": -100,
+        "yOffset": -300,
+        "xOffset": -30,
         "zOffset": 180
     },
     {
@@ -21,8 +21,8 @@
         "attack": 100,
         "defense": 58,
         "monsterGrowthRate": 1.07,
-        "yOffset": -250,
-        "xOffset": -100,
+        "yOffset": -300,
+        "xOffset": -30,
         "zOffset": 180
     }
 ]

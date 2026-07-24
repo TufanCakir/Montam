@@ -12,12 +12,7 @@ struct SummonData: Codable {
     let title: String
     let category: String
     let currency: String
-    let bannerImage: String?
-    let renderMode: String?
-    let accentColor: String?
-    let iconShape: String?
-    let description: String?
-    let singleCost: Int?
-    let multiCost: Int?
-    let guaranteedAfter: Int?
+    let singleCost: Int
+    let multiCost: Int
+    let bannerImage: String
 }

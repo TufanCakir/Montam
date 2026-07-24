@@ -1,97 +1,47 @@
 [
     {
-        "id": "beginnings_banner",
-        "title": "Beginnings Summon",
+        "id": "beginnings_kyro_banner",
+        "title": "Kyro Summon",
         "category": "beginnings",
         "currency": "crystal",
-        "bannerImage": "mon_kyro",
-        "renderMode": "image",
-        "accentColor": "#00C8FF",
-        "iconShape": "monster",
-        "description": "Beschwöre Kyro aus dem Pool.",
         "singleCost": 5,
         "multiCost": 50,
-        "guaranteedAfter": 500
+        "bannerImage": "mon_kyro"
     },
     {
-        "id": "pyron_banner",
-        "title": "Beginnings Summon",
+        "id": "beginnings_pyron_banner",
+        "title": "Pyron Summon",
         "category": "beginnings",
         "currency": "crystal",
-        "bannerImage": "mon_pyron",
-        "renderMode": "image",
-        "accentColor": "#00C8FF",
-        "iconShape": "monster",
-        "description": "Beschwöre Pyron aus dem Pool.",
         "singleCost": 5,
         "multiCost": 50,
-        "guaranteedAfter": 500
+        "bannerImage": "mon_pyron"
     },
     {
-        "id": "support_banner",
-        "title": "Support Summon",
+        "id": "support_kael_banner",
+        "title": "Kael Support Summon",
         "category": "support",
         "currency": "summon_ticket",
-        "bannerImage": "tamer_kael",
-        "renderMode": "image",
-        "accentColor": "#B658FF",
-        "iconShape": "support",
-        "description": "Beschwöre Supporter für deine Monster.",
         "singleCost": 5,
         "multiCost": 50,
-        "guaranteedAfter": 500
+        "bannerImage": "tamer_kael"
     },
     {
-        "id": "support_cards_banner",
-        "title": "Support-Karten Beschwörung",
-        "category": "support",
-        "currency": "summon_ticket",
-        "renderMode": "generated",
-        "accentColor": "#35D875",
-        "iconShape": "cards",
-        "description":
-            "Erhalte dynamisch generierte Support-Karten für Kampfboni.",
-        "singleCost": 5,
-        "multiCost": 50,
-        "guaranteedAfter": 500
-    },
-    {
-        "id": "support_monster_banner",
-        "title": "Support-Monster Beschwörung",
-        "category": "support",
-        "currency": "crystal",
-        "renderMode": "generated",
-        "accentColor": "#FFB000",
-        "iconShape": "monster",
-        "description": "Beschwöre Monster, die dein aktives Team verstärken.",
-        "singleCost": 5,
-        "multiCost": 50,
-        "guaranteedAfter": 500
-    },
-    {
-        "id": "ability_cards_banner",
-        "title": "Fähigkeitskarten Beschwörung",
-        "category": "special",
-        "currency": "crystal",
-        "renderMode": "generated",
-        "accentColor": "#00D2FF",
-        "iconShape": "cards",
-        "description": "Ziehe Karten mit aktiven und passiven Fähigkeiten.",
-        "singleCost": 5,
-        "multiCost": 50,
-        "guaranteedAfter": 500
-    },
-    {
-        "id": "event_support_banner",
-        "title": "Event-Support Beschwörung",
+        "id": "event_kael_banner",
+        "title": "Event Support Summon",
         "category": "empfohlen",
         "currency": "summon_ticket",
-        "renderMode": "generated",
-        "accentColor": "#FF4F9A",
-        "iconShape": "ticket",
-        "description": "Zeitlich empfohlene Banner für Event-Fortschritt.",
         "singleCost": 5,
         "multiCost": 50,
-        "guaranteedAfter": 500
+        "bannerImage": "tamer_kael"
+    },
+    {
+        "id": "special_pyron_banner",
+        "title": "Special Pyron Summon",
+        "category": "special",
+        "currency": "crystal",
+        "singleCost": 5,
+        "multiCost": 50,
+        "bannerImage": "mon_pyron"
     }
 ]
