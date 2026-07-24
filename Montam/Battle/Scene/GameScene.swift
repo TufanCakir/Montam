@@ -274,6 +274,8 @@ final class GameScene: SKScene {
                 BattleUnitConfig(
                     id: $0.monsterId,
                     level: $0.level,
+                    xp: $0.xp,
+                    maxXP: $0.maxXP,
                     slot: 0,
                     hpMultiplier: nil,
                     scaleMultiplier: nil,
@@ -327,6 +329,8 @@ final class GameScene: SKScene {
                 BattleUnitConfig(
                     id: $0.monsterId,
                     level: $0.level,
+                    xp: $0.xp,
+                    maxXP: $0.maxXP,
                     slot: 0,
                     hpMultiplier: nil,
                     scaleMultiplier: nil,
@@ -365,6 +369,8 @@ final class GameScene: SKScene {
             }
 
             playerUnits[index].level = stats.level
+            playerUnits[index].xp = unitConfig.xp ?? 0
+            playerUnits[index].maxXP = unitConfig.maxXP ?? 1
             playerUnits[index].attack = Int(
                 Double(stats.attack) * (1 + attackBonus)
             )

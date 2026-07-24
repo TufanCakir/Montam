@@ -12,6 +12,8 @@ final class BattleUnit {
     let side: BattleSide
     let id: String
     var level: Int
+    var xp: Int
+    var maxXP: Int
     var maxHP: Int
     var currentHP: Int
     var attack: Int
@@ -32,6 +34,8 @@ final class BattleUnit {
         side: BattleSide,
         id: String,
         level: Int,
+        xp: Int = 0,
+        maxXP: Int = 1,
         maxHP: Int,
         currentHP: Int,
         attack: Int,
@@ -47,6 +51,8 @@ final class BattleUnit {
         self.side = side
         self.id = id
         self.level = level
+        self.xp = xp
+        self.maxXP = max(maxXP, 1)
         self.maxHP = maxHP
         self.currentHP = currentHP
         self.attack = attack

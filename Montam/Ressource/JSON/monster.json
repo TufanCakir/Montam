@@ -1,9 +1,9 @@
 [
     {
-        "id": "kyro",
-        "monsterName": "mon_kyro",
-        "name": "Kyro",
-        "rarity": "rare",
+        "id": "cubon",
+        "monsterName": "mon_cubon",
+        "name": "Cubon",
+        "rarity": "normal",
         "hp": 1000,
         "attack": 100,
         "defense": 45,
@@ -13,10 +13,10 @@
         "zOffset": 180
     },
     {
-        "id": "pyron",
-        "monsterName": "mon_pyron",
-        "name": "Pyron",
-        "rarity": "epic",
+        "id": "embon",
+        "monsterName": "mon_embon",
+        "name": "Embon",
+        "rarity": "normal",
         "hp": 1000,
         "attack": 100,
         "defense": 58,

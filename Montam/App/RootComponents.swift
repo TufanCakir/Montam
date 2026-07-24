@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum RootLayoutMetrics {
-    static let headerHeight: CGFloat = 92
+    static let headerHeight: CGFloat = 82
     static let footerHeight: CGFloat = 108
     static let screenInset: CGFloat = 16
     static let chromeOpacity = 0.82
@@ -70,7 +70,7 @@ struct RootGameHeader: View {
 
             PlayerStatusBar(state: status)
         }
-        .offset(y: 50)
+
     }
 }
 
@@ -99,7 +99,7 @@ struct RootQuickMenuButton: View {
         }
         .padding(.top, RootLayoutMetrics.quickButtonTopPadding)
         .padding(.trailing, RootLayoutMetrics.screenInset)
-        .offset(y: 50)
+
     }
 }
 

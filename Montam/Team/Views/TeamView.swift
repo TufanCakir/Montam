@@ -16,9 +16,7 @@ struct TeamView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if selectedSection != .partner {
-                TeamTitleBar(section: selectedSection)
-            }
+            TeamTitleBar(section: selectedSection)
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 12) {
@@ -73,20 +71,25 @@ struct TeamView: View {
         store.selectTamer(id: id)
     }
 
-    private func evolveActiveMonster(_ evolution: EvolutionData) {
+    private func evolveActiveMonster(_ evolution: TeamEvolutionState) {
         let currentImageName =
             store.ownedMonsters.first(where: \.isSelected)?.equippedImageName
             ?? viewModel.activeMonsterImageName(
                 ownedMonsters: store.ownedMonsters
             )
-            ?? evolution.sourceMonsterId
+            ?? evolution.targetAppearance.imageName
         evolutionPreview = TeamEvolutionPreview(
             sourceImageName: currentImageName,
-            targetImageName: evolution.targetImageName,
-            targetName: evolution.displayName
+            targetImageName: evolution.targetAppearance.imageName,
+            targetName: evolution.targetAppearance.title
         )
 
-        store.evolveActiveMonster(evolution)
+        if let activeMonsterId = store.ownedMonsters.first(where: \.isSelected)?.monsterId {
+            store.transformActiveMonster(
+                to: evolution.targetAppearance.imageName,
+                monsterId: activeMonsterId
+            )
+        }
 
         Task {
             try? await Task.sleep(nanoseconds: 1_200_000_000)
@@ -111,6 +114,6 @@ struct TeamView: View {
     }
 }
 
-#Preview {
-    RootView()
+#Preview("Team") {
+    TeamView(store: .preview)
 }

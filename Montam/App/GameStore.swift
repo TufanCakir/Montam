@@ -45,7 +45,8 @@ struct GameStore {
             xp: save?.playerXP ?? active?.xp ?? 0,
             maxXP: save?.playerMaxXP ?? 100,
             coins: save?.coins ?? 0,
-            crystals: save?.crystals ?? 0
+            crystals: save?.crystals ?? 0,
+            bits: save?.bits ?? 0
         )
     }
 
@@ -70,13 +71,20 @@ struct GameStore {
     }
 
     func runtimeSelectedMonsters() -> [RuntimeOwnedMonster] {
-        ownedMonsters
+        let progression = JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
+            ?? GameProgressionData()
+
+        return ownedMonsters
             .filter(\.isSelected)
             .map {
                 RuntimeOwnedMonster(
                     monsterId: $0.monsterId,
                     level: $0.level,
                     xp: $0.xp,
+                    maxXP: GameProgressionCalculator.xpNeeded(
+                        for: $0.level,
+                        progression: progression
+                    ),
                     imageName: $0.equippedImageName
                 )
             }
@@ -202,9 +210,10 @@ struct GameStore {
         )
     }
 
-    func evolveActiveMonster(_ evolution: EvolutionData) {
-        TeamInventoryService.evolveActiveMonster(
-            evolution,
+    func transformActiveMonster(to imageName: String, monsterId: String) {
+        TeamInventoryService.equipAppearance(
+            imageName: imageName,
+            monsterId: monsterId,
             ownedMonsters: ownedMonsters,
             modelContext: modelContext
         )
@@ -307,7 +316,7 @@ extension GameStore {
                 level: 10,
                 xp: 146,
                 isSelected: true,
-                equippedImageName: "mon_kyro"
+                equippedImageName: "mon_cubon"
             )
             let tamer = OwnedTamerData(
                 tamerId: "kael",

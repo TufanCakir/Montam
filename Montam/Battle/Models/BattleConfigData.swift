@@ -39,6 +39,8 @@ struct BattleWaveData: Decodable {
 struct BattleUnitConfig: Decodable {
     let id: String
     let level: Int?
+    let xp: Int?
+    let maxXP: Int?
     let slot: Int
     let hpMultiplier: Double?
     let scaleMultiplier: Double?
@@ -47,6 +49,8 @@ struct BattleUnitConfig: Decodable {
     init(
         id: String,
         level: Int?,
+        xp: Int? = nil,
+        maxXP: Int? = nil,
         slot: Int,
         hpMultiplier: Double?,
         scaleMultiplier: Double?,
@@ -54,6 +58,8 @@ struct BattleUnitConfig: Decodable {
     ) {
         self.id = id
         self.level = level
+        self.xp = xp
+        self.maxXP = maxXP
         self.slot = slot
         self.hpMultiplier = hpMultiplier
         self.scaleMultiplier = scaleMultiplier
@@ -64,6 +70,8 @@ struct BattleUnitConfig: Decodable {
         BattleUnitConfig(
             id: id,
             level: level,
+            xp: xp,
+            maxXP: maxXP,
             slot: slot,
             hpMultiplier: hpMultiplier,
             scaleMultiplier: scaleMultiplier,

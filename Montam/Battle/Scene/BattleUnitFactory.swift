@@ -109,6 +109,8 @@ struct BattleUnitFactory {
                 side: side,
                 id: monster.id,
                 level: stats.level,
+                xp: config.xp ?? 0,
+                maxXP: config.maxXP ?? 1,
                 maxHP: stats.maxHP,
                 currentHP: stats.maxHP,
                 attack: stats.attack,
@@ -250,4 +252,3 @@ private enum BattleSpriteRole {
     case enemy
     case boss
 }
-

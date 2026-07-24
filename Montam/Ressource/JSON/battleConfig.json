@@ -23,7 +23,7 @@
     ],
     "playerMonsters": [
         {
-            "id": "kyro",
+            "id": "cubon",
             "slot": 0
         }
     ],
@@ -40,12 +40,12 @@
             "xpReward": 18,
             "enemies": [
                 {
-                    "id": "pyron",
+                    "id": "cubon",
                     "level": 1,
                     "slot": 0
                 },
                 {
-                    "id": "pyron",
+                    "id": "cubon",
                     "level": 1,
                     "slot": 1
                 }
@@ -57,17 +57,17 @@
             "xpReward": 24,
             "enemies": [
                 {
-                    "id": "pyron",
+                    "id": "cubon",
                     "level": 2,
                     "slot": 0
                 },
                 {
-                    "id": "pyron",
+                    "id": "cubon",
                     "level": 2,
                     "slot": 1
                 },
                 {
-                    "id": "pyron",
+                    "id": "cubon",
                     "level": 2,
                     "slot": 2
                 }
@@ -79,7 +79,7 @@
             "xpReward": 72,
             "enemies": [
                 {
-                    "id": "pyron",
+                    "id": "kyro",
                     "level": 3,
                     "slot": 0,
                     "hpMultiplier": 1.5,

@@ -15,6 +15,7 @@ struct PlayerStatusBarState {
     let maxXP: Int
     let coins: Int
     let crystals: Int
+    let bits: Int
 }
 
 struct PlayerStatusBar: View {
@@ -32,7 +33,7 @@ struct PlayerStatusBar: View {
             )
             .layoutPriority(1)
 
-            LazyVGrid(columns: currencyColumns, spacing: 10) {
+            HStack(spacing: 7) {
                 CurrencyPill(
                     iconId: "coin",
                     fallbackImage: "icon_coin",
@@ -46,18 +47,12 @@ struct PlayerStatusBar: View {
                 )
 
                 CurrencyPill(
-                    iconId: "ticket",
-                    fallbackImage: "icon_ticket",
-                    amount: state.crystals
-                )
-
-                CurrencyPill(
                     iconId: "bit",
                     fallbackImage: "icon_bit",
-                    amount: state.crystals
+                    amount: state.bits
                 )
             }
-            .fixedSize()
+            .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, PlayerStatusBarMetrics.horizontalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -70,24 +65,20 @@ struct PlayerStatusBar: View {
     }
 }
 
-private let currencyColumns = [
-    GridItem(.fixed(PlayerStatusBarMetrics.currencyWidth), spacing: 6),
-    GridItem(.fixed(PlayerStatusBarMetrics.currencyWidth), spacing: 6)
-]
 
 private enum PlayerStatusBarMetrics {
-    static let horizontalPadding: CGFloat = 12
-    static let itemSpacing: CGFloat = 12
+    static let horizontalPadding: CGFloat = 10
+    static let itemSpacing: CGFloat = 6
 
-    static let avatarFrame = CGSize(width: 42, height: 46)
-    static let avatarImageSize: CGFloat = 34
+    static let avatarFrame = CGSize(width: 40, height: 44)
+    static let avatarImageSize: CGFloat = 32
     static let avatarCornerRadius: CGFloat = 7
 
-    static let meterMinWidth: CGFloat = 104
-    static let meterMaxWidth: CGFloat = 140
+    static let meterMinWidth: CGFloat = 72
+    static let meterMaxWidth: CGFloat = 92
     static let progressHeight: CGFloat = 4
 
-    static let currencyWidth: CGFloat = 62
+    static let currencyWidth: CGFloat = 56
     static let currencyHeight: CGFloat = 28
     static let currencyIconSize: CGFloat = 17
     static let currencyCornerRadius: CGFloat = 6
@@ -129,7 +120,6 @@ private struct PlayerAvatar: View {
             width: PlayerStatusBarMetrics.avatarFrame.width,
             height: PlayerStatusBarMetrics.avatarFrame.height
         )
-        .padding()
     }
 }
 
@@ -192,7 +182,7 @@ private struct CurrencyPill: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
         }
-        .padding(.horizontal, 7)
+        .padding(.horizontal, 5)
         .frame(
             width: PlayerStatusBarMetrics.currencyWidth,
             height: PlayerStatusBarMetrics.currencyHeight
@@ -221,7 +211,8 @@ private struct CurrencyPill: View {
             xp: 0,
             maxXP: 100,
             coins: 0,
-            crystals: 0
+            crystals: 0,
+            bits: 0
         )
     )
 }

@@ -26,7 +26,16 @@ struct PartnerTeamContent: View {
     let evolution: TeamEvolutionState?
     let onSelect: (String) -> Void
     let onEquipAppearance: (TeamAppearanceRow, String) -> Void
-    let onEvolve: (EvolutionData) -> Void
+    let onEvolve: (TeamEvolutionState) -> Void
+
+    @State private var isAppearancePickerVisible = false
+    @State private var pendingSelection: TeamMonsterRow?
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10),
+    ]
 
     var body: some View {
         if rows.isEmpty {
@@ -35,20 +44,48 @@ struct PartnerTeamContent: View {
                 message: "Partner werden aus deinen Spieldaten geladen."
             )
         } else {
-            VStack(spacing: 10) {
-                if let active = rows.first(where: \.isSelected) ?? rows.first {
-                    ActiveMonsterPanel(
-                        row: active,
-                        evolution: evolution,
-                        onEquipAppearance: onEquipAppearance,
-                        onEvolve: onEvolve
+            ZStack {
+                VStack(spacing: 14) {
+                    if let active = rows.first(where: \.isSelected) ?? rows.first {
+                        ActiveMonsterPanel(
+                            row: active,
+                            evolution: evolution,
+                            isAppearancePickerVisible: $isAppearancePickerVisible,
+                            onEquipAppearance: onEquipAppearance,
+                            onEvolve: onEvolve
+                        )
+                    }
+
+                    VStack(spacing: 10) {
+                        LazyVGrid(columns: columns, spacing: 10) {
+                            ForEach(rows) { row in
+                                TeamMonsterGridTile(row: row) {
+                                    pendingSelection = row
+                                }
+                            }
+                        }
+                    }
+                    .padding(10)
+                    .background(Color.blue.opacity(0.30))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(.cyan.opacity(0.65), lineWidth: 2)
                     )
                 }
 
-                ForEach(rows) { row in
-                    TeamMonsterListRow(row: row) {
-                        onSelect(row.id)
-                    }
+                if let pendingSelection {
+                    TeamMonsterSelectionPopup(
+                        row: pendingSelection,
+                        onCancel: {
+                            self.pendingSelection = nil
+                        },
+                        onConfirm: {
+                            onSelect(pendingSelection.id)
+                            self.pendingSelection = nil
+                        }
+                    )
+                    .transition(.scale.combined(with: .opacity))
                 }
             }
         }
@@ -78,24 +115,12 @@ struct SupportTeamContent: View {
 
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(row.name)
-                                    .font(
-                                        .system(
-                                            size: 18,
-                                            weight: .heavy,
-                                            design: .rounded
-                                        )
-                                    )
+                                    .font(.system(size: 18, weight: .heavy, design: .rounded))
                                     .foregroundStyle(.white)
                                 Text(
                                     "Lv. \(row.level)  ATK +\(percent(row.attackBonus))  DEF +\(percent(row.defenseBonus))  HP +\(percent(row.healthBonus))"
                                 )
-                                .font(
-                                    .system(
-                                        size: 12,
-                                        weight: .bold,
-                                        design: .rounded
-                                    )
-                                )
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
                                 .foregroundStyle(.cyan)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.65)
@@ -103,20 +128,13 @@ struct SupportTeamContent: View {
 
                             Spacer()
 
-                            Image(
-                                systemName: row.isSelected
-                                    ? "checkmark.circle.fill" : "circle"
-                            )
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundStyle(
-                                row.isSelected ? .yellow : .cyan.opacity(0.55)
-                            )
+                            Image(systemName: row.isSelected ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundStyle(row.isSelected ? .yellow : .cyan.opacity(0.55))
                         }
                         .padding(.horizontal, 10)
                         .frame(height: 72)
-                        .background(
-                            Color.black.opacity(row.isSelected ? 0.36 : 0.2)
-                        )
+                        .background(Color.black.opacity(row.isSelected ? 0.36 : 0.2))
                         .clipShape(RoundedRectangle(cornerRadius: 7))
                     }
                     .buttonStyle(.plain)
@@ -159,20 +177,13 @@ struct TeamSectionTabs: View {
                     selectedSection = section
                 } label: {
                     Text(section.title)
-                        .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(
-                            selectedSection == section ? .black : .cyan
-                        )
+                        .font(.system(size: 12, weight: .heavy, design: .rounded))
+                        .foregroundStyle(selectedSection == section ? .black : .cyan)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                         .frame(maxWidth: .infinity)
                         .frame(height: 38)
-                        .background(
-                            selectedSection == section
-                                ? Color.yellow : Color.black.opacity(0.28)
-                        )
+                        .background(selectedSection == section ? Color.yellow : Color.black.opacity(0.28))
                         .clipShape(RoundedRectangle(cornerRadius: 7))
                 }
                 .buttonStyle(.plain)
@@ -214,149 +225,287 @@ struct TeamBackground: View {
 private struct ActiveMonsterPanel: View {
     let row: TeamMonsterRow
     let evolution: TeamEvolutionState?
+    @Binding var isAppearancePickerVisible: Bool
     let onEquipAppearance: (TeamAppearanceRow, String) -> Void
-    let onEvolve: (EvolutionData) -> Void
+    let onEvolve: (TeamEvolutionState) -> Void
 
     var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 12) {
-                RemoteAssetImage(imageName: row.imageName)
-                    .scaledToFit()
-                    .frame(width: 118, height: 118)
-                    .padding(8)
-                    .background(Color.black.opacity(0.22))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8).stroke(
-                            .cyan.opacity(0.55),
-                            lineWidth: 1
-                        )
-                    )
+        VStack(spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.cyan.opacity(0.16))
+                        .overlay(TeamTechGrid().opacity(0.65))
+
+                    RemoteAssetImage(imageName: row.imageName)
+                        .scaledToFit()
+                        .padding(10)
+
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundStyle(.cyan)
+                        .padding(8)
+                }
+                .frame(width: 142, height: 142)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(.cyan.opacity(0.62), lineWidth: 1.4)
+                )
 
                 VStack(alignment: .leading, spacing: 7) {
-                    Text(row.name)
-                        .font(
-                            .system(size: 24, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.65)
-
-                    StatLine(title: "Level", value: "\(row.level)")
-                    StatLine(
-                        title: "Power",
-                        value: GameNumberFormatter.compact(row.power)
+                    TeamInfoBlock(title: "Digitationsstufe", value: row.rarity.uppercased())
+                    TeamInfoBlock(title: "Name", value: row.displayName)
+                    TeamInfoBlock(
+                        title: "Kampf-Typ",
+                        value: "Power \(GameNumberFormatter.compact(row.power))"
                     )
-                    StatLine(title: "Rarity", value: row.rarity.uppercased())
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            TeamXPBar(value: row.xp, maxValue: row.maxXP)
+            HStack(alignment: .bottom, spacing: 10) {
+                VStack(spacing: 0) {
+                    Text("LV")
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(.yellow)
+                    Text("\(row.level)")
+                        .font(.system(size: 30, weight: .black, design: .rounded))
+                        .foregroundStyle(.cyan)
+                }
+                .frame(width: 62)
 
-            if let evolution {
-                TeamEvolutionButton(
-                    sourceImageName: row.imageName,
-                    evolution: evolution,
-                    onEvolve: onEvolve
-                )
+                TeamXPBar(value: row.xp, maxValue: row.maxXP)
+                    .padding(.bottom, 5)
             }
 
-            if !row.appearances.isEmpty {
+            Button {
+                withAnimation(.spring(response: 0.26, dampingFraction: 0.86)) {
+                    isAppearancePickerVisible.toggle()
+                }
+            } label: {
+                TeamLargeActionLabel(
+                    title: "Aussehen ändern",
+                    systemName: "paintpalette.fill",
+                    color: .cyan,
+                    foreground: .white
+                )
+            }
+            .buttonStyle(.plain)
+
+            if let evolution {
+                Button {
+                    onEvolve(evolution)
+                } label: {
+                    TeamLargeActionLabel(
+                        title: evolution.canEvolve
+                            ? "Transformieren"
+                            : "Transformieren ab Lv. \(evolution.targetAppearance.requiredLevel)",
+                        systemName: evolution.canEvolve ? "sparkles" : "lock.fill",
+                        color: evolution.canEvolve ? .yellow : .gray.opacity(0.55),
+                        foreground: evolution.canEvolve ? .black : .white.opacity(0.72)
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(!evolution.canEvolve)
+            } else {
+                Text("Keine weitere Transformation")
+                    .font(.system(size: 13, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.cyan.opacity(0.78))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 32)
+                    .background(Color.black.opacity(0.18))
+                    .clipShape(Capsule())
+            }
+
+            if isAppearancePickerVisible {
                 TeamAppearanceStrip(
                     appearances: row.appearances,
                     monsterId: row.id,
                     onEquip: onEquipAppearance
                 )
+                .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
-        .padding(12)
-        .background(Color.blue.opacity(0.24))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(14)
+        .background(Color.blue.opacity(0.34))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
-            RoundedRectangle(cornerRadius: 8).stroke(
-                .cyan.opacity(0.5),
-                lineWidth: 1
-            )
+            RoundedRectangle(cornerRadius: 12).stroke(.cyan.opacity(0.72), lineWidth: 2)
         )
     }
 }
 
-private struct TeamEvolutionButton: View {
-    let sourceImageName: String
-    let evolution: TeamEvolutionState
-    let onEvolve: (EvolutionData) -> Void
+private struct TeamInfoBlock: View {
+    let title: String
+    let value: String
 
     var body: some View {
-        Button {
-            onEvolve(evolution.evolution)
-        } label: {
-            HStack(spacing: 10) {
-                EvolutionSwapIcon(
-                    sourceImageName: sourceImageName,
-                    targetImageName: evolution.evolution.targetImageName
-                )
-
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(
-                        evolution.canEvolve
-                            ? "Entwicklung starten"
-                            : "Entwicklung ab Lv. \(evolution.evolution.requiredLevel)"
-                    )
-                    Text(evolution.evolution.displayName)
-                        .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
-                        )
-                        .opacity(0.82)
-                }
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.system(size: 14, weight: .heavy, design: .rounded))
+                .foregroundStyle(.cyan)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
-                Spacer()
-                Image(
-                    systemName: evolution.canEvolve ? "sparkles" : "lock.fill"
-                )
-            }
-            .font(.system(size: 15, weight: .heavy, design: .rounded))
-            .foregroundStyle(
-                evolution.canEvolve ? .black : .white.opacity(0.72)
-            )
-            .padding(.horizontal, 12)
-            .frame(maxWidth: .infinity)
-            .frame(height: 52)
-            .background(
-                evolution.canEvolve ? Color.yellow : Color.gray.opacity(0.45)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 7))
+            Text(value)
+                .font(.system(size: 18, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
+                .frame(height: 34)
+                .background(Color.black.opacity(0.24))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-        .buttonStyle(.plain)
-        .disabled(!evolution.canEvolve)
     }
 }
 
-private struct EvolutionSwapIcon: View {
-    let sourceImageName: String
-    let targetImageName: String
+private struct TeamTechGrid: View {
+    var body: some View {
+        GeometryReader { proxy in
+            Path { path in
+                let step: CGFloat = 18
+                var x: CGFloat = 0
+                while x <= proxy.size.width {
+                    path.move(to: CGPoint(x: x, y: 0))
+                    path.addLine(to: CGPoint(x: x, y: proxy.size.height))
+                    x += step
+                }
+
+                var y: CGFloat = 0
+                while y <= proxy.size.height {
+                    path.move(to: CGPoint(x: 0, y: y))
+                    path.addLine(to: CGPoint(x: proxy.size.width, y: y))
+                    y += step
+                }
+            }
+            .stroke(.cyan.opacity(0.28), lineWidth: 1)
+        }
+    }
+}
+
+private struct TeamLargeActionLabel: View {
+    let title: String
+    let systemName: String
+    let color: Color
+    let foreground: Color
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemName)
+                .font(.system(size: 17, weight: .black))
+            Text(title)
+                .font(.system(size: 18, weight: .heavy, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .foregroundStyle(foreground)
+        .frame(maxWidth: .infinity)
+        .frame(height: 54)
+        .background(color.opacity(0.9))
+        .clipShape(Capsule())
+        .overlay(Capsule().stroke(.black.opacity(0.38), lineWidth: 1.5))
+    }
+}
+
+private struct TeamMonsterGridTile: View {
+    let row: TeamMonsterRow
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                RemoteAssetImage(imageName: row.imageName)
+                    .scaledToFit()
+                    .frame(height: 74)
+
+                Text(row.displayName)
+                    .font(.system(size: 12, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+
+                Text("Lv. \(row.level)")
+                    .font(.system(size: 11, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.cyan)
+            }
+            .padding(8)
+            .frame(maxWidth: .infinity)
+            .frame(height: 128)
+            .background(Color.black.opacity(row.isSelected ? 0.38 : 0.22))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10).stroke(
+                    row.isSelected ? .yellow : .cyan.opacity(0.35),
+                    lineWidth: row.isSelected ? 2 : 1
+                )
+            )
+            .overlay(alignment: .topTrailing) {
+                if row.isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundStyle(.yellow)
+                        .padding(6)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct TeamMonsterSelectionPopup: View {
+    let row: TeamMonsterRow
+    let onCancel: () -> Void
+    let onConfirm: () -> Void
 
     var body: some View {
         ZStack {
-            Circle()
-                .fill(Color.black.opacity(0.22))
-                .frame(width: 48, height: 48)
-                .overlay(
-                    Circle().stroke(.white.opacity(0.65), lineWidth: 1)
-                )
+            Color.black.opacity(0.48)
+                .ignoresSafeArea()
+                .onTapGesture(perform: onCancel)
 
-            HStack(spacing: -8) {
-                RemoteAssetImage(imageName: sourceImageName)
-                    .scaledToFit()
-                    .frame(width: 31, height: 31)
-                    .clipShape(Circle())
+            VStack(spacing: 12) {
+                Text(row.displayName)
+                    .font(.system(size: 24, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
 
-                RemoteAssetImage(imageName: targetImageName)
+                RemoteAssetImage(imageName: row.imageName)
                     .scaledToFit()
-                    .frame(width: 31, height: 31)
-                    .clipShape(Circle())
+                    .frame(width: 160, height: 160)
+
+                Text("Lv. \(row.level) · Power \(GameNumberFormatter.compact(row.power))")
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.cyan)
+                    .lineLimit(1)
+
+                Button(action: onConfirm) {
+                    TeamLargeActionLabel(
+                        title: row.isSelected ? "Leveln beginnen" : "Auswählen und leveln",
+                        systemName: "play.fill",
+                        color: .yellow,
+                        foreground: .black
+                    )
+                }
+                .buttonStyle(.plain)
+
+                Button(action: onCancel) {
+                    Text("Schließen")
+                        .font(.system(size: 15, weight: .heavy, design: .rounded))
+                        .foregroundStyle(.cyan)
+                        .frame(height: 34)
+                }
+                .buttonStyle(.plain)
             }
+            .padding(18)
+            .frame(width: 292)
+            .background(Color.blue.opacity(0.92))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16).stroke(.cyan.opacity(0.8), lineWidth: 2)
+            )
+            .shadow(color: .black.opacity(0.45), radius: 14, y: 8)
         }
     }
 }
@@ -370,7 +519,7 @@ struct TeamEvolutionPreviewOverlay: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                Text("Entwicklung")
+                Text("Transformation")
                     .font(.system(size: 22, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
 
@@ -413,120 +562,40 @@ private struct TeamAppearanceStrip: View {
     let onEquip: (TeamAppearanceRow, String) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            Text("Aussehen")
-                .font(.system(size: 14, weight: .heavy, design: .rounded))
-                .foregroundStyle(.cyan)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(appearances) { appearance in
-                        Button {
-                            onEquip(appearance, monsterId)
-                        } label: {
-                            VStack(spacing: 4) {
-                                RemoteAssetImage(
-                                    imageName: appearance.imageName
-                                )
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(appearances) { appearance in
+                    Button {
+                        onEquip(appearance, monsterId)
+                    } label: {
+                        VStack(spacing: 4) {
+                            RemoteAssetImage(imageName: appearance.imageName)
                                 .scaledToFit()
                                 .frame(width: 58, height: 58)
                                 .opacity(appearance.isUnlocked ? 1 : 0.35)
 
-                                Text(
-                                    appearance.isUnlocked
-                                        ? appearance.title
-                                        : "Lv. \(appearance.requiredLevel)"
-                                )
-                                .font(
-                                    .system(
-                                        size: 10,
-                                        weight: .heavy,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(
-                                    appearance.isEquipped ? .black : .white
-                                )
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.65)
-                            }
-                            .frame(width: 74, height: 86)
-                            .background(
-                                appearance.isEquipped
-                                    ? Color.yellow : Color.black.opacity(0.24)
+                            Text(
+                                appearance.isUnlocked
+                                    ? appearance.title
+                                    : "Lv. \(appearance.requiredLevel)"
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8).stroke(
-                                    .cyan.opacity(0.5),
-                                    lineWidth: 1
-                                )
-                            )
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!appearance.isUnlocked)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct TeamMonsterListRow: View {
-    let row: TeamMonsterRow
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                RemoteAssetImage(imageName: row.imageName)
-                    .scaledToFit()
-                    .frame(width: 54, height: 54)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 6) {
-                        Text(row.name)
-                            .font(
-                                .system(
-                                    size: 17,
-                                    weight: .heavy,
-                                    design: .rounded
-                                )
-                            )
-                            .foregroundStyle(.white)
+                            .font(.system(size: 10, weight: .heavy, design: .rounded))
+                            .foregroundStyle(appearance.isEquipped ? .black : .white)
                             .lineLimit(1)
-                        Text("Lv. \(row.level)")
-                            .font(
-                                .system(
-                                    size: 12,
-                                    weight: .heavy,
-                                    design: .rounded
-                                )
-                            )
-                            .foregroundStyle(.green)
-                    }
-                    Text("Power \(GameNumberFormatter.compact(row.power))")
-                        .font(
-                            .system(size: 12, weight: .bold, design: .rounded)
+                            .minimumScaleFactor(0.65)
+                        }
+                        .frame(width: 74, height: 86)
+                        .background(appearance.isEquipped ? Color.yellow : Color.black.opacity(0.24))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8).stroke(.cyan.opacity(0.5), lineWidth: 1)
                         )
-                        .foregroundStyle(.cyan)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!appearance.isUnlocked)
                 }
-
-                Spacer()
-
-                Image(
-                    systemName: row.isSelected
-                        ? "checkmark.circle.fill" : "circle"
-                )
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(row.isSelected ? .yellow : .cyan.opacity(0.55))
             }
-            .padding(.horizontal, 10)
-            .frame(height: 68)
-            .background(Color.black.opacity(row.isSelected ? 0.36 : 0.2))
-            .clipShape(RoundedRectangle(cornerRadius: 7))
         }
-        .buttonStyle(.plain)
     }
 }
 
@@ -543,9 +612,7 @@ private struct TeamXPBar: View {
             HStack {
                 Text("XP")
                 Spacer()
-                Text(
-                    "\(GameNumberFormatter.compact(value))/\(GameNumberFormatter.compact(maxValue))"
-                )
+                Text("\(GameNumberFormatter.compact(value))/\(GameNumberFormatter.compact(maxValue))")
             }
             .font(.system(size: 11, weight: .heavy, design: .rounded))
             .foregroundStyle(.green)
@@ -556,22 +623,6 @@ private struct TeamXPBar: View {
                 .background(Color.black.opacity(0.55))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
         }
-    }
-}
-
-private struct StatLine: View {
-    let title: String
-    let value: String
-
-    var body: some View {
-        HStack {
-            Text(title)
-                .foregroundStyle(.cyan.opacity(0.8))
-            Spacer()
-            Text(value)
-                .foregroundStyle(.white)
-        }
-        .font(.system(size: 13, weight: .heavy, design: .rounded))
     }
 }
 

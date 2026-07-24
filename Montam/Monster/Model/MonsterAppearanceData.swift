@@ -14,4 +14,5 @@ struct MonsterAppearanceData: Codable, Identifiable {
     let imageName: String
     let requiredLevel: Int?
     let isDefault: Bool?
+    let isEvolutionStep: Bool?
 }

@@ -34,14 +34,10 @@
     ],
     "assetKeys": [
         "imageName",
-        "backgroundImage",
-        "groundImageName",
-        "groundImage",
         "monsterName",
         "tamerName",
         "enemyName",
-        "bannerImage",
-        "targetImageName"
+        "bannerImage"
     ],
     "assetFiles": [],
     "musicFiles": [

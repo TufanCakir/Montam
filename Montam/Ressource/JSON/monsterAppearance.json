@@ -1,18 +1,92 @@
 [
     {
-        "id": "kyro_default",
-        "monsterId": "kyro",
-        "title": "Kyro",
-        "imageName": "mon_kyro",
+        "id": "cubon_baby",
+        "monsterId": "cubmon",
+        "title": "Cubon",
+        "imageName": "mon_cubon",
         "requiredLevel": 1,
-        "isDefault": true
+        "isDefault": true,
+        "isEvolutionStep": true
     },
     {
-        "id": "kyro_prime_preview",
-        "monsterId": "kyro_plus",
-        "title": "Kyro Prime",
+        "id": "cubon_rookie",
+        "monsterId": "cubmon",
+        "title": "Kyro",
         "imageName": "mon_kyro",
-        "requiredLevel": 20,
-        "isDefault": true
+        "requiredLevel": 10,
+        "isDefault": false,
+        "isEvolutionStep": true
+    },
+    {
+        "id": "cubon_champion",
+        "monsterId": "cubmon",
+        "title": "Dravon",
+        "imageName": "mon_dravon",
+        "requiredLevel": 30,
+        "isDefault": false,
+        "isEvolutionStep": false
+    },
+    {
+        "id": "cubon_ultimate",
+        "monsterId": "cubmon",
+        "title": "Aetheron",
+        "imageName": "mon_aetheron",
+        "requiredLevel": 60,
+        "isDefault": false,
+        "isEvolutionStep": true
+    },
+    {
+        "id": "cubon_mega",
+        "monsterId": "cubmon",
+        "title": "Sovereon",
+        "imageName": "mon_sovereon",
+        "requiredLevel": 100,
+        "isDefault": false,
+        "isEvolutionStep": true
+    },
+    {
+        "id": "embon_baby",
+        "monsterId": "embon",
+        "title": "Embon",
+        "imageName": "mon_embon",
+        "requiredLevel": 1,
+        "isDefault": true,
+        "isEvolutionStep": true
+    },
+    {
+        "id": "embon_rookie",
+        "monsterId": "embon",
+        "title": "Pyron",
+        "imageName": "mon_pyron",
+        "requiredLevel": 10,
+        "isDefault": false,
+        "isEvolutionStep": true
+    },
+    {
+        "id": "embon_champion",
+        "monsterId": "embon",
+        "title": "Blazion",
+        "imageName": "mon_blazion",
+        "requiredLevel": 30,
+        "isDefault": false,
+        "isEvolutionStep": false
+    },
+    {
+        "id": "embon_ultimate",
+        "monsterId": "embon",
+        "title": "Infernon",
+        "imageName": "mon_infernon",
+        "requiredLevel": 60,
+        "isDefault": false,
+        "isEvolutionStep": true
+    },
+    {
+        "id": "embon_mega",
+        "monsterId": "embon",
+        "title": "Solarin",
+        "imageName": "mon_solarin",
+        "requiredLevel": 100,
+        "isDefault": false,
+        "isEvolutionStep": true
     }
 ]

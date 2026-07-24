@@ -30,7 +30,22 @@ struct RuntimeOwnedMonster {
     let monsterId: String
     let level: Int
     let xp: Int
+    let maxXP: Int?
     let imageName: String?
+
+    init(
+        monsterId: String,
+        level: Int,
+        xp: Int,
+        maxXP: Int? = nil,
+        imageName: String?
+    ) {
+        self.monsterId = monsterId
+        self.level = level
+        self.xp = xp
+        self.maxXP = maxXP
+        self.imageName = imageName
+    }
 }
 
 struct RuntimeOwnedTamer {

@@ -20,10 +20,28 @@ enum BattleHUDFactory {
 
         let badge = SKShapeNode(circleOfRadius: badgeRadius)
         badge.fillColor = SKColor.black.withAlphaComponent(0.72)
-        badge.strokeColor = unit.side == .player ? .cyan : .systemOrange
-        badge.lineWidth = 1.6
+        badge.strokeColor = SKColor.white.withAlphaComponent(0.18)
+        badge.lineWidth = 2
         badge.position = CGPoint(x: -width / 2 - badgeRadius - 4, y: 0)
         root.addChild(badge)
+
+        let progress = max(0, min(CGFloat(unit.xp) / CGFloat(max(unit.maxXP, 1)), 1))
+        let ringPath = CGMutablePath()
+        ringPath.addArc(
+            center: .zero,
+            radius: badgeRadius,
+            startAngle: -.pi / 2,
+            endAngle: -.pi / 2 + progress * .pi * 2,
+            clockwise: false
+        )
+
+        let progressRing = SKShapeNode(path: ringPath)
+        progressRing.strokeColor = unit.side == .player ? .cyan : .systemOrange
+        progressRing.lineWidth = 2.6
+        progressRing.lineCap = .round
+        progressRing.fillColor = .clear
+        progressRing.zPosition = 1
+        badge.addChild(progressRing)
 
         let levelLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
         levelLabel.text = "\(unit.level)"
@@ -31,6 +49,7 @@ enum BattleHUDFactory {
         levelLabel.fontColor = .white
         levelLabel.verticalAlignmentMode = .center
         levelLabel.horizontalAlignmentMode = .center
+        levelLabel.zPosition = 2
         badge.addChild(levelLabel)
 
         let back = SKShapeNode(
