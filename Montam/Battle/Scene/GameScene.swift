@@ -695,6 +695,7 @@ final class GameScene: SKScene {
             return
         }
 
+        showWaveReward(reward)
         currentWaveIndex = min(currentWaveIndex + 1, config.waves.count - 1)
         resetPlayerHealth()
         advanceEnvironmentAfterFight(config: config) { [weak self] in
@@ -867,9 +868,21 @@ final class GameScene: SKScene {
         )
     }
 
-    private func showBossVictory(rewards: BattleRewardConfig, reward: BattleWaveReward) {
+    private func showBossVictory(
+        rewards: BattleRewardConfig,
+        reward: BattleWaveReward
+    ) {
         let container = BattleRewardHUDFactory.bossVictoryNode(
             rewards: rewards,
+            reward: reward,
+            sceneSize: size
+        )
+        addChild(container)
+        container.run(BattleRewardHUDFactory.presentationAction())
+    }
+
+    private func showWaveReward(_ reward: BattleWaveReward) {
+        let container = BattleRewardHUDFactory.waveRewardNode(
             reward: reward,
             sceneSize: size
         )

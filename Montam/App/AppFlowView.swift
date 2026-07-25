@@ -24,11 +24,15 @@ struct AppFlowView: View {
             if remoteContent.isUpdating,
                 let statusText = remoteContent.statusText
             {
-                RemoteContentLoadingOverlay(text: statusText)
+                RemoteContentLoadingOverlay(
+                    text: statusText,
+                    progress: remoteContent.progress,
+                    detailText: remoteContent.progressText
+                )
             }
         }
         .task {
-            await remoteContent.updateAtLaunch()
+            await remoteContent.updateAtLaunch(showOverlay: false)
         }
         .statusBarHidden(true)
     }

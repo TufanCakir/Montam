@@ -110,7 +110,7 @@ final class SummonViewModel {
         let rarity = resultRarity(for: summon, index: index, count: count)
 
         if shouldUseTamerPool(for: summon),
-           let tamer = supportForResult(rarity: rarity)
+            let tamer = supportForResult(rarity: rarity)
         {
             return SummonResultItem(
                 title: tamer.name,
@@ -147,8 +147,12 @@ final class SummonViewModel {
         summon.category == "support" || summon.category == "empfohlen"
     }
 
-    private func monsterForResult(summon: SummonData, rarity: String) -> MonsterData? {
-        if let exact = monsters.first(where: { $0.monsterName == summon.bannerImage }) {
+    private func monsterForResult(summon: SummonData, rarity: String)
+        -> MonsterData?
+    {
+        if let exact = monsters.first(where: {
+            $0.monsterName == summon.bannerImage
+        }) {
             return exact
         }
 
@@ -187,7 +191,8 @@ final class SummonViewModel {
         }
 
         let matching = items.filter {
-            Self.normalizedRarity(rarity($0)) == Self.normalizedRarity(targetRarity)
+            Self.normalizedRarity(rarity($0))
+                == Self.normalizedRarity(targetRarity)
         }
         if let item = randomItem(in: matching) {
             return item
@@ -198,22 +203,28 @@ final class SummonViewModel {
             (item: item, rank: Self.rarityRank(rarity(item) ?? "common"))
         }
         let eligible = rankedItems.filter { $0.rank >= targetRank }
-        let fallbackRank = eligible.map(\.rank).min()
+        let fallbackRank =
+            eligible.map(\.rank).min()
             ?? rankedItems.map(\.rank).min()
             ?? 0
-        let fallbackItems = rankedItems
+        let fallbackItems =
+            rankedItems
             .filter { $0.rank == fallbackRank }
             .map(\.item)
         return randomItem(in: fallbackItems.isEmpty ? items : fallbackItems)
     }
 
-    private func resultRarity(for summon: SummonData, index: Int, count: Int) -> String {
+    private func resultRarity(for summon: SummonData, index: Int, count: Int)
+        -> String
+    {
         let rates = rates(for: summon)
         if count >= 10, index == count - 1 {
             let guaranteedRates = rates.filter {
                 Self.rarityRank($0.rarity) >= Self.rarityRank("rare")
             }
-            return weightedRarity(from: guaranteedRates.isEmpty ? rates : guaranteedRates)
+            return weightedRarity(
+                from: guaranteedRates.isEmpty ? rates : guaranteedRates
+            )
         }
 
         return weightedRarity(from: rates)

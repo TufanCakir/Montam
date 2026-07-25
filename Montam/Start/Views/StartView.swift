@@ -16,7 +16,7 @@ struct StartView: View {
     @State private var isSettingsPresented = false
     @State private var menuMessage: String?
     @State private var isLogoOpen = false
-    @State private var backgroundImageName = Self.randomBackgroundImageName()
+    @State private var backgroundImageName = "bg_tropical_beach"
 
     var body: some View {
         ZStack {
@@ -64,8 +64,15 @@ struct StartView: View {
         .ignoresSafeArea()
         .onAppear {
             isLogoOpen = false
+
             withAnimation(.easeOut(duration: 1.15).delay(0.2)) {
                 isLogoOpen = true
+            }
+
+            if let remote = Self.launchBackgroundImageName(),
+                RemoteContentService.cachedAssetExists(named: remote)
+            {
+                backgroundImageName = remote
             }
         }
     }
@@ -118,15 +125,13 @@ struct StartView: View {
                 MontamBadge()
                     .frame(width: 50, height: 50)
 
-
                 Text(AppBundleInfo.versionDisplay)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(.blue)
                     .frame(width: 142, height: 28)
                     .background(.black)
                     .clipShape(Capsule())
-                
-                
+
                 Text("© 2026 Tufan Cakir. All rights reserved.")
                     .font(.system(size: 10, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
@@ -181,9 +186,10 @@ struct StartView: View {
         }
     }
 
-    private static func randomBackgroundImageName() -> String? {
-        let backgrounds = JSONDataLoader.load("background", as: [BackgroundData].self) ?? []
-        return backgrounds.compactMap(\.resolvedBackgroundImageName).randomElement()
+    private static func launchBackgroundImageName() -> String? {
+        let backgrounds =
+            JSONDataLoader.load("background", as: [BackgroundData].self) ?? []
+        return backgrounds.compactMap(\.resolvedBackgroundImageName).first
     }
 }
 
@@ -192,20 +198,29 @@ private struct StartBackgroundImage: View {
 
     var body: some View {
         GeometryReader { geometry in
-            if let imageName {
-                RemoteAssetImage(imageName: imageName)
-                    .scaledToFill()
-                    .frame(
-                        width: geometry.size.width,
-                        height: geometry.size.height
-                    )
-                    .clipped()
-            } else {
+            ZStack {
                 AppScreenBackground()
                     .frame(
                         width: geometry.size.width,
                         height: geometry.size.height
                     )
+
+                if let imageName {
+
+                    if RemoteContentService.cachedAssetExists(named: imageName)
+                    {
+                        RemoteAssetImage(imageName: imageName)
+                    } else {
+                        Image(imageName)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height
+                            )
+                            .clipped()
+                    }
+                }
             }
         }
         .ignoresSafeArea()
@@ -365,14 +380,12 @@ private struct RevealingLogo: View {
     let progress: CGFloat
 
     var body: some View {
-        Image("montam_logo")
-            .resizable()
+        RemoteAssetImage(imageName: "montam_logo")
             .scaledToFill()
             .opacity(0.18)
             .overlay(alignment: .leading) {
                 GeometryReader { geometry in
-                    Image("montam_logo")
-                        .resizable()
+                    RemoteAssetImage(imageName: "montam_logo")
                         .scaledToFit()
                         .frame(
                             width: geometry.size.width,
@@ -414,8 +427,7 @@ private struct RevealingLogo: View {
 private struct MontamBadge: View {
     var body: some View {
         VStack(spacing: 0) {
-            Image("montem_badge_logo")
-                .resizable()
+            RemoteAssetImage(imageName: "montem_badge_logo")
                 .scaledToFit()
         }
     }

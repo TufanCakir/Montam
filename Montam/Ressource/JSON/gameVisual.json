@@ -15,6 +15,10 @@
         {
             "id": "bit",
             "imageName": "icon_bit"
+        },
+        {
+            "id": "exp",
+            "imageName": "icon_exp"
         }
     ]
 }

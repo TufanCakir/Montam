@@ -69,7 +69,7 @@ struct SummonView: View {
                 .presentationDetents([.height(330)])
                 .presentationDragIndicator(.visible)
         }
-        .padding(.top, 50)
+        .padding(.top, 30)
     }
 
     private func performSummon(_ summon: SummonData, count: Int) {
@@ -98,4 +98,3 @@ struct SummonView: View {
         viewModel.isShowingSummonResult = true
     }
 }
-

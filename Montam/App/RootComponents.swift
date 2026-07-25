@@ -9,7 +9,7 @@ import SwiftUI
 
 enum RootLayoutMetrics {
     static let headerHeight: CGFloat = 82
-    static let footerHeight: CGFloat = 108
+    static let footerHeight: CGFloat = 100
     static let screenInset: CGFloat = 16
     static let chromeOpacity = 0.82
 
@@ -71,7 +71,7 @@ struct RootGameHeader: View {
             PlayerStatusBar(state: status)
         }
         .padding(.horizontal)
-        .offset(y: 29)
+        .offset(y: 30)
     }
 }
 
@@ -100,7 +100,7 @@ struct RootQuickMenuButton: View {
         }
         .padding(.top, RootLayoutMetrics.quickButtonTopPadding)
         .padding(.trailing, RootLayoutMetrics.screenInset)
-
+        .offset(y: 50)
     }
 }
 
@@ -342,8 +342,8 @@ private struct RootFooterButton: View {
     }
 }
 
-private extension View {
-    func rootIconSurface(cornerRadius: CGFloat) -> some View {
+extension View {
+    fileprivate func rootIconSurface(cornerRadius: CGFloat) -> some View {
         background(.black.opacity(0.34))
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(
@@ -353,7 +353,7 @@ private extension View {
             .shadow(color: .black.opacity(0.28), radius: 4)
     }
 
-    func rootPanelSurface(cornerRadius: CGFloat) -> some View {
+    fileprivate func rootPanelSurface(cornerRadius: CGFloat) -> some View {
         background(RootChromeBackground())
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(

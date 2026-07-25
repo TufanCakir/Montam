@@ -30,7 +30,9 @@ struct GameResourceIcon: View {
 
     private var resource: GameVisualResourceData? {
         GameVisualCatalog.shared.resource(id: id)
-            ?? GameVisualCatalog.shared.resource(id: GameCurrency.iconId(for: id))
+            ?? GameVisualCatalog.shared.resource(
+                id: GameCurrency.iconId(for: id)
+            )
     }
 
     private var fallbackSystemName: String {

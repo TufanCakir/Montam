@@ -1,6 +1,14 @@
 [
     {
-        "id": "support",
-        "title": "Support"
+        "id": "montam",
+        "title": "Montam"
+    },
+    {
+        "id": "tamer",
+        "title": "Tamer"
+    },
+    {
+        "id": "mega_supporter",
+        "title": "Mega Supporter"
     }
 ]

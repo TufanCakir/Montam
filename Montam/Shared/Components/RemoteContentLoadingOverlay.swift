@@ -9,15 +9,26 @@ import SwiftUI
 
 struct RemoteContentLoadingOverlay: View {
     let text: String
+    let progress: Double
+    let detailText: String
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 8) {
             ProgressView()
                 .tint(.cyan)
 
             Text(text)
                 .font(.system(size: 14, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
+
+            ProgressView(value: progress)
+                .progressViewStyle(.linear)
+                .tint(.cyan)
+                .frame(width: 180)
+
+            Text(detailText)
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.72))
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)

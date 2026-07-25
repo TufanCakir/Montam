@@ -84,7 +84,9 @@ struct TeamView: View {
             targetName: evolution.targetAppearance.title
         )
 
-        if let activeMonsterId = store.ownedMonsters.first(where: \.isSelected)?.monsterId {
+        if let activeMonsterId = store.ownedMonsters.first(where: \.isSelected)?
+            .monsterId
+        {
             store.transformActiveMonster(
                 to: evolution.targetAppearance.imageName,
                 monsterId: activeMonsterId
@@ -113,4 +115,3 @@ struct TeamView: View {
         )
     }
 }
-

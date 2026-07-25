@@ -25,7 +25,10 @@ enum BattleHUDFactory {
         badge.position = CGPoint(x: -width / 2 - badgeRadius - 4, y: 0)
         root.addChild(badge)
 
-        let progress = max(0, min(CGFloat(unit.xp) / CGFloat(max(unit.maxXP, 1)), 1))
+        let progress = max(
+            0,
+            min(CGFloat(unit.xp) / CGFloat(max(unit.maxXP, 1)), 1)
+        )
         let ringPath = CGMutablePath()
         ringPath.addArc(
             center: .zero,

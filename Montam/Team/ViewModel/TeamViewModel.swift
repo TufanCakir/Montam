@@ -73,13 +73,15 @@ final class TeamViewModel {
     func monsterRows(ownedMonsters: [OwnedMonsterData]) -> [TeamMonsterRow] {
         ownedMonsters.compactMap { owned in
             guard
-                let monster = monsters.first(where: { $0.id == owned.monsterId })
+                let monster = monsters.first(where: { $0.id == owned.monsterId }
+                )
             else {
                 return nil
             }
 
             let equippedImageName =
-                owned.equippedImageName ?? defaultAppearance(for: monster)?.imageName
+                owned.equippedImageName ?? defaultAppearance(for: monster)?
+                .imageName
                 ?? monster.monsterName
             let activeAppearance = appearance(for: equippedImageName)
 
@@ -153,7 +155,8 @@ final class TeamViewModel {
         }
 
         let equippedImageName =
-            active.equippedImageName ?? defaultAppearance(for: monster)?.imageName
+            active.equippedImageName ?? defaultAppearance(for: monster)?
+            .imageName
             ?? monster.monsterName
         let source = evolutionAppearances(
             for: monster,
@@ -166,7 +169,8 @@ final class TeamViewModel {
         )
         let targetIndex = min(currentIndex + 1, source.count - 1)
 
-        guard source.indices.contains(targetIndex), targetIndex > currentIndex else {
+        guard source.indices.contains(targetIndex), targetIndex > currentIndex
+        else {
             return nil
         }
 
@@ -194,7 +198,8 @@ final class TeamViewModel {
             return nil
         }
 
-        return active.equippedImageName ?? defaultAppearance(for: monster)?.imageName
+        return active.equippedImageName ?? defaultAppearance(for: monster)?
+            .imageName
             ?? monster.monsterName
     }
 
@@ -203,7 +208,8 @@ final class TeamViewModel {
         level: Int,
         equippedImageName: String
     ) -> [TeamAppearanceRow] {
-        appearanceSource(for: monster, equippedImageName: equippedImageName).map { item in
+        appearanceSource(for: monster, equippedImageName: equippedImageName).map
+        { item in
             let requiredLevel = item.requiredLevel ?? 1
             return TeamAppearanceRow(
                 id: item.id,
@@ -220,7 +226,8 @@ final class TeamViewModel {
         for monster: MonsterData,
         equippedImageName: String? = nil
     ) -> [MonsterAppearanceData] {
-        let configured = appearances
+        let configured =
+            appearances
             .filter { $0.monsterId == monster.id }
             .sorted { ($0.requiredLevel ?? 1) < ($1.requiredLevel ?? 1) }
 
@@ -229,9 +236,10 @@ final class TeamViewModel {
         }
 
         if let equippedImageName,
-           let equippedAppearance = appearance(for: equippedImageName)
+            let equippedAppearance = appearance(for: equippedImageName)
         {
-            let lineage = appearances
+            let lineage =
+                appearances
                 .filter { $0.monsterId == equippedAppearance.monsterId }
                 .sorted { ($0.requiredLevel ?? 1) < ($1.requiredLevel ?? 1) }
             if !lineage.isEmpty {
@@ -264,7 +272,9 @@ final class TeamViewModel {
             .filter { $0.isEvolutionStep != false }
     }
 
-    private func defaultAppearance(for monster: MonsterData) -> MonsterAppearanceData? {
+    private func defaultAppearance(for monster: MonsterData)
+        -> MonsterAppearanceData?
+    {
         appearanceSource(for: monster).first { $0.isDefault == true }
             ?? appearanceSource(for: monster).first
     }
@@ -278,7 +288,9 @@ final class TeamViewModel {
         equippedImageName: String,
         level: Int
     ) -> Int {
-        if let exact = source.firstIndex(where: { $0.imageName == equippedImageName }) {
+        if let exact = source.firstIndex(where: {
+            $0.imageName == equippedImageName
+        }) {
             return exact
         }
 

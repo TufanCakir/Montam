@@ -13,9 +13,11 @@ enum RootSaveMigrationService {
         ownedMonsters: [OwnedMonsterData],
         modelContext: ModelContext
     ) {
-        let legacyId = "starter_a"
-        let currentId = "kyro"
-        let legacyMonsters = ownedMonsters.filter { $0.monsterId == legacyId }
+        let legacyIds: Set<String> = ["starter_a", "kyron", "cubmon"]
+        let currentId = "cubon"
+        let legacyMonsters = ownedMonsters.filter {
+            legacyIds.contains($0.monsterId)
+        }
 
         guard !legacyMonsters.isEmpty else {
             return

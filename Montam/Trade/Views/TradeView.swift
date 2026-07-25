@@ -36,7 +36,7 @@ struct TradeView: View {
         .onAppear {
             viewModel.loadIfNeeded()
         }
-        .padding(.top, 50)
+        .padding(.top, 30)
     }
 
     private var tradeList: some View {

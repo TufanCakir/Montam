@@ -9,7 +9,8 @@ import SpriteKit
 import UIKit
 
 enum ImageEnvironmentNodes {
-    static func backgroundNode(for data: BackgroundData, size: CGSize) -> SKNode {
+    static func backgroundNode(for data: BackgroundData, size: CGSize) -> SKNode
+    {
         guard let imageName = data.resolvedBackgroundImageName else {
             return fallbackBackgroundNode(size: size)
         }
@@ -49,6 +50,16 @@ enum ImageEnvironmentNodes {
             return SKTexture(image: image)
         }
 
-        return SKTexture(imageNamed: imageName)
+        return SKTexture(image: placeholderImage())
+    }
+
+    private static func placeholderImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(
+            size: CGSize(width: 32, height: 32)
+        )
+        return renderer.image { context in
+            UIColor.clear.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
+        }
     }
 }

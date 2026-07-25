@@ -1,12 +1,14 @@
 [
     {
         "id": "cubon_evolution",
-        "monsterId": "cubmon",
-        "note": "Transformationslinie Cubon -> Kyro -> Dravon -> Aetheron -> Sovereon."
+        "monsterId": "cubon",
+        "note":
+            "Transformationslinie Cubon -> Kyron -> Dravon -> Aetheron -> Sovereon."
     },
     {
         "id": "embon_evolution",
         "monsterId": "embon",
-        "note": "Transformationslinie Embon -> Pyron -> Blazion -> Infernon -> Solarion."
+        "note":
+            "Transformationslinie Embon -> Pyron -> Blazion -> Infernon -> Solarion."
     }
 ]

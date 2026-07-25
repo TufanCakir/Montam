@@ -22,9 +22,25 @@ final class RemoteContentService {
     private static let musicURL = URL(
         string: "https://remotemontam.tufancakir.com/music/"
     )!
+    fileprivate static let backgroundJSONFileName = "background"
 
     private(set) var isUpdating = false
     private(set) var statusText: String?
+    private(set) var completedFileCount = 0
+    private(set) var totalFileCount = 1
+    private(set) var downloadedBytes = 0
+
+    var progress: Double {
+        guard totalFileCount > 0 else {
+            return 0
+        }
+
+        return min(Double(completedFileCount) / Double(totalFileCount), 1)
+    }
+
+    var progressText: String {
+        "\(completedFileCount)/\(totalFileCount) Dateien • \(Self.megabyteText(downloadedBytes))"
+    }
 
     private let session: URLSession
     private let fileManager = FileManager.default
@@ -48,33 +64,72 @@ final class RemoteContentService {
         cacheDirectory.appending(path: "Assets/\(fileName)")
     }
 
+    nonisolated static func cachedAssetExists(named fileName: String) -> Bool {
+        FileManager.default.fileExists(
+            atPath: cachedAssetURL(named: fileName).path()
+        )
+    }
+
     nonisolated static func cachedMusicURL(named fileName: String) -> URL {
         cacheDirectory.appending(path: "Music/\(fileName)")
     }
 
-    func updateAtLaunch() async {
+    func updateAtLaunch(showOverlay: Bool = true) async {
         guard !isUpdating else {
             return
         }
 
         isUpdating = true
-        statusText = "Aktualisiere Inhalte"
-        defer {
-            isUpdating = false
-            statusText = nil
+
+        completedFileCount = 0
+        totalFileCount = 1
+        downloadedBytes = 0
+
+        if showOverlay {
+            statusText = "Aktualisiere Inhalte"
         }
 
-        await updateRemoteConfig()
+        defer {
+            isUpdating = false
+
+            if showOverlay {
+                statusText = nil
+            }
+        }
+
+        await updateRemoteConfig(showOverlay: showOverlay)
 
         let config = Self.loadRemoteConfig()
         guard config.isCompatibleWithCurrentApp else {
-            statusText = "App-Update erforderlich"
+            if showOverlay {
+                statusText = "App-Update erforderlich"
+            }
             return
         }
 
-        await updateJSONFiles(config: config)
-        await updateAssetFiles(config: config)
-        await updateMusicFiles(config: config)
+        let plan = Self.contentUpdatePlan(config: config)
+        prepareProgressTotal(plan: plan)
+
+        await updateBackgroundFiles(
+            plan: plan,
+            config: config,
+            showOverlay: showOverlay
+        )
+        await updateJSONFiles(
+            plan: plan,
+            showOverlay: showOverlay
+        )
+
+        await updateAssetFiles(
+            plan: plan,
+            config: config,
+            showOverlay: showOverlay
+        )
+
+        await updateMusicFiles(
+            plan: plan,
+            showOverlay: showOverlay
+        )
     }
 
     nonisolated static func clearCachedContent() {
@@ -93,78 +148,133 @@ final class RemoteContentService {
         return fileManager.fileExists(atPath: url.path()) ? url : nil
     }
 
-    private func updateRemoteConfig() async {
-        await Self.downloadJSON("remoteConfig", session: session)
-    }
-
-    private func updateJSONFiles(config: RemoteContentConfig) async {
-        await withTaskGroup(of: Void.self) { group in
-            for fileName in config.resolvedJSONFiles {
-                group.addTask { [session] in
-                    await Self.downloadJSON(fileName, session: session)
-                }
-            }
+    private func updateRemoteConfig(showOverlay: Bool) async {
+        if showOverlay {
+            statusText = "Lade Konfiguration"
         }
+
+        recordDownload(
+            await Self.downloadJSON("remoteConfig", session: session)
+        )
     }
 
-    private func updateMusicFiles(config: RemoteContentConfig) async {
-        let configuredFiles = config.resolvedMusicFiles
-        let jsonFiles =
-            JSONDataLoader.load("music", as: [MusicData].self)?
-            .map(\.file) ?? []
-        let musicFiles = Set(configuredFiles + jsonFiles)
-
-        await withTaskGroup(of: Void.self) { group in
-            for fileName in musicFiles {
-                group.addTask { [session] in
-                    await Self.downloadFile(
-                        remoteURL: Self.musicURL.appending(path: fileName),
-                        destinationURL: Self.cachedMusicURL(named: fileName),
-                        session: session
-                    )
-                }
-            }
+    private func updateBackgroundFiles(
+        plan: ContentUpdatePlan,
+        config: RemoteContentConfig,
+        showOverlay: Bool
+    ) async {
+        guard plan.jsonFiles.contains(Self.backgroundJSONFileName) else {
+            return
         }
-    }
 
-    private func updateAssetFiles(config: RemoteContentConfig) async {
-        let assetNames = Set(config.resolvedAssetFiles)
-            .union(
-                Self.assetNamesFromCurrentJSON(
-                    jsonFiles: config.resolvedJSONFiles,
-                    assetKeys: Set(config.resolvedAssetKeys)
+        if showOverlay {
+            statusText = "Lade Hintergründe"
+        }
+        recordDownload(
+            await Self.downloadJSON(
+                Self.backgroundJSONFileName,
+                session: session
+            )
+        )
+
+        for assetName in Self.backgroundAssetNamesInOrder() {
+            recordDownload(
+                await Self.downloadAsset(
+                    named: assetName,
+                    extensions: config.resolvedAssetExtensions,
+                    session: session
                 )
             )
-
-        await withTaskGroup(of: Void.self) { group in
-            for assetName in assetNames {
-                group.addTask { [session] in
-                    await Self.downloadAsset(
-                        named: assetName,
-                        extensions: config.resolvedAssetExtensions,
-                        session: session
-                    )
-                }
-            }
         }
+    }
+
+    private func updateJSONFiles(
+        plan: ContentUpdatePlan,
+        showOverlay: Bool
+    ) async {
+
+        if showOverlay {
+            statusText = "Lade Daten"
+        }
+
+        for fileName in plan.regularJSONFiles {
+            recordDownload(
+                await Self.downloadJSON(fileName, session: session)
+            )
+        }
+    }
+
+    private func updateMusicFiles(
+        plan: ContentUpdatePlan,
+        showOverlay: Bool
+    ) async {
+
+        if showOverlay {
+            statusText = "Lade Musik"
+        }
+
+        for fileName in plan.musicFiles.sorted() {
+            recordDownload(
+                await Self.downloadFile(
+                    remoteURL: Self.musicURL.appending(path: fileName),
+                    destinationURL: Self.cachedMusicURL(named: fileName),
+                    session: session
+                )
+            )
+        }
+    }
+
+    private func updateAssetFiles(
+        plan: ContentUpdatePlan,
+        config: RemoteContentConfig,
+        showOverlay: Bool
+    ) async {
+
+        if showOverlay {
+            statusText = "Lade Bilder"
+        }
+
+        for assetName in plan.regularAssetNames {
+            recordDownload(
+                await Self.downloadAsset(
+                    named: assetName,
+                    extensions: config.resolvedAssetExtensions,
+                    session: session
+                )
+            )
+        }
+    }
+
+    private func prepareProgressTotal(plan: ContentUpdatePlan) {
+        totalFileCount =
+            1
+            + plan.jsonFiles.count
+            + plan.assetNames.count
+            + plan.musicFiles.count
+    }
+
+    private func recordDownload(_ result: FileDownloadResult) {
+        completedFileCount += 1
+        downloadedBytes += result.bytes
     }
 
     private static func downloadJSON(_ fileName: String, session: URLSession)
-        async
+        async -> FileDownloadResult
     {
         let primaryURL = Self.rootURL.appending(path: "JSON/\(fileName).json")
         let fallbackURL = Self.rootURL.appending(path: "\(fileName).json")
         let destinationURL = Self.cachedJSONURL(for: fileName)
 
-        if await downloadFile(
+        let primaryResult = await downloadFile(
             remoteURL: primaryURL,
             destinationURL: destinationURL,
             session: session
-        ) {
-            return
+        )
+        if primaryResult.didDownload {
+            return primaryResult
         }
 
-        _ = await downloadFile(
+        return await downloadFile(
             remoteURL: fallbackURL,
             destinationURL: destinationURL,
             session: session
@@ -175,30 +285,32 @@ final class RemoteContentService {
         named fileName: String,
         extensions: [String],
         session: URLSession
-    ) async {
+    ) async -> FileDownloadResult {
         let destinationURL = Self.cachedAssetURL(named: fileName)
 
         if fileName.contains(".") {
-            _ = await downloadFile(
+            return await downloadFile(
                 remoteURL: Self.assetsURL.appending(path: fileName),
                 destinationURL: destinationURL,
                 session: session
             )
-            return
         }
 
         for fileExtension in extensions {
             let remoteURL = Self.assetsURL.appending(
                 path: "\(fileName).\(fileExtension)"
             )
-            if await downloadFile(
+            let result = await downloadFile(
                 remoteURL: remoteURL,
                 destinationURL: destinationURL,
                 session: session
-            ) {
-                return
+            )
+            if result.didDownload {
+                return result
             }
         }
+
+        return .failed
     }
 
     @discardableResult
@@ -206,7 +318,7 @@ final class RemoteContentService {
         remoteURL: URL,
         destinationURL: URL,
         session: URLSession
-    ) async -> Bool {
+    ) async -> FileDownloadResult {
         do {
             let request = URLRequest(
                 url: remoteURL,
@@ -218,13 +330,13 @@ final class RemoteContentService {
             guard let httpResponse = response as? HTTPURLResponse,
                 (200..<300).contains(httpResponse.statusCode)
             else {
-                return false
+                return .failed
             }
 
             try data.write(to: destinationURL, options: .atomic)
-            return true
+            return FileDownloadResult(didDownload: true, bytes: data.count)
         } catch {
-            return false
+            return .failed
         }
     }
 
@@ -267,6 +379,49 @@ final class RemoteContentService {
         }
 
         return names.filter { !$0.isEmpty && !$0.hasPrefix("http") }
+    }
+
+    private static func contentUpdatePlan(
+        config: RemoteContentConfig
+    ) -> ContentUpdatePlan {
+        let jsonFiles = config.resolvedJSONFiles
+        let assetNames = Set(config.resolvedAssetFiles)
+            .union(
+                assetNamesFromCurrentJSON(
+                    jsonFiles: jsonFiles,
+                    assetKeys: Set(config.resolvedAssetKeys)
+                )
+            )
+        let backgroundAssetNames = backgroundAssetNames()
+        let configuredMusicFiles = config.resolvedMusicFiles
+        let jsonMusicFiles =
+            JSONDataLoader.load("music", as: [MusicData].self)?
+            .map(\.file) ?? []
+        let musicFiles = Set(configuredMusicFiles + jsonMusicFiles)
+
+        return ContentUpdatePlan(
+            jsonFiles: jsonFiles,
+            assetNames: assetNames,
+            backgroundAssetNames: backgroundAssetNames,
+            musicFiles: musicFiles
+        )
+    }
+
+    private static func backgroundAssetNames() -> Set<String> {
+        Set(backgroundAssetNamesInOrder())
+    }
+
+    private static func backgroundAssetNamesInOrder() -> [String] {
+        let backgrounds =
+            JSONDataLoader.load(
+                backgroundJSONFileName,
+                as: [BackgroundData].self
+            ) ?? []
+
+        var seen = Set<String>()
+        return backgrounds.compactMap(\.resolvedBackgroundImageName).filter {
+            seen.insert($0).inserted
+        }
     }
 
     private static func collectAssetNames(
@@ -327,6 +482,35 @@ final class RemoteContentService {
             in: .userDomainMask
         )[0]
         return base.appending(path: "RemoteMontam")
+    }
+
+    private static func megabyteText(_ bytes: Int) -> String {
+        let megabytes = Double(bytes) / 1_048_576
+        return String(format: "%.1f MB", megabytes)
+    }
+}
+
+private struct FileDownloadResult {
+    let didDownload: Bool
+    let bytes: Int
+
+    static let failed = FileDownloadResult(didDownload: false, bytes: 0)
+}
+
+private struct ContentUpdatePlan {
+    let jsonFiles: [String]
+    let assetNames: Set<String>
+    let backgroundAssetNames: Set<String>
+    let musicFiles: Set<String>
+
+    var regularJSONFiles: [String] {
+        jsonFiles.filter { $0 != RemoteContentService.backgroundJSONFileName }
+    }
+
+    var regularAssetNames: [String] {
+        assetNames
+            .subtracting(backgroundAssetNames)
+            .sorted()
     }
 }
 

@@ -25,7 +25,10 @@ final class ShopViewModel {
 
     func loadIfNeeded(store: StoreKitShopManager) async {
         if itemProducts.isEmpty {
-            let itemData = JSONDataLoader.load("itemShop", as: ItemShopData.self)
+            let itemData = JSONDataLoader.load(
+                "itemShop",
+                as: ItemShopData.self
+            )
             itemProducts =
                 itemData?.products.sorted { $0.sortOrder < $1.sortOrder } ?? []
         }
@@ -39,7 +42,8 @@ final class ShopViewModel {
             data?.products.sorted { $0.sortOrder < $1.sortOrder } ?? []
         products = loadedProducts
         await store.loadProducts(
-            productIds: loadedProducts
+            productIds:
+                loadedProducts
                 .filter { $0.purchaseType != .softCurrency }
                 .map(\.productId)
         )
@@ -53,8 +57,8 @@ final class ShopViewModel {
         -> String
     {
         guard product.purchaseType == .softCurrency,
-              let priceCurrency = product.priceCurrency,
-              let priceAmount = product.priceAmount
+            let priceCurrency = product.priceCurrency,
+            let priceAmount = product.priceAmount
         else {
             return store.localizedPrice(for: product)
         }

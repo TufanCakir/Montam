@@ -13,6 +13,8 @@
             "rewards": {
                 "crystals": 10,
                 "coins": null,
+                "bits": null,
+                "summonTickets": null,
                 "unlockEventPass": null
             }
         },
@@ -29,6 +31,8 @@
             "rewards": {
                 "crystals": 30,
                 "coins": null,
+                "bits": null,
+                "summonTickets": null,
                 "unlockEventPass": null
             }
         },
@@ -45,6 +49,116 @@
             "rewards": {
                 "crystals": 50,
                 "coins": null,
+                "bits": null,
+                "summonTickets": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "bits_small",
+            "productId": "montam.bits.small",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Kleines Bit-Paket",
+            "subtitle": "5.000 Bits",
+            "visual": "bits",
+            "badge": null,
+            "sortOrder": 40,
+            "rewards": {
+                "crystals": null,
+                "coins": null,
+                "bits": 10,
+                "summonTickets": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "bits_medium",
+            "productId": "montam.bits.medium",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Mittleres Bit-Paket",
+            "subtitle": "15.000 Bits",
+            "visual": "bits",
+            "badge": null,
+            "sortOrder": 50,
+            "rewards": {
+                "crystals": null,
+                "coins": null,
+                "bits": 30,
+                "summonTickets": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "bits_big",
+            "productId": "montam.bits.big",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Großes Bit-Paket",
+            "subtitle": "30.000 Bits",
+            "visual": "bits",
+            "badge": "VALUE",
+            "sortOrder": 50,
+            "rewards": {
+                "crystals": null,
+                "coins": null,
+                "bits": 50,
+                "summonTickets": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "tickets_small",
+            "productId": "montam.tickets.small",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Kleines Ticketpaket",
+            "subtitle": "5 Summon-Tickets",
+            "visual": "summon_ticket",
+            "badge": null,
+            "sortOrder": 70,
+            "rewards": {
+                "crystals": null,
+                "coins": null,
+                "bits": null,
+                "summonTickets": 10,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "summon_tickets_medium",
+            "productId": "montam.summonTickets.medium",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Mittleres Ticketpaket",
+            "subtitle": "15 Summon-Tickets",
+            "visual": "summon_ticket",
+            "badge": null,
+            "sortOrder": 80,
+            "rewards": {
+                "crystals": null,
+                "coins": null,
+                "bits": null,
+                "summonTickets": 30,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "summon_tickets_big",
+            "productId": "montam.summonTickets.big",
+            "section": "premiumCurrency",
+            "purchaseType": "consumable",
+            "title": "Großes Ticketpaket",
+            "subtitle": "30 Summon-Tickets",
+            "visual": "summon_ticket",
+            "badge": "BEST",
+            "sortOrder": 90,
+            "rewards": {
+                "crystals": null,
+                "coins": null,
+                "bits": null,
+                "summonTickets": 50,
                 "unlockEventPass": null
             }
         },
@@ -57,10 +171,12 @@
             "subtitle": "Einmaliger Event-Zugang",
             "visual": "pass",
             "badge": "EVENT",
-            "sortOrder": 10,
+            "sortOrder": 100,
             "rewards": {
                 "crystals": 100,
                 "coins": null,
+                "bits": null,
+                "summonTickets": null,
                 "unlockEventPass": true
             }
         }

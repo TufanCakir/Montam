@@ -131,7 +131,8 @@ struct BattleUnitFactory {
                 enemy: enemy
             )
             let node = makeSprite(
-                imageName: config.imageName ?? enemy.imageName ?? enemy.enemyName,
+                imageName: config.imageName ?? enemy.imageName
+                    ?? enemy.enemyName,
                 side: side,
                 role: isBoss ? .boss : .enemy,
                 scaleMultiplier: config.scaleMultiplier ?? 1
@@ -218,7 +219,17 @@ struct BattleUnitFactory {
             return SKTexture(image: image)
         }
 
-        return SKTexture(imageNamed: imageName)
+        return SKTexture(image: placeholderImage())
+    }
+
+    private static func placeholderImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(
+            size: CGSize(width: 32, height: 32)
+        )
+        return renderer.image { context in
+            UIColor.clear.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
+        }
     }
 
     private func maxSpriteHeightRatio(for side: BattleSide) -> Double {

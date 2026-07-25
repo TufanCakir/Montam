@@ -39,7 +39,17 @@
         "enemyName",
         "bannerImage"
     ],
-    "assetFiles": [],
+    "assetFiles": [
+        "icon_coin",
+        "icon_crystal",
+        "icon_bit",
+        "icon_exp",
+        "icon_ticket",
+        "mon_cubon",
+        "mon_kyron",
+        "mon_pyron",
+        "mon_embon"
+    ],
     "musicFiles": [
         "mon_song_1.mp3",
         "mon_song_2.mp3"

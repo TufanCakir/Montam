@@ -46,11 +46,14 @@ struct PartnerTeamContent: View {
         } else {
             ZStack {
                 VStack(spacing: 14) {
-                    if let active = rows.first(where: \.isSelected) ?? rows.first {
+                    if let active = rows.first(where: \.isSelected)
+                        ?? rows.first
+                    {
                         ActiveMonsterPanel(
                             row: active,
                             evolution: evolution,
-                            isAppearancePickerVisible: $isAppearancePickerVisible,
+                            isAppearancePickerVisible:
+                                $isAppearancePickerVisible,
                             onEquipAppearance: onEquipAppearance,
                             onEvolve: onEvolve
                         )
@@ -115,12 +118,24 @@ struct SupportTeamContent: View {
 
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(row.name)
-                                    .font(.system(size: 18, weight: .heavy, design: .rounded))
+                                    .font(
+                                        .system(
+                                            size: 18,
+                                            weight: .heavy,
+                                            design: .rounded
+                                        )
+                                    )
                                     .foregroundStyle(.white)
                                 Text(
                                     "Lv. \(row.level)  ATK +\(percent(row.attackBonus))  DEF +\(percent(row.defenseBonus))  HP +\(percent(row.healthBonus))"
                                 )
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .font(
+                                    .system(
+                                        size: 12,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
                                 .foregroundStyle(.cyan)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.65)
@@ -128,13 +143,20 @@ struct SupportTeamContent: View {
 
                             Spacer()
 
-                            Image(systemName: row.isSelected ? "checkmark.circle.fill" : "circle")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundStyle(row.isSelected ? .yellow : .cyan.opacity(0.55))
+                            Image(
+                                systemName: row.isSelected
+                                    ? "checkmark.circle.fill" : "circle"
+                            )
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundStyle(
+                                row.isSelected ? .yellow : .cyan.opacity(0.55)
+                            )
                         }
                         .padding(.horizontal, 10)
                         .frame(height: 72)
-                        .background(Color.black.opacity(row.isSelected ? 0.36 : 0.2))
+                        .background(
+                            Color.black.opacity(row.isSelected ? 0.36 : 0.2)
+                        )
                         .clipShape(RoundedRectangle(cornerRadius: 7))
                     }
                     .buttonStyle(.plain)
@@ -154,13 +176,20 @@ struct TeamSectionTabs: View {
                     selectedSection = section
                 } label: {
                     Text(section.title)
-                        .font(.system(size: 12, weight: .heavy, design: .rounded))
-                        .foregroundStyle(selectedSection == section ? .black : .cyan)
+                        .font(
+                            .system(size: 12, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(
+                            selectedSection == section ? .black : .cyan
+                        )
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                         .frame(maxWidth: .infinity)
                         .frame(height: 38)
-                        .background(selectedSection == section ? Color.yellow : Color.black.opacity(0.28))
+                        .background(
+                            selectedSection == section
+                                ? Color.yellow : Color.black.opacity(0.28)
+                        )
                         .clipShape(RoundedRectangle(cornerRadius: 7))
                 }
                 .buttonStyle(.plain)
@@ -231,7 +260,10 @@ private struct ActiveMonsterPanel: View {
                 )
 
                 VStack(alignment: .leading, spacing: 7) {
-                    TeamInfoBlock(title: "Digitationsstufe", value: row.rarity.uppercased())
+                    TeamInfoBlock(
+                        title: "Digitationsstufe",
+                        value: row.rarity.uppercased()
+                    )
                     TeamInfoBlock(title: "Name", value: row.displayName)
                     TeamInfoBlock(
                         title: "Kampf-Typ",
@@ -244,10 +276,14 @@ private struct ActiveMonsterPanel: View {
             HStack(alignment: .bottom, spacing: 10) {
                 VStack(spacing: 0) {
                     Text("LV")
-                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .font(
+                            .system(size: 16, weight: .black, design: .rounded)
+                        )
                         .foregroundStyle(.yellow)
                     Text("\(row.level)")
-                        .font(.system(size: 30, weight: .black, design: .rounded))
+                        .font(
+                            .system(size: 30, weight: .black, design: .rounded)
+                        )
                         .foregroundStyle(.cyan)
                 }
                 .frame(width: 62)
@@ -278,9 +314,12 @@ private struct ActiveMonsterPanel: View {
                         title: evolution.canEvolve
                             ? "Transformieren"
                             : "Transformieren ab Lv. \(evolution.targetAppearance.requiredLevel)",
-                        systemName: evolution.canEvolve ? "sparkles" : "lock.fill",
-                        color: evolution.canEvolve ? .yellow : .gray.opacity(0.55),
-                        foreground: evolution.canEvolve ? .black : .white.opacity(0.72)
+                        systemName: evolution.canEvolve
+                            ? "sparkles" : "lock.fill",
+                        color: evolution.canEvolve
+                            ? .yellow : .gray.opacity(0.55),
+                        foreground: evolution.canEvolve
+                            ? .black : .white.opacity(0.72)
                     )
                 }
                 .buttonStyle(.plain)
@@ -308,7 +347,10 @@ private struct ActiveMonsterPanel: View {
         .background(Color.blue.opacity(0.34))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
-            RoundedRectangle(cornerRadius: 12).stroke(.cyan.opacity(0.72), lineWidth: 2)
+            RoundedRectangle(cornerRadius: 12).stroke(
+                .cyan.opacity(0.72),
+                lineWidth: 2
+            )
         )
     }
 }
@@ -452,14 +494,17 @@ private struct TeamMonsterSelectionPopup: View {
                     .scaledToFit()
                     .frame(width: 160, height: 160)
 
-                Text("Lv. \(row.level) · Power \(GameNumberFormatter.compact(row.power))")
-                    .font(.system(size: 14, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.cyan)
-                    .lineLimit(1)
+                Text(
+                    "Lv. \(row.level) · Power \(GameNumberFormatter.compact(row.power))"
+                )
+                .font(.system(size: 14, weight: .heavy, design: .rounded))
+                .foregroundStyle(.cyan)
+                .lineLimit(1)
 
                 Button(action: onConfirm) {
                     TeamLargeActionLabel(
-                        title: row.isSelected ? "Leveln beginnen" : "Auswählen und leveln",
+                        title: row.isSelected
+                            ? "Leveln beginnen" : "Auswählen und leveln",
                         systemName: "play.fill",
                         color: .yellow,
                         foreground: .black
@@ -469,7 +514,9 @@ private struct TeamMonsterSelectionPopup: View {
 
                 Button(action: onCancel) {
                     Text("Schließen")
-                        .font(.system(size: 15, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 15, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(.cyan)
                         .frame(height: 34)
                 }
@@ -480,7 +527,10 @@ private struct TeamMonsterSelectionPopup: View {
             .background(Color.blue.opacity(0.92))
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
-                RoundedRectangle(cornerRadius: 16).stroke(.cyan.opacity(0.8), lineWidth: 2)
+                RoundedRectangle(cornerRadius: 16).stroke(
+                    .cyan.opacity(0.8),
+                    lineWidth: 2
+                )
             )
             .shadow(color: .black.opacity(0.45), radius: 14, y: 8)
         }
@@ -556,16 +606,30 @@ private struct TeamAppearanceStrip: View {
                                     ? appearance.title
                                     : "Lv. \(appearance.requiredLevel)"
                             )
-                            .font(.system(size: 10, weight: .heavy, design: .rounded))
-                            .foregroundStyle(appearance.isEquipped ? .black : .white)
+                            .font(
+                                .system(
+                                    size: 10,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(
+                                appearance.isEquipped ? .black : .white
+                            )
                             .lineLimit(1)
                             .minimumScaleFactor(0.65)
                         }
                         .frame(width: 74, height: 86)
-                        .background(appearance.isEquipped ? Color.yellow : Color.black.opacity(0.24))
+                        .background(
+                            appearance.isEquipped
+                                ? Color.yellow : Color.black.opacity(0.24)
+                        )
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8).stroke(.cyan.opacity(0.5), lineWidth: 1)
+                            RoundedRectangle(cornerRadius: 8).stroke(
+                                .cyan.opacity(0.5),
+                                lineWidth: 1
+                            )
                         )
                     }
                     .buttonStyle(.plain)
@@ -589,7 +653,9 @@ private struct TeamXPBar: View {
             HStack {
                 Text("XP")
                 Spacer()
-                Text("\(GameNumberFormatter.compact(value))/\(GameNumberFormatter.compact(maxValue))")
+                Text(
+                    "\(GameNumberFormatter.compact(value))/\(GameNumberFormatter.compact(maxValue))"
+                )
             }
             .font(.system(size: 11, weight: .heavy, design: .rounded))
             .foregroundStyle(.green)

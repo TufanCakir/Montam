@@ -162,13 +162,17 @@ private struct DailyDayCell: View {
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            RoundedRectangle(cornerRadius: 8).stroke(borderColor, lineWidth: 1.4)
+            RoundedRectangle(cornerRadius: 8).stroke(
+                borderColor,
+                lineWidth: 1.4
+            )
         )
         .opacity(status == .locked ? 0.55 : 1)
     }
 
     private var rewardIconId: String {
-        reward.primaryReward.map { GameCurrency.iconId(for: $0.resourceId) } ?? "reward"
+        reward.primaryReward.map { GameCurrency.iconId(for: $0.resourceId) }
+            ?? "reward"
     }
 
     private var rewardAmount: Int {

@@ -99,7 +99,8 @@ struct SummonCategoryPicker: View {
         }
     }
 
-    private func previewSummon(for category: SummonCategoryData) -> SummonData? {
+    private func previewSummon(for category: SummonCategoryData) -> SummonData?
+    {
         summons.first { $0.category == category.id }
     }
 }
@@ -124,7 +125,7 @@ private struct SummonCategoryTile: View {
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal)
         .frame(
             width: SummonLayoutMetrics.categoryWidth,
             height: SummonLayoutMetrics.categoryHeight
@@ -167,7 +168,6 @@ struct SummonCategoryPage: View {
                     )
                 }
             }
-            .padding(.bottom, 8)
         }
     }
 }
@@ -188,7 +188,7 @@ private struct SummonBannerSection: View {
             )
             SummonActionRow(summon: summon, onSummon: onSummon)
         }
-        .padding(.bottom, 8)
+        .padding(.bottom, 68)
     }
 }
 
@@ -197,11 +197,11 @@ struct SummonFocusView: View {
     let onShowRates: () -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 8) {
+        VStack(spacing: 0) {
+            HStack(spacing: 5) {
                 Text(summon.title)
-                    .font(.system(size: 26, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.black)
+                    .font(.system(size: 20, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .minimumScaleFactor(0.72)
@@ -209,7 +209,7 @@ struct SummonFocusView: View {
                 Button(action: onShowRates) {
                     Image(systemName: "info.circle.fill")
                         .font(.system(size: 24, weight: .black))
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.white)
                         .frame(width: 34, height: 34)
                 }
                 .buttonStyle(.plain)
@@ -262,13 +262,19 @@ struct SummonRateInfoSheet: View {
                 }
             }
 
-            Text("10x garantiert mindestens Rare. Legendär bleibt absichtlich sehr selten.")
-                .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.72))
-                .fixedSize(horizontal: false, vertical: true)
+            Text(
+                "10x garantiert mindestens Rare. Legendär bleibt absichtlich sehr selten."
+            )
+            .font(.system(size: 12, weight: .bold, design: .rounded))
+            .foregroundStyle(.white.opacity(0.72))
+            .fixedSize(horizontal: false, vertical: true)
         }
         .padding(18)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity,
+            alignment: .topLeading
+        )
         .background(Color(red: 0.02, green: 0.08, blue: 0.20))
     }
 }
@@ -376,12 +382,14 @@ struct SummonActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: 0) {
                 HStack(spacing: 5) {
                     GameResourceIcon(id: currency, fallbackImage: nil)
-                        .frame(width: 21, height: 21)
+                        .frame(width: 20, height: 20)
                     Text("\(cost)")
-                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .font(
+                            .system(size: 16, weight: .black, design: .rounded)
+                        )
                 }
 
                 Text(count == 1 ? "1x beschwören" : "10x beschwören")
@@ -394,7 +402,9 @@ struct SummonActionButton: View {
             .frame(maxWidth: .infinity)
             .frame(height: SummonLayoutMetrics.actionHeight)
             .background(backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: SummonLayoutMetrics.cornerRadius))
+            .clipShape(
+                RoundedRectangle(cornerRadius: SummonLayoutMetrics.cornerRadius)
+            )
             .overlay(
                 RoundedRectangle(cornerRadius: SummonLayoutMetrics.cornerRadius)
                     .stroke(.black.opacity(0.58), lineWidth: 1.5)
@@ -456,61 +466,7 @@ struct SummonSideChevron: View {
 
 struct SummonScreenBackground: View {
     var body: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.80, green: 0.90, blue: 1.0),
-                Color.white,
-                Color(red: 1.0, green: 0.93, blue: 0.86),
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .overlay {
-            SummonHexPattern()
-                .opacity(0.32)
-        }
-        .ignoresSafeArea()
-    }
-}
-
-private struct SummonHexPattern: View {
-    var body: some View {
-        GeometryReader { geometry in
-            Path { path in
-                let radius: CGFloat = 26
-                let rowHeight = radius * 1.5
-                let columnWidth = radius * 1.72
-                let rows = Int(geometry.size.height / rowHeight) + 2
-                let columns = Int(geometry.size.width / columnWidth) + 2
-
-                for row in 0..<rows {
-                    for column in 0..<columns {
-                        let x = CGFloat(column) * columnWidth
-                            + (row.isMultiple(of: 2) ? 0 : columnWidth / 2)
-                        let y = CGFloat(row) * rowHeight
-                        addHexagon(to: &path, center: CGPoint(x: x, y: y), radius: radius)
-                    }
-                }
-            }
-            .stroke(.white.opacity(0.75), lineWidth: 2)
-        }
-    }
-
-    private func addHexagon(to path: inout Path, center: CGPoint, radius: CGFloat) {
-        for index in 0..<6 {
-            let angle = CGFloat(index) * .pi / 3 + .pi / 6
-            let point = CGPoint(
-                x: center.x + cos(angle) * radius,
-                y: center.y + sin(angle) * radius
-            )
-
-            if index == 0 {
-                path.move(to: point)
-            } else {
-                path.addLine(to: point)
-            }
-        }
-        path.closeSubpath()
+        AppScreenBackground()
     }
 }
 

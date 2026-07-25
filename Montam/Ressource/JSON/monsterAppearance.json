@@ -1,7 +1,7 @@
 [
     {
         "id": "cubon_baby",
-        "monsterId": "cubmon",
+        "monsterId": "cubon",
         "title": "Cubon",
         "imageName": "mon_cubon",
         "requiredLevel": 1,
@@ -10,16 +10,16 @@
     },
     {
         "id": "cubon_rookie",
-        "monsterId": "cubmon",
-        "title": "Kyro",
-        "imageName": "mon_kyro",
+        "monsterId": "cubon",
+        "title": "Kyron",
+        "imageName": "mon_kyron",
         "requiredLevel": 10,
         "isDefault": false,
         "isEvolutionStep": true
     },
     {
         "id": "cubon_champion",
-        "monsterId": "cubmon",
+        "monsterId": "cubon",
         "title": "Dravon",
         "imageName": "mon_dravon",
         "requiredLevel": 30,
@@ -28,7 +28,7 @@
     },
     {
         "id": "cubon_ultimate",
-        "monsterId": "cubmon",
+        "monsterId": "cubon",
         "title": "Aetheron",
         "imageName": "mon_aetheron",
         "requiredLevel": 60,
@@ -37,7 +37,7 @@
     },
     {
         "id": "cubon_mega",
-        "monsterId": "cubmon",
+        "monsterId": "cubon",
         "title": "Sovereon",
         "imageName": "mon_sovereon",
         "requiredLevel": 100,

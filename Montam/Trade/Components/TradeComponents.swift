@@ -134,7 +134,7 @@ private struct TradeOfferRow: View {
                                     design: .rounded
                                 )
                             )
-                            .foregroundStyle(.cyan.opacity(0.85))
+                            .foregroundStyle(.white)
                             .lineLimit(2)
                             .minimumScaleFactor(0.75)
                     }
@@ -156,7 +156,7 @@ private struct TradeOfferRow: View {
                 }
                 .padding(.horizontal, 8)
                 .frame(height: 30)
-                .background(Color.black.opacity(0.28))
+                .background(Color.blue.opacity(isEnabled ? 0.34 : 0.18))
                 .clipShape(RoundedRectangle(cornerRadius: 6))
             }
             .padding(10)

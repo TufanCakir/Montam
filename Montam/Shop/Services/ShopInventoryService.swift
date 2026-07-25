@@ -15,11 +15,13 @@ enum ShopInventoryService {
         modelContext: ModelContext
     ) -> Bool {
         let save = ensureSave(saves: saves, modelContext: modelContext)
-        guard canSpend(
-            currency: product.priceCurrency,
-            amount: product.priceAmount,
-            from: save
-        ) else {
+        guard
+            canSpend(
+                currency: product.priceCurrency,
+                amount: product.priceAmount,
+                from: save
+            )
+        else {
             return false
         }
 
@@ -39,18 +41,20 @@ enum ShopInventoryService {
         modelContext: ModelContext
     ) -> Bool {
         guard product.purchaseType == .softCurrency,
-              let priceCurrency = product.priceCurrency,
-              let priceAmount = product.priceAmount
+            let priceCurrency = product.priceCurrency,
+            let priceAmount = product.priceAmount
         else {
             return false
         }
 
         let save = ensureSave(saves: saves, modelContext: modelContext)
-        guard canSpend(
-            currency: priceCurrency,
-            amount: priceAmount,
-            from: save
-        ) else {
+        guard
+            canSpend(
+                currency: priceCurrency,
+                amount: priceAmount,
+                from: save
+            )
+        else {
             return false
         }
 

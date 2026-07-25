@@ -65,7 +65,6 @@ struct PlayerStatusBar: View {
     }
 }
 
-
 private enum PlayerStatusBarMetrics {
     static let horizontalPadding: CGFloat = 10
     static let itemSpacing: CGFloat = 6
@@ -205,7 +204,7 @@ private struct CurrencyPill: View {
 #Preview {
     PlayerStatusBar(
         state: PlayerStatusBarState(
-            imageName: "mon_kyro",
+            imageName: "mon_kyron",
             level: 1,
             power: 0,
             xp: 0,

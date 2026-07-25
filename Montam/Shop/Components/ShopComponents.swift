@@ -58,7 +58,6 @@ struct ShopWalletFilterBar: View {
 
     var body: some View {
         HStack {
-       
 
             Menu {
                 ForEach(ShopSection.allCases) { section in
@@ -274,7 +273,11 @@ private struct ItemShopProductCard: View {
                     if let badge = product.badge {
                         Text(badge)
                             .font(
-                                .system(size: 12, weight: .heavy, design: .rounded)
+                                .system(
+                                    size: 12,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
                             )
                             .foregroundStyle(.blue)
                             .padding(.horizontal, 8)
@@ -306,13 +309,18 @@ private struct ItemShopProductCard: View {
                     HStack(spacing: 7) {
                         GameResourceIcon(
                             id: GameCurrency.iconId(for: product.priceCurrency),
-                            fallbackImage: "icon_\(GameCurrency.iconId(for: product.priceCurrency))"
+                            fallbackImage:
+                                "icon_\(GameCurrency.iconId(for: product.priceCurrency))"
                         )
                         .frame(width: 24, height: 24)
 
                         Text("\(product.priceAmount)")
                             .font(
-                                .system(size: 18, weight: .heavy, design: .rounded)
+                                .system(
+                                    size: 18,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
                             )
                             .foregroundStyle(.white)
                     }
@@ -379,8 +387,10 @@ private struct ShopProductCard: View {
                         )
                         .overlay(ShopCardPattern().opacity(0.14))
 
-                        ShopProductIcon(visual: productVisual(from: product.visual))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        ShopProductIcon(
+                            visual: productVisual(from: product.visual)
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                         if let badge = product.badge {
                             Text(badge)

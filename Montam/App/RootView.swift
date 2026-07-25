@@ -55,8 +55,8 @@ struct RootView: View {
                         monsters: monsterCatalog
                     )
                 )
-                    .frame(height: RootLayoutMetrics.headerHeight)
-                    .ignoresSafeArea(.container, edges: .top)
+                .frame(height: RootLayoutMetrics.headerHeight)
+                .ignoresSafeArea(.container, edges: .top)
 
                 Spacer(minLength: 0)
 

@@ -36,7 +36,7 @@ struct GameStore {
                 monsters.first(where: { $0.id == owned.monsterId })?.monsterName
             }
             ?? monsters.first?.monsterName
-            ?? "mon_kyro"
+            ?? "mon_kyron"
 
         return PlayerStatusBarState(
             imageName: activeImage,
@@ -71,10 +71,12 @@ struct GameStore {
     }
 
     func runtimeSelectedMonsters() -> [RuntimeOwnedMonster] {
-        let progression = JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
+        let progression =
+            JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
             ?? GameProgressionData()
 
-        return ownedMonsters
+        return
+            ownedMonsters
             .filter(\.isSelected)
             .map {
                 RuntimeOwnedMonster(
@@ -234,7 +236,8 @@ struct GameStore {
         progression: GameProgressionData
     ) {
         while monster.level < progression.resolvedMaxLevel
-            && monster.xp >= xpNeeded(for: monster.level, progression: progression)
+            && monster.xp
+                >= xpNeeded(for: monster.level, progression: progression)
         {
             monster.xp -= xpNeeded(for: monster.level, progression: progression)
             monster.level += 1
@@ -267,7 +270,10 @@ struct GameStore {
         let selected = ownedMonsters.filter(\.isSelected)
         save.playerLevel = selected.map(\.level).max() ?? save.playerLevel
         save.playerXP = selected.first?.xp ?? save.playerXP
-        save.playerMaxXP = xpNeeded(for: save.playerLevel, progression: progression)
+        save.playerMaxXP = xpNeeded(
+            for: save.playerLevel,
+            progression: progression
+        )
         save.playerPower = selected.reduce(0) { total, owned in
             guard
                 let base = monsterCatalog.first(where: {
@@ -284,61 +290,61 @@ struct GameStore {
 }
 
 #if DEBUG
-extension GameStore {
-    static var preview: GameStore {
-        do {
-            let schema = Schema([
-                GameSaveData.self,
-                OwnedMonsterData.self,
-                OwnedTamerData.self,
-            ])
-            let configuration = ModelConfiguration(
-                schema: schema,
-                isStoredInMemoryOnly: true
-            )
-            let container = try ModelContainer(
-                for: schema,
-                configurations: [configuration]
-            )
-            let context = ModelContext(container)
-            let save = GameSaveData(
-                didCompleteOnboarding: true,
-                playerLevel: 10,
-                playerPower: 472,
-                playerXP: 146,
-                playerMaxXP: 234,
-                bits: 70_900,
-                coins: 50_800,
-                crystals: 202,
-                summonTickets: 9
-            )
-            let monster = OwnedMonsterData(
-                monsterId: "kyro",
-                level: 10,
-                xp: 146,
-                isSelected: true,
-                equippedImageName: "mon_cubon"
-            )
-            let tamer = OwnedTamerData(
-                tamerId: "kael",
-                level: 8,
-                xp: 80,
-                isSelected: true
-            )
+    extension GameStore {
+        static var preview: GameStore {
+            do {
+                let schema = Schema([
+                    GameSaveData.self,
+                    OwnedMonsterData.self,
+                    OwnedTamerData.self,
+                ])
+                let configuration = ModelConfiguration(
+                    schema: schema,
+                    isStoredInMemoryOnly: true
+                )
+                let container = try ModelContainer(
+                    for: schema,
+                    configurations: [configuration]
+                )
+                let context = ModelContext(container)
+                let save = GameSaveData(
+                    didCompleteOnboarding: true,
+                    playerLevel: 10,
+                    playerPower: 472,
+                    playerXP: 146,
+                    playerMaxXP: 234,
+                    bits: 70_900,
+                    coins: 50_800,
+                    crystals: 202,
+                    summonTickets: 9
+                )
+                let monster = OwnedMonsterData(
+                    monsterId: "cubon",
+                    level: 10,
+                    xp: 146,
+                    isSelected: true,
+                    equippedImageName: "mon_cubon"
+                )
+                let tamer = OwnedTamerData(
+                    tamerId: "kael",
+                    level: 8,
+                    xp: 80,
+                    isSelected: true
+                )
 
-            context.insert(save)
-            context.insert(monster)
-            context.insert(tamer)
+                context.insert(save)
+                context.insert(monster)
+                context.insert(tamer)
 
-            return GameStore(
-                modelContext: context,
-                saves: [save],
-                ownedMonsters: [monster],
-                ownedTamers: [tamer]
-            )
-        } catch {
-            fatalError("Failed to create preview GameStore: \(error)")
+                return GameStore(
+                    modelContext: context,
+                    saves: [save],
+                    ownedMonsters: [monster],
+                    ownedTamers: [tamer]
+                )
+            } catch {
+                fatalError("Failed to create preview GameStore: \(error)")
+            }
         }
     }
-}
 #endif

@@ -12,6 +12,7 @@ enum GameCurrency {
         case "crystal", "crystals": "crystals"
         case "ticket", "tickets", "summon_ticket": "summon_ticket"
         case "bit", "bits": "bits"
+        case "exp", "xp": "exp"
         default: currency
         }
     }
@@ -22,6 +23,7 @@ enum GameCurrency {
         case "crystals": "Kristalle"
         case "summon_ticket": "Tickets"
         case "bits": "Bits"
+        case "exp": "EXP"
         default: currency
         }
     }
@@ -32,6 +34,7 @@ enum GameCurrency {
         case "crystals": "crystal"
         case "summon_ticket": "summon_ticket"
         case "bits": "bit"
+        case "exp": "exp"
         default: currency
         }
     }

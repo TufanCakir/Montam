@@ -49,14 +49,14 @@ enum TeamInventoryService {
         }
 
         if !ownedMonsters.contains(where: \.isSelected),
-           let first = ownedMonsters.first
+            let first = ownedMonsters.first
         {
             first.isSelected = true
             didChange = true
         }
 
         if !ownedTamers.contains(where: \.isSelected),
-           let first = ownedTamers.first
+            let first = ownedTamers.first
         {
             first.isSelected = true
             didChange = true
@@ -88,7 +88,6 @@ enum TeamInventoryService {
         }
         try? modelContext.save()
     }
-
 
     static func equipAppearance(
         imageName: String,

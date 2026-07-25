@@ -52,6 +52,11 @@
                     "slot": 0
                 },
                 {
+                    "id": "embon",
+                    "level": 1,
+                    "slot": 1
+                },
+                {
                     "id": "cubon",
                     "level": 1,
                     "slot": 1
@@ -64,7 +69,7 @@
             "xpReward": 24,
             "enemies": [
                 {
-                    "id": "cubon",
+                    "id": "embon",
                     "level": 2,
                     "slot": 0
                 },
@@ -74,7 +79,7 @@
                     "slot": 1
                 },
                 {
-                    "id": "cubon",
+                    "id": "embon",
                     "level": 2,
                     "slot": 2
                 }
@@ -86,7 +91,14 @@
             "xpReward": 72,
             "enemies": [
                 {
-                    "id": "kyro",
+                    "id": "kyron",
+                    "level": 3,
+                    "slot": 0,
+                    "hpMultiplier": 1.5,
+                    "scaleMultiplier": 1.35
+                },
+                {
+                    "id": "pyron",
                     "level": 3,
                     "slot": 0,
                     "hpMultiplier": 1.5,

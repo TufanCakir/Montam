@@ -50,7 +50,9 @@ struct MonsterSelectView: View {
                     .padding(.top, 18)
 
                 ForEach(tamers, id: \.id) { tamer in
-                    let owned = store.ownedTamers.first { $0.tamerId == tamer.id }
+                    let owned = store.ownedTamers.first {
+                        $0.tamerId == tamer.id
+                    }
                     SelectionRow(
                         imageName: tamer.tamerName,
                         title: tamer.name,
@@ -71,7 +73,7 @@ struct MonsterSelectView: View {
         .background {
             AppScreenBackground()
         }
-        .padding(.top, 50)
+        .padding(.top, 30)
     }
 }
 
