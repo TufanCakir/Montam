@@ -72,6 +72,11 @@ final class SummonViewModel {
         }
     }
 
+    func rates(for summon: SummonData) -> [SummonRateData] {
+        let configured = summon.rates ?? []
+        return configured.isEmpty ? Self.defaultRates : configured
+    }
+
     func currencyName(_ currency: String) -> String {
         switch currency {
         case "crystal", "crystals":
@@ -102,9 +107,11 @@ final class SummonViewModel {
     private func makeResultItem(for summon: SummonData, index: Int, count: Int)
         -> SummonResultItem
     {
-        let rarity = resultRarity(index: index, count: count)
+        let rarity = resultRarity(for: summon, index: index, count: count)
 
-        if shouldUseTamerPool(for: summon), let tamer = supportForResult(index: index) {
+        if shouldUseTamerPool(for: summon),
+           let tamer = supportForResult(rarity: rarity)
+        {
             return SummonResultItem(
                 title: tamer.name,
                 subtitle: "Tamer Support",
@@ -115,7 +122,7 @@ final class SummonViewModel {
             )
         }
 
-        if let monster = monsterForResult(summon: summon, index: index) {
+        if let monster = monsterForResult(summon: summon, rarity: rarity) {
             return SummonResultItem(
                 title: monster.name,
                 subtitle: "Monster",
@@ -140,7 +147,7 @@ final class SummonViewModel {
         summon.category == "support" || summon.category == "empfohlen"
     }
 
-    private func monsterForResult(summon: SummonData, index: Int) -> MonsterData? {
+    private func monsterForResult(summon: SummonData, rarity: String) -> MonsterData? {
         if let exact = monsters.first(where: { $0.monsterName == summon.bannerImage }) {
             return exact
         }
@@ -150,47 +157,130 @@ final class SummonViewModel {
             poolIds.contains($0.monsterName) || poolIds.contains($0.id)
         }
         let source = pooledMonsters.isEmpty ? monsters : pooledMonsters
-        return item(at: index, in: source)
+        return weightedItem(rarity: rarity, in: source, rarity: { $0.rarity })
     }
 
-    private func supportForResult(index: Int) -> TamerData? {
+    private func supportForResult(rarity: String) -> TamerData? {
         let poolIds = summonPool.map(\.characterId)
         let pooledTamers = tamers.filter {
             poolIds.contains($0.tamerName) || poolIds.contains($0.id)
         }
         let source = pooledTamers.isEmpty ? tamers : pooledTamers
-        return item(at: index, in: source)
+        return weightedItem(rarity: rarity, in: source, rarity: { $0.rarity })
     }
 
-    private func item<T>(at index: Int, in items: [T]) -> T? {
+    private func randomItem<T>(in items: [T]) -> T? {
         guard !items.isEmpty else {
             return nil
         }
 
-        return items[index % items.count]
+        return items.randomElement()
     }
 
-    private func resultRarity(index: Int, count: Int) -> String {
-        if count >= 10, index == count - 1 {
-            return "SR"
+    private func weightedItem<T>(
+        rarity targetRarity: String,
+        in items: [T],
+        rarity: (T) -> String?
+    ) -> T? {
+        guard !items.isEmpty else {
+            return nil
         }
 
-        let cycle = ["N", "R", "R", "SR", "N", "R", "SSR"]
-        return cycle[index % cycle.count]
+        let matching = items.filter {
+            Self.normalizedRarity(rarity($0)) == Self.normalizedRarity(targetRarity)
+        }
+        if let item = randomItem(in: matching) {
+            return item
+        }
+
+        let targetRank = Self.rarityRank(targetRarity)
+        let rankedItems = items.map { item in
+            (item: item, rank: Self.rarityRank(rarity(item) ?? "common"))
+        }
+        let eligible = rankedItems.filter { $0.rank >= targetRank }
+        let fallbackRank = eligible.map(\.rank).min()
+            ?? rankedItems.map(\.rank).min()
+            ?? 0
+        let fallbackItems = rankedItems
+            .filter { $0.rank == fallbackRank }
+            .map(\.item)
+        return randomItem(in: fallbackItems.isEmpty ? items : fallbackItems)
+    }
+
+    private func resultRarity(for summon: SummonData, index: Int, count: Int) -> String {
+        let rates = rates(for: summon)
+        if count >= 10, index == count - 1 {
+            let guaranteedRates = rates.filter {
+                Self.rarityRank($0.rarity) >= Self.rarityRank("rare")
+            }
+            return weightedRarity(from: guaranteedRates.isEmpty ? rates : guaranteedRates)
+        }
+
+        return weightedRarity(from: rates)
+    }
+
+    private func weightedRarity(from rates: [SummonRateData]) -> String {
+        let safeRates = rates.filter { $0.weight > 0 }
+        let totalWeight = safeRates.reduce(0) { $0 + $1.weight }
+        guard totalWeight > 0 else {
+            return "common"
+        }
+
+        var roll = Int.random(in: 1...totalWeight)
+        for rate in safeRates {
+            roll -= rate.weight
+            if roll <= 0 {
+                return rate.rarity
+            }
+        }
+
+        return safeRates.last?.rarity ?? "common"
     }
 
     private func rarityColor(_ rarity: String) -> Color {
-        switch rarity.lowercased() {
-        case "ur", "legendary", "epic":
+        switch Self.normalizedRarity(rarity) {
+        case "legendary":
             return .orange
-        case "ssr":
+        case "epic":
             return .purple
-        case "sr", "rare":
+        case "rare":
             return .blue
-        case "r":
+        case "common":
             return .green
         default:
             return .cyan
+        }
+    }
+
+    private static let defaultRates = [
+        SummonRateData(rarity: "common", title: "Common", weight: 7000),
+        SummonRateData(rarity: "rare", title: "Rare", weight: 2200),
+        SummonRateData(rarity: "epic", title: "Epic", weight: 750),
+        SummonRateData(rarity: "legendary", title: "Legendär", weight: 50),
+    ]
+
+    private static func rarityRank(_ rarity: String) -> Int {
+        switch normalizedRarity(rarity) {
+        case "common": 0
+        case "rare": 1
+        case "epic": 2
+        case "legendary": 3
+        default: 0
+        }
+    }
+
+    private static func normalizedRarity(_ rarity: String?) -> String {
+        switch rarity?.lowercased() {
+        case "n", "normal", "common":
+            return "common"
+        case "r", "sr", "rare":
+            return "rare"
+        case "ssr", "epic":
+            return "epic"
+        case "ur", "lr", "legendary", "legendär":
+            return "legendary"
+        default:
+            return "common"
         }
     }
 }

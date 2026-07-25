@@ -1,14 +1,43 @@
 [
     {
-        "id": "bg_beach_01",
-        "imageName": "bg_beach_01"
+        "id": "bg_tropical_beach",
+        "imageName": "bg_tropical_beach"
     },
     {
-        "id": "bg_lava_01",
-        "imageName": "bg_lava_01"
+        "id": "bg_lava_world_with_volcanoes",
+        "imageName": "bg_lava_world_with_volcanoes"
     },
     {
-        "id": "bg_ice_01",
-        "imageName": "bg_ice_01"
+        "id": "bg_snowy_mountain_valley",
+        "imageName": "bg_snowy_mountain_valley"
+    },
+    {
+        "id": "bg_desert_canyon",
+        "imageName": "bg_desert_canyon"
+    },
+    {
+        "id": "bg_crystal_cave_entrance",
+        "imageName": "bg_crystal_cave_entrance"
+    },
+    {
+        "id": "bg_ancient_ruins",
+        "imageName": "bg_ancient_ruins"
+    },
+    {
+        "id": "bg_floating_islands",
+        "imageName": "bg_floating_islands"
+    },
+    {
+        "id": "bg_autumn_forest",
+        "imageName": "bg_autumn_forest"
+    },
+    {
+        "id": "bg_haunted_wasteland",
+        "imageName": "bg_haunted_wasteland"
+    },
+    {
+        "id": "bg_heavenly_grasslands",
+        "imageName": "bg_heavenly_grasslands"
     }
 ]
+ 

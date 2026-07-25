@@ -10,5 +10,9 @@ import Foundation
 struct BattleRewardData: Codable {
     let battleCoins: Int
     let battleCrystals: Int
+    let battleBits: Int?
+    let coinDropChance: Double?
+    let crystalDropChance: Double?
+    let bitDropChance: Double?
     let battleeventExp: Int
 }

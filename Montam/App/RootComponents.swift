@@ -70,7 +70,8 @@ struct RootGameHeader: View {
 
             PlayerStatusBar(state: status)
         }
-
+        .padding(.horizontal)
+        .offset(y: 29)
     }
 }
 

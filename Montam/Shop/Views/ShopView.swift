@@ -15,7 +15,7 @@ struct ShopView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ShopTitleBar(title: viewModel.selectedSection.title)
+
             ShopWalletFilterBar(
                 wallet: gameStore.shopWallet,
                 selectedSection: $viewModel.selectedSection
@@ -50,6 +50,7 @@ struct ShopView: View {
         .onChange(of: paymentStore.purchasedProductIds) { _, productIds in
             gameStore.syncShopEntitlements(productIds: productIds)
         }
+        .padding(.top, 50)
     }
 
     @ViewBuilder

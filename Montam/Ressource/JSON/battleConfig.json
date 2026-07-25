@@ -17,9 +17,16 @@
     "xpLinearGrowth": 58,
     "xpExponentialGrowth": 1.075,
     "backgroundSequence": [
-        "bg_beach_01",
-        "bg_lava_01",
-        "bg_ice_01"
+        "bg_tropical_beach",
+        "bg_lava_world_with_volcanoes",
+        "bg_snowy_mountain_valley",
+        "bg_desert_canyon",
+        "bg_crystal_cave_entrance",
+        "bg_ancient_ruins",
+        "bg_floating_islands",
+        "bg_autumn_forest",
+        "bg_haunted_wasteland",
+        "bg_heavenly_grasslands"
     ],
     "playerMonsters": [
         {
@@ -91,8 +98,16 @@
     "rewards": {
         "coinIcon": "icon_coin",
         "crystalIcon": "icon_crystal",
+        "bitIcon": "bit",
         "coins": 130,
         "crystals": 1,
+        "bits": 25,
+        "coinDropChance": 0.85,
+        "crystalDropChance": 0.04,
+        "bitDropChance": 0.015,
+        "bossCoinDropChance": 1.0,
+        "bossCrystalDropChance": 0.18,
+        "bossBitDropChance": 0.08,
         "eventExp": 72
     }
 }

@@ -52,50 +52,13 @@ struct ShopWalletState {
     let bits: Int
 }
 
-struct ShopTitleBar: View {
-    let title: String
-
-    var body: some View {
-        Text(title.uppercased())
-            .font(.system(size: 27, weight: .heavy, design: .rounded))
-            .foregroundStyle(.white)
-            .lineLimit(1)
-            .minimumScaleFactor(0.72)
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(
-                LinearGradient(
-                    colors: [.cyan, .cyan.opacity(0.4), .cyan],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-    }
-}
-
 struct ShopWalletFilterBar: View {
     let wallet: ShopWalletState
     @Binding var selectedSection: ShopSection
 
     var body: some View {
         HStack {
-            if selectedSection == .item {
-                ShopWalletValue(
-                    image: "icon_bit",
-                    text: formatNumber(wallet.bits)
-                )
-            } else {
-                ShopWalletValue(
-                    image: "icon_crystal",
-                    text: formatNumber(wallet.crystals)
-                )
-                ShopWalletValue(
-                    image: "icon_coin",
-                    text: formatNumber(wallet.coins)
-                )
-            }
-
-            Spacer()
+       
 
             Menu {
                 ForEach(ShopSection.allCases) { section in

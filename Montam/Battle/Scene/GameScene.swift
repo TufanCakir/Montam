@@ -666,21 +666,16 @@ final class GameScene: SKScene {
 
     private func completeWave(config: BattleConfigData) {
         let wave = config.waves[currentWaveIndex]
+        let reward = battleReward(for: wave, config: config)
         completedFightCount += 1
         globalStage += 1
         onStageCompleted?(globalStage)
-        onBattleWon?(
-            BattleWaveReward(
-                xp: wave.xpReward ?? 0,
-                coins: config.rewards.coins,
-                crystals: wave.isBossWave ? config.rewards.crystals : 0
-            )
-        )
+        onBattleWon?(reward)
 
         if wave.isBossWave {
             showBossVictory(
                 rewards: config.rewards,
-                xpReward: wave.xpReward ?? 0
+                reward: reward
             )
             onBossBattleWon?()
             currentWaveIndex = 0
@@ -705,6 +700,36 @@ final class GameScene: SKScene {
         advanceEnvironmentAfterFight(config: config) { [weak self] in
             self?.startWave(at: self?.currentWaveIndex ?? 0)
         }
+    }
+
+    private func battleReward(
+        for wave: BattleWaveData,
+        config: BattleConfigData
+    ) -> BattleWaveReward {
+        let rewards = config.rewards
+        let coinChance =
+            wave.isBossWave
+            ? rewards.bossCoinDropChance ?? rewards.coinDropChance ?? 0.85
+            : rewards.coinDropChance ?? 0.85
+        let crystalChance =
+            wave.isBossWave
+            ? rewards.bossCrystalDropChance ?? rewards.crystalDropChance ?? 0.18
+            : rewards.crystalDropChance ?? 0.04
+        let bitChance =
+            wave.isBossWave
+            ? rewards.bossBitDropChance ?? rewards.bitDropChance ?? 0.08
+            : rewards.bitDropChance ?? 0.015
+
+        return BattleWaveReward(
+            xp: wave.xpReward ?? 0,
+            coins: roll(chance: coinChance) ? rewards.coins : 0,
+            crystals: roll(chance: crystalChance) ? rewards.crystals : 0,
+            bits: roll(chance: bitChance) ? rewards.bits ?? 0 : 0
+        )
+    }
+
+    private func roll(chance: Double) -> Bool {
+        Double.random(in: 0...1) < min(max(chance, 0), 1)
     }
 
     private func advanceEnvironmentAfterFight(
@@ -842,10 +867,10 @@ final class GameScene: SKScene {
         )
     }
 
-    private func showBossVictory(rewards: BattleRewardConfig, xpReward: Int) {
+    private func showBossVictory(rewards: BattleRewardConfig, reward: BattleWaveReward) {
         let container = BattleRewardHUDFactory.bossVictoryNode(
             rewards: rewards,
-            xpReward: xpReward,
+            reward: reward,
             sceneSize: size
         )
         addChild(container)

@@ -71,6 +71,7 @@ struct MonsterSelectView: View {
         .background {
             AppScreenBackground()
         }
+        .padding(.top, 50)
     }
 }
 

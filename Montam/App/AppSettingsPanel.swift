@@ -30,6 +30,7 @@ struct AppSettingsPanel: View {
                             ? "speaker.wave.2.fill" : "speaker.slash.fill"
                     )
                     .font(.system(size: 21, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
                 }
                 .toggleStyle(.switch)
                 .padding(.horizontal, 18)
@@ -55,7 +56,7 @@ struct AppSettingsPanel: View {
                         .font(
                             .system(size: 14, weight: .heavy, design: .rounded)
                         )
-                        .foregroundStyle(.cyan)
+                        .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
                 }
             }

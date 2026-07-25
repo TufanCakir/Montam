@@ -7,26 +7,6 @@
 
 import SwiftUI
 
-struct TradeTitleBar: View {
-    var body: some View {
-        HStack(spacing: 8) {
-            Text("Tausch")
-                .font(.system(size: 24, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-            Spacer()
-            Image(systemName: "arrow.left.arrow.right.circle.fill")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.cyan)
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 46)
-        .background(Color.black.opacity(0.24))
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(.cyan.opacity(0.45)).frame(height: 1)
-        }
-    }
-}
-
 struct TradeWalletPanel: View {
     let save: GameSaveData?
 

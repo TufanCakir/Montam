@@ -2,6 +2,10 @@
     {
         "battleCoins": 130,
         "battleCrystals": 1,
+        "battleBits": 25,
+        "coinDropChance": 0.85,
+        "crystalDropChance": 0.04,
+        "bitDropChance": 0.015,
         "battleeventExp": 72
     }
 ]

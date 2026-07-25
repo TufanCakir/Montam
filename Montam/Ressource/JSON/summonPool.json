@@ -1,6 +1,10 @@
 [
     {
-        "characterId": "kyro",
+        "characterId": "aren",
+        "rateUp": true
+    },
+    {
+        "characterId": "rick",
         "rateUp": true
     }
 ]

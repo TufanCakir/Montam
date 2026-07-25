@@ -15,4 +15,13 @@ struct SummonData: Codable {
     let singleCost: Int
     let multiCost: Int
     let bannerImage: String
+    let rates: [SummonRateData]?
+}
+
+struct SummonRateData: Codable, Identifiable {
+    let rarity: String
+    let title: String
+    let weight: Int
+
+    var id: String { rarity }
 }

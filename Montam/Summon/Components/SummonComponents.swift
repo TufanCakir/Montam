@@ -151,13 +151,20 @@ private struct SummonCategoryArtwork: View {
 
 struct SummonCategoryPage: View {
     let summons: [SummonData]
+    let rates: (SummonData) -> [SummonRateData]
+    let onShowRates: (SummonData, [SummonRateData]) -> Void
     let onSummon: (SummonData, Int) -> Void
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: SummonLayoutMetrics.bannerSpacing) {
                 ForEach(summons, id: \.id) { summon in
-                    SummonBannerSection(summon: summon, onSummon: onSummon)
+                    SummonBannerSection(
+                        summon: summon,
+                        rates: rates(summon),
+                        onShowRates: onShowRates,
+                        onSummon: onSummon
+                    )
                 }
             }
             .padding(.bottom, 8)
@@ -167,11 +174,18 @@ struct SummonCategoryPage: View {
 
 private struct SummonBannerSection: View {
     let summon: SummonData
+    let rates: [SummonRateData]
+    let onShowRates: (SummonData, [SummonRateData]) -> Void
     let onSummon: (SummonData, Int) -> Void
 
     var body: some View {
         VStack(spacing: 12) {
-            SummonFocusView(summon: summon)
+            SummonFocusView(
+                summon: summon,
+                onShowRates: {
+                    onShowRates(summon, rates)
+                }
+            )
             SummonActionRow(summon: summon, onSummon: onSummon)
         }
         .padding(.bottom, 8)
@@ -180,18 +194,29 @@ private struct SummonBannerSection: View {
 
 struct SummonFocusView: View {
     let summon: SummonData
+    let onShowRates: () -> Void
 
     var body: some View {
         VStack(spacing: 12) {
-            Text(summon.title)
-                .font(.system(size: 26, weight: .heavy, design: .rounded))
-                .foregroundStyle(.black)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .minimumScaleFactor(0.72)
+            HStack(spacing: 8) {
+                Text(summon.title)
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.black)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.72)
+
+                Button(action: onShowRates) {
+                    Image(systemName: "info.circle.fill")
+                        .font(.system(size: 24, weight: .black))
+                        .foregroundStyle(.blue)
+                        .frame(width: 34, height: 34)
+                }
+                .buttonStyle(.plain)
+            }
+            .frame(maxWidth: .infinity)
 
             ZStack {
-                SummonArtworkBackdrop()
 
                 SummonArtwork(summon: summon)
                     .padding(.horizontal, 52)
@@ -202,6 +227,100 @@ struct SummonFocusView: View {
                 minHeight: SummonLayoutMetrics.focusMinHeight,
                 maxHeight: SummonLayoutMetrics.focusMaxHeight
             )
+        }
+    }
+}
+
+struct SummonRateInfo: Identifiable {
+    let id = UUID()
+    let title: String
+    let rates: [SummonRateData]
+}
+
+struct SummonRateInfoSheet: View {
+    let info: SummonRateInfo
+
+    private var totalWeight: Int {
+        max(info.rates.reduce(0) { $0 + max($1.weight, 0) }, 1)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(info.title)
+                .font(.system(size: 22, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(2)
+                .minimumScaleFactor(0.75)
+
+            Text("Summon Rates")
+                .font(.system(size: 15, weight: .heavy, design: .rounded))
+                .foregroundStyle(.cyan)
+
+            VStack(spacing: 8) {
+                ForEach(info.rates) { rate in
+                    SummonRateRow(rate: rate, totalWeight: totalWeight)
+                }
+            }
+
+            Text("10x garantiert mindestens Rare. Legendär bleibt absichtlich sehr selten.")
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.72))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Color(red: 0.02, green: 0.08, blue: 0.20))
+    }
+}
+
+private struct SummonRateRow: View {
+    let rate: SummonRateData
+    let totalWeight: Int
+
+    private var percent: Double {
+        Double(max(rate.weight, 0)) / Double(max(totalWeight, 1)) * 100
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Circle()
+                .fill(color)
+                .frame(width: 12, height: 12)
+
+            Text(rate.title)
+                .font(.system(size: 15, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            Text(percentText)
+                .font(.system(size: 15, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .monospacedDigit()
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 38)
+        .background(Color.white.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var percentText: String {
+        if percent < 1 {
+            return String(format: "%.2f%%", percent)
+        }
+        return String(format: "%.1f%%", percent)
+    }
+
+    private var color: Color {
+        switch rate.rarity.lowercased() {
+        case "legendary", "legendär", "ur", "lr":
+            return .orange
+        case "epic", "ssr":
+            return .purple
+        case "rare", "r", "sr":
+            return .blue
+        default:
+            return .green
         }
     }
 }
@@ -354,19 +473,6 @@ struct SummonScreenBackground: View {
     }
 }
 
-private struct SummonArtworkBackdrop: View {
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(.blue.opacity(0.08))
-                .frame(width: 250, height: 250)
-            Circle()
-                .stroke(.blue.opacity(0.14), lineWidth: 12)
-                .frame(width: 220, height: 220)
-        }
-    }
-}
-
 private struct SummonHexPattern: View {
     var body: some View {
         GeometryReader { geometry in
@@ -421,6 +527,3 @@ struct SparkView: View {
     }
 }
 
-#Preview("Summon") {
-    SummonView(store: .preview)
-}

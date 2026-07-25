@@ -1,8 +1,21 @@
 [
     {
-        "id": "kael",
-        "tamerName": "tamer_kael",
-        "name": "Kael",
+        "id": "aren",
+        "tamerName": "tamer_aren",
+        "name": "Aren",
+        "tamerGrowthRate": 1.12,
+        "rarity": "legendary",
+        "supportAttackBonus": 0.18,
+        "supportDefenseBonus": 0.08,
+        "supportHealthBonus": 0.15,
+        "yOffset": -300,
+        "xOffset": -50,
+        "zOffset": 180
+    },
+    {
+        "id": "rick",
+        "tamerName": "tamer_rick",
+        "name": "Rick",
         "tamerGrowthRate": 1.12,
         "rarity": "legendary",
         "supportAttackBonus": 0.18,

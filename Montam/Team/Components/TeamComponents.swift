@@ -144,29 +144,6 @@ struct SupportTeamContent: View {
     }
 }
 
-struct TeamTitleBar: View {
-    let section: TeamSection
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(section.title.uppercased())
-                .font(.system(size: 20, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-            Spacer()
-            Image(systemName: "info.circle.fill")
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(.white.opacity(0.72))
-        }
-        .padding(.horizontal, 14)
-        .frame(height: 42)
-        .background(Color.cyan.opacity(0.42))
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(.cyan.opacity(0.65)).frame(height: 1)
-        }
-    }
-}
-
 struct TeamSectionTabs: View {
     @Binding var selectedSection: TeamSection
 

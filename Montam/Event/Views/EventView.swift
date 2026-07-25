@@ -16,7 +16,6 @@ struct EventView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            EventTitleBar()
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 22) {
@@ -44,6 +43,7 @@ struct EventView: View {
                 selectedEvent = nil
             }
         }
+        .padding(.top, 50)
     }
 }
 
@@ -122,29 +122,6 @@ private struct EventBattleView: View {
             from: event,
             saves: saves,
             modelContext: modelContext
-        )
-    }
-}
-
-private struct EventTitleBar: View {
-    var body: some View {
-        HStack(spacing: 10) {
-            Spacer()
-            Text("DUNGEON")
-                .font(.system(size: 27, weight: .heavy, design: .rounded))
-                .foregroundStyle(.blue.opacity(0.82))
-            Image(systemName: "info.circle.fill")
-                .font(.system(size: 21, weight: .bold))
-                .foregroundStyle(.blue.opacity(0.75))
-            Spacer()
-        }
-        .frame(height: 56)
-        .background(
-            LinearGradient(
-                colors: [.cyan, .cyan.opacity(0.45), .cyan],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
         )
     }
 }
@@ -333,7 +310,7 @@ private struct EventRewardPills: View {
     let rewards: [EventRewardItem]
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 10) {
             ForEach(rewards.prefix(3)) { reward in
                 HStack(spacing: 4) {
                     GameResourceIcon(id: reward.currency, fallbackImage: nil)
@@ -343,9 +320,7 @@ private struct EventRewardPills: View {
                             .system(size: 13, weight: .heavy, design: .rounded)
                         )
                         .foregroundStyle(.white)
-                        .lineLimit(1)
                 }
-                .padding(.horizontal, 7)
                 .frame(height: 28)
                 .background(.blue.opacity(0.68))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -357,6 +332,7 @@ private struct EventRewardPills: View {
                 )
             }
         }
+        .padding()
     }
 }
 

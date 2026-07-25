@@ -1,47 +1,64 @@
 [
     {
-        "id": "beginnings_kyro_banner",
-        "title": "Kyro Summon",
-        "category": "beginnings",
-        "currency": "crystal",
-        "singleCost": 5,
-        "multiCost": 50,
-        "bannerImage": "mon_kyro"
-    },
-    {
-        "id": "beginnings_pyron_banner",
-        "title": "Pyron Summon",
-        "category": "beginnings",
-        "currency": "crystal",
-        "singleCost": 5,
-        "multiCost": 50,
-        "bannerImage": "mon_pyron"
-    },
-    {
-        "id": "support_kael_banner",
-        "title": "Kael Support Summon",
+        "id": "support_tamer_aren_banner",
+        "title": "Aren",
         "category": "support",
-        "currency": "summon_ticket",
+        "currency": "crystals",
         "singleCost": 5,
         "multiCost": 50,
-        "bannerImage": "tamer_kael"
+        "bannerImage": "tamer_aren",
+        "rates": [
+            {
+                "rarity": "common",
+                "title": "Common",
+                "weight": 7000
+            },
+            {
+                "rarity": "rare",
+                "title": "Rare",
+                "weight": 2200
+            },
+            {
+                "rarity": "epic",
+                "title": "Epic",
+                "weight": 750
+            },
+            {
+                "rarity": "legendary",
+                "title": "Legendär",
+                "weight": 50
+            }
+        ]
     },
     {
-        "id": "event_kael_banner",
-        "title": "Event Support Summon",
-        "category": "empfohlen",
-        "currency": "summon_ticket",
+        "id": "support_tamer_rick_banner",
+        "title": "Rick",
+        "category": "support",
+        "currency": "crystals",
         "singleCost": 5,
         "multiCost": 50,
-        "bannerImage": "tamer_kael"
-    },
-    {
-        "id": "special_pyron_banner",
-        "title": "Special Pyron Summon",
-        "category": "special",
-        "currency": "crystal",
-        "singleCost": 5,
-        "multiCost": 50,
-        "bannerImage": "mon_pyron"
+        "bannerImage": "tamer_rick",
+        "rates": [
+            {
+                "rarity": "common",
+                "title": "Common",
+                "weight": 7000
+            },
+            {
+                "rarity": "rare",
+                "title": "Rare",
+                "weight": 2200
+            },
+            {
+                "rarity": "epic",
+                "title": "Epic",
+                "weight": 750
+            },
+            {
+                "rarity": "legendary",
+                "title": "Legendär",
+                "weight": 50
+            }
+        ]
     }
 ]

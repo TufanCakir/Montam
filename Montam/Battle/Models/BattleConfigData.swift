@@ -83,8 +83,16 @@ struct BattleUnitConfig: Decodable {
 struct BattleRewardConfig: Decodable {
     let coinIcon: String
     let crystalIcon: String
+    let bitIcon: String?
     let coins: Int
     let crystals: Int
+    let bits: Int?
+    let coinDropChance: Double?
+    let crystalDropChance: Double?
+    let bitDropChance: Double?
+    let bossCoinDropChance: Double?
+    let bossCrystalDropChance: Double?
+    let bossBitDropChance: Double?
     let eventExp: Int
 }
 
@@ -100,8 +108,16 @@ extension BattleConfigData {
         let reward = BattleRewardConfig(
             coinIcon: rewards.coinIcon,
             crystalIcon: rewards.crystalIcon,
+            bitIcon: rewards.bitIcon,
             coins: rewardCoins,
             crystals: rewardCrystals,
+            bits: rewards.bits,
+            coinDropChance: rewards.coinDropChance,
+            crystalDropChance: rewards.crystalDropChance,
+            bitDropChance: rewards.bitDropChance,
+            bossCoinDropChance: rewards.bossCoinDropChance,
+            bossCrystalDropChance: rewards.bossCrystalDropChance,
+            bossBitDropChance: rewards.bossBitDropChance,
             eventExp: eventXP
         )
 

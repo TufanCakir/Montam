@@ -16,7 +16,6 @@ struct TeamView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TeamTitleBar(section: selectedSection)
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 12) {
@@ -38,6 +37,7 @@ struct TeamView: View {
         .onAppear {
             store.syncJSONCompanions()
         }
+        .padding(.top, 50)
     }
 
     @ViewBuilder
@@ -114,6 +114,3 @@ struct TeamView: View {
     }
 }
 
-#Preview("Team") {
-    TeamView(store: .preview)
-}

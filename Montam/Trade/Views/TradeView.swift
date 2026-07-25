@@ -19,7 +19,6 @@ struct TradeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TradeTitleBar()
 
             if viewModel.offers.isEmpty {
                 TradeEmptyState()
@@ -37,6 +36,7 @@ struct TradeView: View {
         .onAppear {
             viewModel.loadIfNeeded()
         }
+        .padding(.top, 50)
     }
 
     private var tradeList: some View {

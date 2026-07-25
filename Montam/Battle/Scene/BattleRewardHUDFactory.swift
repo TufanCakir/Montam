@@ -10,7 +10,7 @@ import SpriteKit
 enum BattleRewardHUDFactory {
     static func bossVictoryNode(
         rewards: BattleRewardConfig,
-        xpReward: Int,
+        reward: BattleWaveReward,
         sceneSize: CGSize
     ) -> SKNode {
         let container = SKNode()
@@ -43,17 +43,23 @@ enum BattleRewardHUDFactory {
         subtitle.position = CGPoint(x: 0, y: 11)
         container.addChild(subtitle)
 
-        addRewardIcon("exp", text: "+\(xpReward)", x: -108, to: container)
+        addRewardIcon("exp", text: "+\(reward.xp)", x: -126, to: container)
         addRewardIcon(
             rewards.coinIcon,
-            text: "+\(rewards.coins)",
-            x: 0,
+            text: "+\(reward.coins)",
+            x: -42,
             to: container
         )
         addRewardIcon(
             rewards.crystalIcon,
-            text: "+\(rewards.crystals)",
-            x: 108,
+            text: "+\(reward.crystals)",
+            x: 42,
+            to: container
+        )
+        addRewardIcon(
+            rewards.bitIcon ?? "bit",
+            text: "+\(reward.bits)",
+            x: 126,
             to: container
         )
 
@@ -106,6 +112,19 @@ enum BattleRewardHUDFactory {
             node.fillColor = SKColor(red: 0.25, green: 1, blue: 0.58, alpha: 1)
             node.strokeColor = .white
             node.lineWidth = 2
+            return node
+        case "bit", "bits":
+            let node = SKShapeNode(circleOfRadius: 14)
+            node.fillColor = SKColor(red: 0.08, green: 0.66, blue: 1, alpha: 1)
+            node.strokeColor = .white
+            node.lineWidth = 2
+            let label = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+            label.text = "bit"
+            label.fontSize = 9
+            label.fontColor = .white
+            label.verticalAlignmentMode = .center
+            label.horizontalAlignmentMode = .center
+            node.addChild(label)
             return node
         default:
             let node = SKShapeNode(circleOfRadius: 14)

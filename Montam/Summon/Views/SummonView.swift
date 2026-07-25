@@ -11,6 +11,7 @@ struct SummonView: View {
     let store: GameStore
 
     @State private var viewModel = SummonViewModel()
+    @State private var selectedRateInfo: SummonRateInfo?
 
     var body: some View {
         ZStack {
@@ -32,6 +33,13 @@ struct SummonView: View {
                     ForEach(viewModel.categories) { category in
                         SummonCategoryPage(
                             summons: viewModel.summons(for: category.id),
+                            rates: { summon in viewModel.rates(for: summon) },
+                            onShowRates: { summon, rates in
+                                selectedRateInfo = SummonRateInfo(
+                                    title: summon.title,
+                                    rates: rates
+                                )
+                            },
                             onSummon: performSummon
                         )
                         .tag(category.id)
@@ -56,6 +64,12 @@ struct SummonView: View {
                 SummonToast(message: message)
             }
         }
+        .sheet(item: $selectedRateInfo) { info in
+            SummonRateInfoSheet(info: info)
+                .presentationDetents([.height(330)])
+                .presentationDragIndicator(.visible)
+        }
+        .padding(.top, 50)
     }
 
     private func performSummon(_ summon: SummonData, count: Int) {
@@ -85,6 +99,3 @@ struct SummonView: View {
     }
 }
 
-#Preview("Summon") {
-    SummonView(store: .preview)
-}

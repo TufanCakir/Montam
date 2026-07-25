@@ -121,6 +121,7 @@ struct GameStore {
 
         save.coins += reward.coins
         save.crystals += reward.crystals
+        save.bits += reward.bits
         refreshPlayerStats(
             save: save,
             monsterCatalog: monsterCatalog,
