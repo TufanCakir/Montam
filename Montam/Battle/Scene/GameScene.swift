@@ -6,8 +6,11 @@
 //
 
 import SpriteKit
+import UIKit
 
 final class GameScene: SKScene {
+
+    private static let cameraZoomGestureName = "Montam.Battle.CameraZoom"
 
     private var battleConfig: BattleConfigData?
     private var backgrounds: [BackgroundData] = []
@@ -33,6 +36,9 @@ final class GameScene: SKScene {
     private var currentBackgroundIndex = 0
     private var completedFightCount = 0
     private var didStartBattle = false
+    private weak var gestureView: SKView?
+    private var pinchStartCameraZoom: CGFloat = 1
+    private var currentCameraZoom: CGFloat?
     private var eventData: EventData?
     var onStageChanged: ((BattleStageState) -> Void)?
     var onStageCompleted: ((Int) -> Void)?
@@ -78,6 +84,7 @@ final class GameScene: SKScene {
     override func didMove(to view: SKView) {
         scaleMode = .resizeFill
         anchorPoint = .zero
+        installSceneGestures(on: view)
         loadBattleData()
         startMusicIfNeeded()
         startIfReady()
@@ -148,13 +155,58 @@ final class GameScene: SKScene {
             return
         }
 
-        let zoom = max(battleConfig?.cameraZoom ?? 1, 0.25)
+        let zoom = resolvedCameraZoom()
         battleCamera.xScale = zoom
         battleCamera.yScale = zoom
         battleCamera.position = CGPoint(
             x: size.width / 2 + (battleConfig?.cameraXOffset ?? 0),
             y: size.height / 2 + (battleConfig?.cameraYOffset ?? 0)
         )
+        layoutFadeNode()
+    }
+
+    private func installSceneGestures(on view: SKView) {
+        guard gestureView !== view else {
+            return
+        }
+
+        gestureView?.gestureRecognizers?
+            .filter { $0.name == Self.cameraZoomGestureName }
+            .forEach { gestureView?.removeGestureRecognizer($0) }
+
+        let pinchGesture = UIPinchGestureRecognizer(
+            target: self,
+            action: #selector(handleCameraPinch(_:))
+        )
+        pinchGesture.name = Self.cameraZoomGestureName
+        view.addGestureRecognizer(pinchGesture)
+        gestureView = view
+    }
+
+    @objc private func handleCameraPinch(_ gesture: UIPinchGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            pinchStartCameraZoom = resolvedCameraZoom()
+        case .changed:
+            setCameraZoom(pinchStartCameraZoom / max(gesture.scale, 0.01))
+        default:
+            pinchStartCameraZoom = resolvedCameraZoom()
+        }
+    }
+
+    private func setCameraZoom(_ zoom: CGFloat) {
+        currentCameraZoom = clampedCameraZoom(zoom)
+        applyBattleCamera()
+    }
+
+    private func resolvedCameraZoom() -> CGFloat {
+        clampedCameraZoom(
+            currentCameraZoom ?? CGFloat(battleConfig?.cameraZoom ?? 1)
+        )
+    }
+
+    private func clampedCameraZoom(_ zoom: CGFloat) -> CGFloat {
+        min(max(zoom, 0.65), 1.85)
     }
 
     private func startWave(at index: Int) {
@@ -279,7 +331,7 @@ final class GameScene: SKScene {
     }
 
     private func layoutFadeNode() {
-        let zoom = max(battleConfig?.cameraZoom ?? 1, 1)
+        let zoom = max(resolvedCameraZoom(), 1)
         fadeNode?.size = CGSize(
             width: size.width * zoom,
             height: size.height * zoom
@@ -374,6 +426,17 @@ final class GameScene: SKScene {
     private func refreshPlayerStats(config: BattleConfigData) {
 
         let factory = unitFactory(config: config)
+        let supporterPlacements = Dictionary(
+            uniqueKeysWithValues: supporterUnits.enumerated().map { index, unit in
+                (
+                    unitPlacementKey(for: unit, index: index),
+                    BattleUnitPlacement(
+                        position: unit.node.position,
+                        zPosition: unit.node.zPosition
+                    )
+                )
+            }
+        )
 
         supporterUnits.forEach {
             $0.node.removeFromParent()
@@ -381,8 +444,15 @@ final class GameScene: SKScene {
 
         supporterUnits = factory.supporterUnits(from: selectedSupporters)
 
-        supporterUnits.forEach {
-            addChild($0.node)
+        for (index, unit) in supporterUnits.enumerated() {
+            if let placement = supporterPlacements[
+                unitPlacementKey(for: unit, index: index)
+            ] {
+                unit.node.position = placement.position
+                unit.node.zPosition = placement.zPosition
+            }
+
+            addChild(unit.node)
         }
 
         let configuredMonsters =
@@ -456,8 +526,10 @@ final class GameScene: SKScene {
             playerUnits[index].currentHP = playerUnits[index].maxHP
             playerUnits[index].node.alpha = 1
         }
+    }
 
-        movePlayersToStart(config: config)
+    private func unitPlacementKey(for unit: BattleUnit, index: Int) -> String {
+        "\(unit.id)#\(index)"
     }
 
     private func movePlayersToStart(config: BattleConfigData) {
@@ -1063,4 +1135,9 @@ extension Array {
     fileprivate subscript(safe index: Int) -> Element? {
         indices.contains(index) ? self[index] : nil
     }
+}
+
+private struct BattleUnitPlacement {
+    let position: CGPoint
+    let zPosition: CGFloat
 }

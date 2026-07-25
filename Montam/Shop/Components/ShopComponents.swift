@@ -177,6 +177,7 @@ struct ShopProductGridContent: View {
                         product: product,
                         price: priceTitle(product),
                         soldOut: store.isPurchased(product),
+                        storeUnavailable: store.isStoreKitUnavailable(product),
                         onBuy: onBuy
                     )
                     .frame(maxWidth: 164)
@@ -226,6 +227,7 @@ struct ShopPassContent: View {
                         product: product,
                         price: priceTitle(product),
                         purchased: store.isPurchased(product),
+                        storeUnavailable: store.isStoreKitUnavailable(product),
                         onBuy: onBuy
                     )
                 }
@@ -368,11 +370,12 @@ private struct ShopProductCard: View {
     let product: ShopProductData
     let price: String
     let soldOut: Bool
+    let storeUnavailable: Bool
     let onBuy: (ShopProductData) -> Void
 
     var body: some View {
         Button {
-            guard !soldOut else {
+            guard !soldOut && !storeUnavailable else {
                 return
             }
 
@@ -463,10 +466,10 @@ private struct ShopProductCard: View {
                     )
                 )
 
-                if soldOut {
+                if soldOut || storeUnavailable {
                     Color.black.opacity(0.58)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
-                    Text("GEKAUFT")
+                    Text(soldOut ? "GEKAUFT" : "STORE FEHLT")
                         .font(
                             .system(size: 25, weight: .heavy, design: .rounded)
                         )
@@ -482,6 +485,7 @@ private struct ShopProductCard: View {
             .frame(height: 180)
         }
         .buttonStyle(.plain)
+        .disabled(soldOut || storeUnavailable)
     }
 
 }
@@ -585,6 +589,7 @@ private struct ShopPassCard: View {
     let product: ShopProductData
     let price: String
     let purchased: Bool
+    let storeUnavailable: Bool
     let onBuy: (ShopProductData) -> Void
 
     private var color: Color {
@@ -593,7 +598,7 @@ private struct ShopPassCard: View {
 
     var body: some View {
         Button {
-            guard !purchased else {
+            guard !purchased && !storeUnavailable else {
                 return
             }
 
@@ -680,7 +685,9 @@ private struct ShopPassCard: View {
                         .font(
                             .system(size: 22, weight: .heavy, design: .rounded)
                         )
-                        .foregroundStyle(purchased ? .green : .red)
+                        .foregroundStyle(
+                            purchased ? .green : storeUnavailable ? .gray : .red
+                        )
                         .frame(width: 112)
                         .frame(maxHeight: .infinity)
                         .background(.white)
@@ -696,6 +703,7 @@ private struct ShopPassCard: View {
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
+        .disabled(purchased || storeUnavailable)
     }
 
     private var rewardLines: [String] {

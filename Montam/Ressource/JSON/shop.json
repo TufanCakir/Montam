@@ -61,7 +61,7 @@
             "purchaseType": "consumable",
             "title": "Kleines Bit-Paket",
             "subtitle": "10 Bits",
-            "visual": "icon_bit",
+            "visual": "bit",
             "badge": null,
             "sortOrder": 40,
             "rewards": {
@@ -79,7 +79,7 @@
             "purchaseType": "consumable",
             "title": "Mittleres Bit-Paket",
             "subtitle": "30 Bits",
-            "visual": "icon_bit",
+            "visual": "bit",
             "badge": null,
             "sortOrder": 50,
             "rewards": {
@@ -97,7 +97,7 @@
             "purchaseType": "consumable",
             "title": "Großes Bit-Paket",
             "subtitle": "50 Bits",
-            "visual": "icon_bit",
+            "visual": "bit",
             "badge": "VALUE",
             "sortOrder": 60,
             "rewards": {
@@ -115,7 +115,7 @@
             "purchaseType": "consumable",
             "title": "Kleines Ticketpaket",
             "subtitle": "10 Summon-Tickets",
-            "visual": "icon_summon_ticket",
+            "visual": "summon_ticket",
             "badge": null,
             "sortOrder": 70,
             "rewards": {
@@ -133,7 +133,7 @@
             "purchaseType": "consumable",
             "title": "Mittleres Ticketpaket",
             "subtitle": "30 Summon-Tickets",
-            "visual": "icon_summon_ticket",
+            "visual": "summon_ticket",
             "badge": null,
             "sortOrder": 80,
             "rewards": {
@@ -151,7 +151,7 @@
             "purchaseType": "consumable",
             "title": "Großes Ticketpaket",
             "subtitle": "50 Summon-Tickets",
-            "visual": "icon_summon_ticket",
+            "visual": "summon_ticket",
             "badge": "BEST",
             "sortOrder": 90,
             "rewards": {

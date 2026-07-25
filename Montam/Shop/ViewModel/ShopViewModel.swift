@@ -60,11 +60,11 @@ final class ShopViewModel {
             let priceCurrency = product.priceCurrency,
             let priceAmount = product.priceAmount
         else {
-            if store.unavailableProductIds.contains(product.productId) {
+            if store.isStoreKitUnavailable(product) {
                 #if DEBUG
                     return "StoreKit fehlt"
                 #else
-                    return "..."
+                    return "Nicht verfügbar"
                 #endif
             }
 

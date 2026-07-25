@@ -11,6 +11,7 @@ import StoreKit
 
 @MainActor
 final class StoreKitShopManager: ObservableObject {
+    @Published private(set) var requestedProductIds: Set<String> = []
     @Published private(set) var productsById: [String: Product] = [:]
     @Published private(set) var purchasedProductIds: Set<String> = []
     @Published private(set) var unavailableProductIds: Set<String> = []
@@ -18,6 +19,14 @@ final class StoreKitShopManager: ObservableObject {
 
     func loadProducts(productIds: [String]) async {
         let uniqueIds = Array(Set(productIds)).sorted()
+        requestedProductIds = Set(uniqueIds)
+        errorMessage = nil
+
+        guard !uniqueIds.isEmpty else {
+            productsById = [:]
+            unavailableProductIds = []
+            return
+        }
 
         do {
             let products = try await Product.products(for: uniqueIds)
@@ -29,12 +38,12 @@ final class StoreKitShopManager: ObservableObject {
             )
 
             #if DEBUG
-                let loadedIds = productsById.keys.sorted()
-                if !loadedIds.isEmpty {
-                    print(
-                        "StoreKit loaded product IDs: \(loadedIds.joined(separator: ", "))"
-                    )
-                }
+                print(
+                    "StoreKit requested product IDs: \(uniqueIds.joined(separator: ", "))"
+                )
+                print(
+                    "StoreKit loaded product IDs: \(productsById.keys.sorted().joined(separator: ", "))"
+                )
 
                 if !unavailableProductIds.isEmpty {
                     print(
@@ -45,6 +54,7 @@ final class StoreKitShopManager: ObservableObject {
 
             await refreshEntitlements()
         } catch {
+            productsById = [:]
             errorMessage = "Store konnte nicht geladen werden."
             unavailableProductIds = Set(uniqueIds)
 
@@ -100,6 +110,12 @@ final class StoreKitShopManager: ObservableObject {
 
     func localizedPrice(for productData: ShopProductData) -> String {
         productsById[productData.productId]?.displayPrice ?? "..."
+    }
+
+    func isStoreKitUnavailable(_ productData: ShopProductData) -> Bool {
+        productData.purchaseType != .softCurrency
+            && requestedProductIds.contains(productData.productId)
+            && unavailableProductIds.contains(productData.productId)
     }
 
     func isPurchased(_ productData: ShopProductData) -> Bool {
