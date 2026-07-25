@@ -57,10 +57,16 @@ struct TeamView: View {
             )
         case .support:
             SupportTeamContent(
-                rows: viewModel.tamerRows(ownedTamers: store.ownedTamers),
-                onSelect: selectTamer
+                rows: viewModel.supporterRows(
+                    ownedSupporters: store.ownedSupporters
+                ),
+                onSelect: selectSupporter
             )
         }
+    }
+    
+    private func selectSupporter(_ id: String) {
+        store.selectSupporter(id: id)
     }
 
     private func selectMonster(_ id: String) {

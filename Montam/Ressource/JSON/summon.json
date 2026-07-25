@@ -2,7 +2,7 @@
     {
         "id": "support_tamer_aren_banner",
         "title": "Aren",
-        "category": "support",
+        "category": "tamer",
         "currency": "crystals",
         "singleCost": 5,
         "multiCost": 50,
@@ -33,11 +33,104 @@
     {
         "id": "support_tamer_rick_banner",
         "title": "Rick",
-        "category": "support",
+        "category": "tamer",
         "currency": "crystals",
         "singleCost": 5,
         "multiCost": 50,
         "bannerImage": "tamer_rick",
+        "rates": [
+            {
+                "rarity": "common",
+                "title": "Common",
+                "weight": 7000
+            },
+            {
+                "rarity": "rare",
+                "title": "Rare",
+                "weight": 2200
+            },
+            {
+                "rarity": "epic",
+                "title": "Epic",
+                "weight": 750
+            },
+            {
+                "rarity": "legendary",
+                "title": "Legendär",
+                "weight": 50
+            }
+        ]
+    },
+    {
+        "id": "support_mon_sovereon_banner",
+        "title": "Sovereon",
+        "category": "mega_supporter",
+        "currency": "bits",
+        "singleCost": 5,
+        "multiCost": 50,
+        "bannerImage": "mon_sovereon",
+        "rates": [
+            {
+                "rarity": "common",
+                "title": "Common",
+                "weight": 7000
+            },
+            {
+                "rarity": "rare",
+                "title": "Rare",
+                "weight": 2200
+            },
+            {
+                "rarity": "epic",
+                "title": "Epic",
+                "weight": 750
+            },
+            {
+                "rarity": "legendary",
+                "title": "Legendär",
+                "weight": 50
+            }
+        ]
+    },
+    {
+        "id": "support_mon_cubon_banner",
+        "title": "Cubon",
+        "category": "montam",
+        "currency": "bits",
+        "singleCost": 5,
+        "multiCost": 50,
+        "bannerImage": "mon_cubon",
+        "rates": [
+            {
+                "rarity": "common",
+                "title": "Common",
+                "weight": 7000
+            },
+            {
+                "rarity": "rare",
+                "title": "Rare",
+                "weight": 2200
+            },
+            {
+                "rarity": "epic",
+                "title": "Epic",
+                "weight": 750
+            },
+            {
+                "rarity": "legendary",
+                "title": "Legendär",
+                "weight": 50
+            }
+        ]
+    },
+    {
+        "id": "support_mon_embon_banner",
+        "title": "Embon",
+        "category": "montam",
+        "currency": "bits",
+        "singleCost": 5,
+        "multiCost": 50,
+        "bannerImage": "mon_embon",
         "rates": [
             {
                 "rarity": "common",

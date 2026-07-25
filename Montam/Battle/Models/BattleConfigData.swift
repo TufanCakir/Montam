@@ -12,6 +12,13 @@ struct BattleConfigData: Decodable {
     let edgeXPadding: Double
     let maxPlayerMonsters: Int
     let maxSupportTamers: Int
+    let maxSupporters: Int?
+    let maxMontamSupporters: Int?
+    let maxTamerSupporters: Int?
+    let maxMegaSupporters: Int?
+    let cameraZoom: Double?
+    let cameraXOffset: Double?
+    let cameraYOffset: Double?
     let walkDuration: Double
     let attackInterval: Double
     let fadeDuration: Double
@@ -162,6 +169,13 @@ extension BattleConfigData {
             edgeXPadding: edgeXPadding,
             maxPlayerMonsters: maxPlayerMonsters,
             maxSupportTamers: maxSupportTamers,
+            maxSupporters: maxSupporters,
+            maxMontamSupporters: maxMontamSupporters,
+            maxTamerSupporters: maxTamerSupporters,
+            maxMegaSupporters: maxMegaSupporters,
+            cameraZoom: cameraZoom,
+            cameraXOffset: cameraXOffset,
+            cameraYOffset: cameraYOffset,
             walkDuration: walkDuration,
             attackInterval: attackInterval,
             fadeDuration: fadeDuration,

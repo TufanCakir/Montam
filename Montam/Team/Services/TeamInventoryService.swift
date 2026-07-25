@@ -12,14 +12,23 @@ enum TeamInventoryService {
     static func syncJSONCompanions(
         ownedMonsters: [OwnedMonsterData],
         ownedTamers: [OwnedTamerData],
+        ownedSupporters: [OwnedSupporterData],
         modelContext: ModelContext
     ) {
         let monsters =
             JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-        let tamers = JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
         let ownedMonsterIds = Set(ownedMonsters.map(\.monsterId))
-        let ownedTamerIds = Set(ownedTamers.map(\.tamerId))
+        var seenSupporterIds = Set<String>()
         var didChange = false
+
+        for supporter in ownedSupporters {
+            if seenSupporterIds.insert(supporter.characterId).inserted {
+                continue
+            }
+
+            modelContext.delete(supporter)
+            didChange = true
+        }
 
         for (index, monster) in monsters.enumerated()
         where !ownedMonsterIds.contains(monster.id) {
@@ -34,36 +43,88 @@ enum TeamInventoryService {
             )
             didChange = true
         }
-
-        for (index, tamer) in tamers.enumerated()
-        where !ownedTamerIds.contains(tamer.id) {
-            modelContext.insert(
-                OwnedTamerData(
-                    tamerId: tamer.id,
-                    level: 1,
-                    xp: 0,
-                    isSelected: ownedTamers.isEmpty && index == 0
-                )
-            )
-            didChange = true
-        }
-
+        
         if !ownedMonsters.contains(where: \.isSelected),
             let first = ownedMonsters.first
         {
             first.isSelected = true
             didChange = true
         }
-
-        if !ownedTamers.contains(where: \.isSelected),
-            let first = ownedTamers.first
-        {
-            first.isSelected = true
-            didChange = true
-        }
-
+        
         if didChange {
             try? modelContext.save()
+        }
+    }
+    
+    static func selectSupporter(
+        id: String,
+        ownedSupporters: [OwnedSupporterData],
+        maxSelectedSupporters: Int,
+        modelContext: ModelContext
+    ) {
+        guard
+            let selectedSupporter = ownedSupporters.first(where: {
+                $0.characterId == id
+            })
+        else {
+            return
+        }
+
+        if selectedSupporter.isSelected {
+            selectedSupporter.isSelected = false
+        } else {
+            let battleConfig =
+                JSONDataLoader.load("battleConfig", as: BattleConfigData.self)
+            let summons =
+                JSONDataLoader.load("summon", as: [SummonData].self) ?? []
+            let selectedCategory = supportCategory(
+                for: selectedSupporter,
+                summons: summons
+            )
+            let selected = ownedSupporters.filter(\.isSelected)
+            let categoryLimit = supportLimit(
+                for: selectedCategory,
+                battleConfig: battleConfig
+            )
+            let selectedInCategory = selected.filter {
+                supportCategory(for: $0, summons: summons) == selectedCategory
+            }
+
+            if selectedInCategory.count >= categoryLimit,
+               let oldestCategorySelection = selectedInCategory.first
+            {
+                oldestCategorySelection.isSelected = false
+            } else if selected.count >= max(maxSelectedSupporters, 1),
+               let oldestSelection = selected.first
+            {
+                oldestSelection.isSelected = false
+            }
+
+            selectedSupporter.isSelected = true
+        }
+
+        try? modelContext.save()
+    }
+
+    private static func supportCategory(
+        for supporter: OwnedSupporterData,
+        summons: [SummonData]
+    ) -> String {
+        summons.first(where: { $0.id == supporter.bannerId })?.category
+            ?? "montam"
+    }
+
+    private static func supportLimit(
+        for category: String,
+        battleConfig: BattleConfigData?
+    ) -> Int {
+        switch category {
+        case "tamer":
+            return battleConfig?.maxTamerSupporters ?? 1
+        case "mega_supporter":
+            return battleConfig?.maxMegaSupporters ?? 1
+        default:
+            return battleConfig?.maxMontamSupporters ?? 1
         }
     }
 

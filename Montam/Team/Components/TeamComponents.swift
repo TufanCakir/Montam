@@ -96,8 +96,14 @@ struct PartnerTeamContent: View {
 }
 
 struct SupportTeamContent: View {
-    let rows: [TeamTamerRow]
+    let rows: [TeamSupporterRow]
     let onSelect: (String) -> Void
+
+    @State private var selectedCategory = SupporterCategory.montam
+
+    private var filteredRows: [TeamSupporterRow] {
+        rows.filter { $0.category == selectedCategory }
+    }
 
     var body: some View {
         if rows.isEmpty {
@@ -107,7 +113,15 @@ struct SupportTeamContent: View {
             )
         } else {
             VStack(spacing: 10) {
-                ForEach(rows) { row in
+                SupporterCategoryTabs(selectedCategory: $selectedCategory)
+
+                if filteredRows.isEmpty {
+                    CompactTeamInfo(
+                        title: "Kein \(selectedCategory.title) Support",
+                        message: "Diese Supporter bekommst du ueber Beschwoerung."
+                    )
+                } else {
+                    ForEach(filteredRows) { row in
                     Button {
                         onSelect(row.id)
                     } label: {
@@ -127,7 +141,9 @@ struct SupportTeamContent: View {
                                     )
                                     .foregroundStyle(.white)
                                 Text(
-                                    "Lv. \(row.level)  ATK +\(percent(row.attackBonus))  DEF +\(percent(row.defenseBonus))  HP +\(percent(row.healthBonus))"
+                                    row.isMonster
+                                        ? "Monster Support • Lv. \(row.level)"
+                                        : "Tamer Support • Lv. \(row.level)"
                                 )
                                 .font(
                                     .system(
@@ -160,7 +176,52 @@ struct SupportTeamContent: View {
                         .clipShape(RoundedRectangle(cornerRadius: 7))
                     }
                     .buttonStyle(.plain)
+                    }
                 }
+            }
+            .onAppear(perform: selectAvailableCategoryIfNeeded)
+            .onChange(of: rows.map(\.id)) {
+                selectAvailableCategoryIfNeeded()
+            }
+        }
+    }
+
+    private func selectAvailableCategoryIfNeeded() {
+        guard !rows.contains(where: { $0.category == selectedCategory }),
+              let firstCategory = rows.first?.category
+        else {
+            return
+        }
+
+        selectedCategory = firstCategory
+    }
+}
+
+private struct SupporterCategoryTabs: View {
+    @Binding var selectedCategory: SupporterCategory
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(SupporterCategory.allCases) { category in
+                Button {
+                    selectedCategory = category
+                } label: {
+                    Text(category.title)
+                        .font(.system(size: 12, weight: .heavy, design: .rounded))
+                        .foregroundStyle(
+                            selectedCategory == category ? .black : .cyan
+                        )
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 34)
+                        .background(
+                            selectedCategory == category
+                                ? Color.yellow : Color.black.opacity(0.24)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 7))
+                }
+                .buttonStyle(.plain)
             }
         }
     }

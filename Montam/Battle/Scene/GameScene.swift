@@ -18,13 +18,16 @@ final class GameScene: SKScene {
 
     private var skyNode: SKNode?
     private var worldNode: SKNode?
+    private var battleCamera: SKCameraNode?
     private var currentBackgroundData: BackgroundData?
     private var fadeNode: SKSpriteNode?
     private var playerUnits: [BattleUnit] = []
     private var supportUnits: [BattleUnit] = []
     private var enemyUnits: [BattleUnit] = []
+    private var supporterUnits: [BattleUnit] = []
     private var selectedMonsters: [RuntimeOwnedMonster] = []
     private var selectedTamers: [RuntimeOwnedTamer] = []
+    private var selectedSupporters: [RuntimeOwnedSupporter] = []
     private var currentWaveIndex = 0
     private var globalStage = 1
     private var currentBackgroundIndex = 0
@@ -42,10 +45,12 @@ final class GameScene: SKScene {
 
     func configure(
         selectedMonsters: [RuntimeOwnedMonster],
-        selectedTamers: [RuntimeOwnedTamer]
+        selectedTamers: [RuntimeOwnedTamer],
+        selectedSupporters: [RuntimeOwnedSupporter]
     ) {
         self.selectedMonsters = selectedMonsters
         self.selectedTamers = selectedTamers
+        self.selectedSupporters = selectedSupporters
 
         guard didStartBattle else {
             return
@@ -57,10 +62,12 @@ final class GameScene: SKScene {
 
     func updateRuntimeSelection(
         selectedMonsters: [RuntimeOwnedMonster],
-        selectedTamers: [RuntimeOwnedTamer]
+        selectedTamers: [RuntimeOwnedTamer],
+        selectedSupporters: [RuntimeOwnedSupporter]
     ) {
         self.selectedMonsters = selectedMonsters
         self.selectedTamers = selectedTamers
+        self.selectedSupporters = selectedSupporters
     }
 
     func updateProgressStage(_ stage: Int) {
@@ -77,6 +84,7 @@ final class GameScene: SKScene {
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
+        applyBattleCamera()
         installCurrentEnvironment()
         layoutFadeNode()
     }
@@ -111,15 +119,42 @@ final class GameScene: SKScene {
         removeAllChildren()
         skyNode = nil
         worldNode = nil
+        battleCamera = nil
         currentBackgroundData = nil
         playerUnits.removeAll()
         supportUnits.removeAll()
+        supporterUnits.removeAll()
         enemyUnits.removeAll()
         currentWaveIndex = 0
         currentBackgroundIndex = 0
         completedFightCount = 0
+        setupBattleCamera()
         setupFadeNode()
         startWave(at: currentWaveIndex)
+    }
+
+    private func setupBattleCamera() {
+        let cameraNode = SKCameraNode()
+        cameraNode.name = "battleCamera"
+        cameraNode.zPosition = 2_000
+        battleCamera = cameraNode
+        camera = cameraNode
+        addChild(cameraNode)
+        applyBattleCamera()
+    }
+
+    private func applyBattleCamera() {
+        guard let battleCamera else {
+            return
+        }
+
+        let zoom = max(battleConfig?.cameraZoom ?? 1, 0.25)
+        battleCamera.xScale = zoom
+        battleCamera.yScale = zoom
+        battleCamera.position = CGPoint(
+            x: size.width / 2 + (battleConfig?.cameraXOffset ?? 0),
+            y: size.height / 2 + (battleConfig?.cameraYOffset ?? 0)
+        )
     }
 
     private func startWave(at index: Int) {
@@ -244,8 +279,13 @@ final class GameScene: SKScene {
     }
 
     private func layoutFadeNode() {
-        fadeNode?.size = size
-        fadeNode?.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        let zoom = max(battleConfig?.cameraZoom ?? 1, 1)
+        fadeNode?.size = CGSize(
+            width: size.width * zoom,
+            height: size.height * zoom
+        )
+        fadeNode?.position = battleCamera?.position
+            ?? CGPoint(x: size.width / 2, y: size.height / 2)
     }
 
     private func publishStageState(config: BattleConfigData?) {
@@ -297,31 +337,54 @@ final class GameScene: SKScene {
             }
 
         let factory = unitFactory(config: config)
+
         playerUnits = factory.playerUnits(from: configuredMonsters)
         supportUnits = factory.supportUnits(from: configuredTamers)
+        supporterUnits = factory.supporterUnits(from: selectedSupporters)
 
-        let attackBonus = supportUnits.reduce(0) { $0 + $1.attackBonus }
-        let defenseBonus = supportUnits.reduce(0) { $0 + $1.defenseBonus }
-        let healthBonus = supportUnits.reduce(0) { $0 + $1.healthBonus }
+        let bonusUnits = supportUnits + supporterUnits
+        let attackBonus = bonusUnits.reduce(0) { $0 + $1.attackBonus }
+        let defenseBonus = bonusUnits.reduce(0) { $0 + $1.defenseBonus }
+        let healthBonus = bonusUnits.reduce(0) { $0 + $1.healthBonus }
 
         for index in playerUnits.indices {
             playerUnits[index].attack = Int(
                 Double(playerUnits[index].attack) * (1 + attackBonus)
             )
+
             playerUnits[index].defense = Int(
                 Double(playerUnits[index].defense) * (1 + defenseBonus)
             )
+
             playerUnits[index].maxHP = Int(
                 Double(playerUnits[index].maxHP) * (1 + healthBonus)
             )
+
             playerUnits[index].currentHP = playerUnits[index].maxHP
         }
 
-        (playerUnits + supportUnits).forEach { addChild($0.node) }
+        (playerUnits + supportUnits + supporterUnits).forEach { unit in
+            unit.node.removeFromParent()
+            addChild(unit.node)
+        }
+
         movePlayersToStart(config: config)
     }
 
     private func refreshPlayerStats(config: BattleConfigData) {
+
+        let factory = unitFactory(config: config)
+
+        supporterUnits.forEach {
+            $0.node.removeFromParent()
+        }
+
+        supporterUnits = factory.supporterUnits(from: selectedSupporters)
+
+        supporterUnits.forEach {
+            addChild($0.node)
+        }
+
         let configuredMonsters =
             selectedMonsters.isEmpty
             ? config.playerMonsters
@@ -351,18 +414,24 @@ final class GameScene: SKScene {
                 )
             }
 
-        let factory = unitFactory(config: config)
         let refreshedSupport = factory.supportStats(from: configuredTamers)
 
-        let attackBonus = refreshedSupport.reduce(0) { $0 + $1.attackBonus }
-        let defenseBonus = refreshedSupport.reduce(0) { $0 + $1.defenseBonus }
-        let healthBonus = refreshedSupport.reduce(0) { $0 + $1.healthBonus }
+        let attackBonus =
+            refreshedSupport.reduce(0) { $0 + $1.attackBonus }
+            + supporterUnits.reduce(0) { $0 + $1.attackBonus }
+        let defenseBonus =
+            refreshedSupport.reduce(0) { $0 + $1.defenseBonus }
+            + supporterUnits.reduce(0) { $0 + $1.defenseBonus }
+        let healthBonus =
+            refreshedSupport.reduce(0) { $0 + $1.healthBonus }
+            + supporterUnits.reduce(0) { $0 + $1.healthBonus }
 
         for index in playerUnits.indices {
+
             guard
-                let unitConfig = configuredMonsters.prefix(
-                    config.maxPlayerMonsters
-                ).first(where: { $0.id == playerUnits[index].id }),
+                let unitConfig = configuredMonsters.first(where: {
+                    $0.id == playerUnits[index].id
+                }),
                 let stats = factory.monsterStats(from: unitConfig)
             else {
                 continue
@@ -371,18 +440,24 @@ final class GameScene: SKScene {
             playerUnits[index].level = stats.level
             playerUnits[index].xp = unitConfig.xp ?? 0
             playerUnits[index].maxXP = unitConfig.maxXP ?? 1
+
             playerUnits[index].attack = Int(
                 Double(stats.attack) * (1 + attackBonus)
             )
+
             playerUnits[index].defense = Int(
                 Double(stats.defense) * (1 + defenseBonus)
             )
+
             playerUnits[index].maxHP = Int(
                 Double(stats.maxHP) * (1 + healthBonus)
             )
+
             playerUnits[index].currentHP = playerUnits[index].maxHP
             playerUnits[index].node.alpha = 1
         }
+
+        movePlayersToStart(config: config)
     }
 
     private func movePlayersToStart(config: BattleConfigData) {
@@ -400,6 +475,21 @@ final class GameScene: SKScene {
                 unit.node.position,
                 unit: unit
             )
+            unit.node.zPosition = zPosition(for: unit, index: index)
+        }
+        
+        for (index, unit) in supporterUnits.enumerated() {
+            unit.node.position = CGPoint(
+                x: -config.edgeXPadding - CGFloat(index) * supportSpacing,
+                y: groundedY(for: unit, groundY: groundY)
+                    - max(size.height * 0.08, 60)
+            )
+
+            unit.node.position = positionWithOffsets(
+                unit.node.position,
+                unit: unit
+            )
+
             unit.node.zPosition = zPosition(for: unit, index: index)
         }
 
@@ -466,6 +556,28 @@ final class GameScene: SKScene {
                         unit.node.run(
                             .move(
                                 to: adjustedTarget,
+                                duration: config.walkDuration
+                            )
+                        )
+                    }
+                )
+            }
+            
+            for (index, unit) in supporterUnits.enumerated() {
+
+            let target = CGPoint(
+                    x: size.width * 0.34 + CGFloat(index) * supportSpacing,
+                    y: groundedY(for: unit, groundY: groundY)
+                        - max(size.height * 0.06, 46)
+                )
+
+                let adjusted = positionWithOffsets(target, unit: unit)
+
+                actions.append(
+                    .run {
+                        unit.node.run(
+                            .move(
+                                to: adjusted,
                                 duration: config.walkDuration
                             )
                         )
@@ -792,7 +904,8 @@ final class GameScene: SKScene {
             ])
         )
 
-        for unit in playerUnits + supportUnits where unit.node.parent != nil {
+        for unit in playerUnits + supportUnits + supporterUnits
+        where unit.node.parent != nil {
             unit.node.run(
                 .sequence([
                     .moveBy(
@@ -819,21 +932,30 @@ final class GameScene: SKScene {
                 .fadeIn(withDuration: config.fadeDuration),
                 .wait(forDuration: 0.35),
                 .run { [weak self] in
-                    self?.playerUnits.forEach { $0.node.removeFromParent() }
-                    self?.supportUnits.forEach { $0.node.removeFromParent() }
-                    self?.enemyUnits.forEach { $0.node.removeFromParent() }
-                    self?.playerUnits.removeAll()
-                    self?.supportUnits.removeAll()
-                    self?.enemyUnits.removeAll()
-                    self?.showBackground(at: self?.currentBackgroundIndex ?? 0)
+
+                    guard let self else { return }
+
+                    self.playerUnits.forEach { $0.node.removeFromParent() }
+                    self.supportUnits.forEach { $0.node.removeFromParent() }
+                    self.supporterUnits.forEach { $0.node.removeFromParent() }
+                    self.enemyUnits.forEach { $0.node.removeFromParent() }
+
+                    self.playerUnits.removeAll()
+                    self.supportUnits.removeAll()
+                    self.supporterUnits.removeAll()
+                    self.enemyUnits.removeAll()
+
+                    self.showBackground(at: self.currentBackgroundIndex)
+
                     completion()
                 },
-                .fadeOut(withDuration: config.fadeDuration),
+                .fadeOut(withDuration: config.fadeDuration)
             ])
         )
     }
-
+    
     private func endBattle() {
+
         guard let config = battleConfig else {
             return
         }
@@ -843,16 +965,24 @@ final class GameScene: SKScene {
                 .fadeIn(withDuration: config.fadeDuration),
                 .wait(forDuration: 0.35),
                 .run { [weak self] in
-                    self?.currentWaveIndex = 0
-                    self?.playerUnits.forEach { $0.node.removeFromParent() }
-                    self?.supportUnits.forEach { $0.node.removeFromParent() }
-                    self?.enemyUnits.forEach { $0.node.removeFromParent() }
-                    self?.playerUnits.removeAll()
-                    self?.supportUnits.removeAll()
-                    self?.enemyUnits.removeAll()
-                    self?.startWave(at: 0)
+
+                    guard let self else { return }
+
+                    self.currentWaveIndex = 0
+
+                    self.playerUnits.forEach { $0.node.removeFromParent() }
+                    self.supportUnits.forEach { $0.node.removeFromParent() }
+                    self.supporterUnits.forEach { $0.node.removeFromParent() }
+                    self.enemyUnits.forEach { $0.node.removeFromParent() }
+
+                    self.playerUnits.removeAll()
+                    self.supportUnits.removeAll()
+                    self.supporterUnits.removeAll()
+                    self.enemyUnits.removeAll()
+
+                    self.startWave(at: 0)
                 },
-                .fadeOut(withDuration: config.fadeDuration),
+                .fadeOut(withDuration: config.fadeDuration)
             ])
         )
     }

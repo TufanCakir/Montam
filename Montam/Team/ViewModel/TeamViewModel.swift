@@ -55,6 +55,33 @@ struct TeamEvolutionPreview: Equatable {
     let targetName: String
 }
 
+enum SupporterCategory: String, CaseIterable, Identifiable {
+    case montam
+    case tamer
+    case mega
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .montam: "Montam"
+        case .tamer: "Tamer"
+        case .mega: "Mega"
+        }
+    }
+}
+
+struct TeamSupporterRow: Identifiable {
+    let id: String
+    let bannerId: String
+    let imageName: String
+    let name: String
+    let category: SupporterCategory
+    let level: Int
+    let isMonster: Bool
+    let isSelected: Bool
+}
+
 @Observable
 final class TeamViewModel {
     private let monsters =
@@ -66,9 +93,93 @@ final class TeamViewModel {
             "monsterAppearance",
             as: [MonsterAppearanceData].self
         ) ?? []
+    private let summons =
+        JSONDataLoader.load("summon", as: [SummonData].self) ?? []
     private let progression =
         JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
         ?? GameProgressionData()
+    
+    func supporterRows(
+        ownedSupporters: [OwnedSupporterData]
+    ) -> [TeamSupporterRow] {
+
+        ownedSupporters.compactMap { owned in
+
+            if owned.isMonster,
+               let monster = monsters.first(where: { $0.id == owned.characterId }) {
+
+                return TeamSupporterRow(
+                    id: owned.characterId,
+                    bannerId: owned.bannerId,
+                    imageName: owned.imageName,
+                    name: monster.name,
+                    category: category(for: owned),
+                    level: owned.level,
+                    isMonster: true,
+                    isSelected: owned.isSelected
+                )
+            }
+
+            if owned.isMonster,
+               let appearance = appearance(for: owned) {
+
+                return TeamSupporterRow(
+                    id: owned.characterId,
+                    bannerId: owned.bannerId,
+                    imageName: owned.imageName,
+                    name: appearance.title,
+                    category: category(for: owned),
+                    level: owned.level,
+                    isMonster: true,
+                    isSelected: owned.isSelected
+                )
+            }
+
+            if let tamer = tamers.first(where: { $0.id == owned.characterId }) {
+
+                return TeamSupporterRow(
+                    id: owned.characterId,
+                    bannerId: owned.bannerId,
+                    imageName: owned.imageName,
+                    name: tamer.name,
+                    category: category(for: owned),
+                    level: owned.level,
+                    isMonster: false,
+                    isSelected: owned.isSelected
+                )
+            }
+
+            return nil
+        }
+    }
+
+    private func category(for owned: OwnedSupporterData) -> SupporterCategory {
+        let categoryId =
+            summons.first(where: { $0.id == owned.bannerId })?.category
+            ?? owned.bannerId
+
+        switch categoryId {
+        case "tamer":
+            return .tamer
+        case "mega_supporter":
+            return .mega
+        default:
+            return .montam
+        }
+    }
+
+    private func appearance(
+        for owned: OwnedSupporterData
+    ) -> MonsterAppearanceData? {
+        let normalizedId = owned.characterId.lowercased()
+
+        return appearances.first {
+            $0.id == owned.characterId
+                || $0.imageName == owned.imageName
+                || $0.title.lowercased() == normalizedId
+                || $0.imageName.lowercased() == "mon_\(normalizedId)"
+        }
+    }
 
     func monsterRows(ownedMonsters: [OwnedMonsterData]) -> [TeamMonsterRow] {
         ownedMonsters.compactMap { owned in

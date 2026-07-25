@@ -17,7 +17,7 @@ final class StoreKitShopManager: ObservableObject {
     @Published var errorMessage: String?
 
     func loadProducts(productIds: [String]) async {
-        let uniqueIds = Array(Set(productIds))
+        let uniqueIds = Array(Set(productIds)).sorted()
 
         do {
             let products = try await Product.products(for: uniqueIds)
@@ -27,10 +27,32 @@ final class StoreKitShopManager: ObservableObject {
             unavailableProductIds = Set(uniqueIds).subtracting(
                 productsById.keys
             )
+
+            #if DEBUG
+                let loadedIds = productsById.keys.sorted()
+                if !loadedIds.isEmpty {
+                    print(
+                        "StoreKit loaded product IDs: \(loadedIds.joined(separator: ", "))"
+                    )
+                }
+
+                if !unavailableProductIds.isEmpty {
+                    print(
+                        "StoreKit missing product IDs: \(unavailableProductIds.sorted().joined(separator: ", "))"
+                    )
+                }
+            #endif
+
             await refreshEntitlements()
         } catch {
             errorMessage = "Store konnte nicht geladen werden."
             unavailableProductIds = Set(uniqueIds)
+
+            #if DEBUG
+                print(
+                    "StoreKit product loading failed for IDs: \(uniqueIds.joined(separator: ", "))"
+                )
+            #endif
         }
     }
 

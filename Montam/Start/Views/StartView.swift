@@ -8,20 +8,21 @@
 import SwiftUI
 
 struct StartView: View {
-
+    
     var onStart: () -> Void = {}
     var onDataDeleted: () -> Void = {}
-
+    
     @State private var isMenuPresented = false
     @State private var isSettingsPresented = false
     @State private var menuMessage: String?
     @State private var isLogoOpen = false
     @State private var backgroundImageName = "bg_tropical_beach"
-
+    @State private var remoteContent = RemoteContentService.shared
+    
     var body: some View {
         ZStack {
             mainContent
-
+            
             if isMenuPresented || isSettingsPresented {
                 Color.black.opacity(0.62)
                     .ignoresSafeArea()
@@ -29,7 +30,7 @@ struct StartView: View {
                         closeOverlays()
                     }
             }
-
+            
             if isMenuPresented {
                 StartMenuPanel(
                     onSettings: {
@@ -49,7 +50,7 @@ struct StartView: View {
                 .environment(\.menuMessage, menuMessage)
                 .transition(.scale.combined(with: .opacity))
             }
-
+            
             if isSettingsPresented {
                 AppSettingsPanel(
                     onClose: closeOverlays,
@@ -64,37 +65,38 @@ struct StartView: View {
         .ignoresSafeArea()
         .onAppear {
             isLogoOpen = false
-
+            
             withAnimation(.easeOut(duration: 1.15).delay(0.2)) {
                 isLogoOpen = true
             }
-
+            
             if let remote = Self.launchBackgroundImageName(),
-                RemoteContentService.cachedAssetExists(named: remote)
+               RemoteContentService.cachedAssetExists(named: remote)
             {
                 backgroundImageName = remote
             }
         }
     }
-
+    
     private var mainContent: some View {
         VStack(spacing: 0) {
             Spacer(minLength: 0)
-
+            
             RevealingLogo(progress: isLogoOpen ? 1 : 0)
                 .frame(maxWidth: 340)
                 .frame(height: 150)
                 .padding(.horizontal, 34)
-
+            
             Spacer(minLength: 0)
-
+            
             Button(action: onStart) {
                 startPrompt
             }
             .buttonStyle(.plain)
+            .disabled(remoteContent.isUpdating)
             .padding(.horizontal, 82)
             .padding(.bottom, 76)
-
+            
             bottomRow
                 .padding(.horizontal, 32)
                 .padding(.bottom, 48)
@@ -104,19 +106,24 @@ struct StartView: View {
             StartBackgroundImage(imageName: backgroundImageName)
         }
     }
-
+    
     private var startPrompt: some View {
-        Text("Touch To Start")
-            .font(.system(size: 25, weight: .heavy, design: .rounded))
-            .foregroundStyle(.white)
-            .padding()
-            .background(
-                LinearGradient(
-                    colors: [.clear, .blue.opacity(0.80), .clear],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
+        Text(
+            remoteContent.isUpdating
+            ? "Downloading..."
+            : "Touch To Start"
+        )
+        .font(.system(size: 25, weight: .heavy, design: .rounded))
+        .foregroundStyle(.white)
+        .padding()
+        .background(
+            LinearGradient(
+                colors: [.clear, .blue.opacity(0.80), .clear],
+                startPoint: .leading,
+                endPoint: .trailing
             )
+        )
+        .opacity(remoteContent.isUpdating ? 0.6 : 1)
     }
 
     private var bottomRow: some View {
@@ -207,11 +214,16 @@ private struct StartBackgroundImage: View {
 
                 if let imageName {
 
-                    if RemoteContentService.cachedAssetExists(named: imageName)
-                    {
+                    if RemoteContentService.cachedAssetExists(named: imageName) {
                         RemoteAssetImage(imageName: imageName)
+                            .scaledToFill()
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height
+                            )
+                            .clipped()
                     } else {
-                        Image(imageName)
+                        Image("bg_tropical_beach")
                             .resizable()
                             .scaledToFill()
                             .frame(

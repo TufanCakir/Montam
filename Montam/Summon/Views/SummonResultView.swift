@@ -107,7 +107,32 @@ struct SummonResultItem: Identifiable {
     let rarity: String
     let kind: Kind
     let imageName: String?
+    let bannerId: String?
+    let characterId: String?
+    let isSupporter: Bool
     let accentColor: Color
+
+    init(
+        title: String,
+        subtitle: String,
+        rarity: String,
+        kind: Kind,
+        imageName: String?,
+        bannerId: String? = nil,
+        characterId: String? = nil,
+        isSupporter: Bool = false,
+        accentColor: Color
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.rarity = rarity
+        self.kind = kind
+        self.imageName = imageName
+        self.bannerId = bannerId
+        self.characterId = characterId
+        self.isSupporter = isSupporter
+        self.accentColor = accentColor
+    }
 }
 
 private struct SummonResultCard: View {

@@ -57,13 +57,15 @@ struct GameView: View {
             )
             scene.updateRuntimeSelection(
                 selectedMonsters: store.runtimeSelectedMonsters(),
-                selectedTamers: store.runtimeSelectedTamers()
+                selectedTamers: store.runtimeSelectedTamers(),
+                selectedSupporters: store.runtimeSelectedSupporters()
             )
         }
 
         scene.configure(
             selectedMonsters: store.runtimeSelectedMonsters(),
-            selectedTamers: store.runtimeSelectedTamers()
+            selectedTamers: store.runtimeSelectedTamers(),
+            selectedSupporters: store.runtimeSelectedSupporters()
         )
     }
 }

@@ -13,6 +13,13 @@ enum JSONDataLoader {
             return cached
         }
 
+        return loadBundled(fileName, as: type)
+    }
+
+    private static func loadBundled<T: Decodable>(
+        _ fileName: String,
+        as type: T.Type
+    ) -> T? {
         guard
             let url = Bundle.main.url(
                 forResource: fileName,

@@ -14,13 +14,10 @@ struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var saves: [GameSaveData]
     @Query private var ownedMonsters: [OwnedMonsterData]
-    @Query private var ownedTamers: [OwnedTamerData]
     @State private var message: String?
 
     private let monsters =
         JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-    private let tamers =
-        JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
     private let starterGift = JSONDataLoader.load("gift", as: [GiftData].self)?
         .first
     private let progression =
@@ -130,22 +127,6 @@ struct OnboardingView: View {
 
         if selectedMonster.modelContext == nil {
             modelContext.insert(selectedMonster)
-        }
-
-        if let firstTamer = tamers.first {
-            for ownedTamer in ownedTamers {
-                ownedTamer.isSelected = false
-            }
-
-            let support =
-                ownedTamers.first { $0.tamerId == firstTamer.id }
-                ?? OwnedTamerData(tamerId: firstTamer.id)
-            support.level = max(support.level, 1)
-            support.isSelected = true
-
-            if support.modelContext == nil {
-                modelContext.insert(support)
-            }
         }
 
         let save = saves.first ?? GameSaveData()

@@ -60,6 +60,14 @@ final class ShopViewModel {
             let priceCurrency = product.priceCurrency,
             let priceAmount = product.priceAmount
         else {
+            if store.unavailableProductIds.contains(product.productId) {
+                #if DEBUG
+                    return "StoreKit fehlt"
+                #else
+                    return "..."
+                #endif
+            }
+
             return store.localizedPrice(for: product)
         }
 

@@ -15,6 +15,7 @@ struct RootView: View {
     @Query private var saves: [GameSaveData]
     @Query private var ownedMonsters: [OwnedMonsterData]
     @Query private var ownedTamers: [OwnedTamerData]
+    @Query private var ownedSupporters: [OwnedSupporterData]
     @State private var selectedTab = RootTab.game
     @State private var didShowDailyLogin = false
     @State private var isDailyPresented = false
@@ -32,7 +33,8 @@ struct RootView: View {
             modelContext: modelContext,
             saves: saves,
             ownedMonsters: ownedMonsters,
-            ownedTamers: ownedTamers
+            ownedTamers: ownedTamers,
+            ownedSupporters: ownedSupporters
         )
     }
 

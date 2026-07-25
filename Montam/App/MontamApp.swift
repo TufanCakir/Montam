@@ -32,6 +32,7 @@ struct MontamApp: App {
             GameSaveData.self,
             OwnedMonsterData.self,
             OwnedTamerData.self,
+            OwnedSupporterData.self,
         ])
 
         let storeURL =

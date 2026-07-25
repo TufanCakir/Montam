@@ -13,7 +13,8 @@ struct GameStore {
     let saves: [GameSaveData]
     let ownedMonsters: [OwnedMonsterData]
     let ownedTamers: [OwnedTamerData]
-
+    let ownedSupporters: [OwnedSupporterData]
+    
     private var save: GameSaveData? {
         saves.first
     }
@@ -93,15 +94,86 @@ struct GameStore {
     }
 
     func runtimeSelectedTamers() -> [RuntimeOwnedTamer] {
-        ownedTamers
+        []
+    }
+    
+    func runtimeSelectedSupporters() -> [RuntimeOwnedSupporter] {
+        let battleConfig =
+            JSONDataLoader.load("battleConfig", as: BattleConfigData.self)
+        let summonPool =
+            JSONDataLoader.load("summonPool", as: [SummonPoolData].self) ?? []
+        let summons =
+            JSONDataLoader.load("summon", as: [SummonData].self) ?? []
+        var seenCharacterIds = Set<String>()
+        var categoryCounts: [String: Int] = [:]
+        let selectedSupporters = ownedSupporters
             .filter(\.isSelected)
-            .map {
-                RuntimeOwnedTamer(
-                    tamerId: $0.tamerId,
-                    level: $0.level,
-                    xp: $0.xp
-                )
+            .filter {
+                seenCharacterIds.insert($0.characterId).inserted
             }
+            .filter { owned in
+                let category = supportCategory(for: owned, summons: summons)
+                let currentCount = categoryCounts[category] ?? 0
+                let limit = supportLimit(
+                    for: category,
+                    battleConfig: battleConfig
+                )
+
+                guard currentCount < limit else {
+                    return false
+                }
+
+                categoryCounts[category] = currentCount + 1
+                return true
+            }
+            .prefix(battleConfig?.maxSupporters ?? 3)
+
+        return selectedSupporters.map { owned in
+            let matchingBannerEntry = summonPool.first { entry in
+                entry.bannerId == owned.bannerId
+                    && entry.characterId == owned.characterId
+            }
+            let matchingCharacterEntry = summonPool.first { entry in
+                entry.characterId == owned.characterId
+            }
+            let poolEntry = matchingBannerEntry ?? matchingCharacterEntry
+
+            return RuntimeOwnedSupporter(
+                characterId: owned.characterId,
+                imageName: owned.imageName,
+                level: owned.level,
+                isMonster: owned.isMonster,
+                xOffset: poolEntry?.xOffset,
+                yOffset: poolEntry?.yOffset,
+                zOffset: poolEntry?.zOffset,
+                scaleMultiplier: poolEntry?.scaleMultiplier,
+                attackBonus: poolEntry?.attackBonus,
+                defenseBonus: poolEntry?.defenseBonus,
+                healthBonus: poolEntry?.healthBonus
+            )
+        }
+    }
+
+    private func supportCategory(
+        for supporter: OwnedSupporterData,
+        summons: [SummonData]
+    ) -> String {
+        summons.first(where: { $0.id == supporter.bannerId })?.category
+            ?? "montam"
+    }
+
+    private func supportLimit(
+        for category: String,
+        battleConfig: BattleConfigData?
+    ) -> Int {
+        switch category {
+        case "tamer":
+            return battleConfig?.maxTamerSupporters ?? 1
+        case "mega_supporter":
+            return battleConfig?.maxMegaSupporters ?? 1
+        default:
+            return battleConfig?.maxMontamSupporters ?? 1
+        }
     }
 
     func updateStage(_ nextStage: Int) {
@@ -153,6 +225,7 @@ struct GameStore {
             tamers: tamers,
             ownedMonsters: ownedMonsters,
             ownedTamers: ownedTamers,
+            ownedSupporters: ownedSupporters,
             modelContext: modelContext
         )
     }
@@ -193,6 +266,7 @@ struct GameStore {
         TeamInventoryService.syncJSONCompanions(
             ownedMonsters: ownedMonsters,
             ownedTamers: ownedTamers,
+            ownedSupporters: ownedSupporters,
             modelContext: modelContext
         )
     }
@@ -209,6 +283,17 @@ struct GameStore {
         TeamInventoryService.selectTamer(
             id: id,
             ownedTamers: ownedTamers,
+            modelContext: modelContext
+        )
+    }
+    
+    func selectSupporter(id: String) {
+        TeamInventoryService.selectSupporter(
+            id: id,
+            ownedSupporters: ownedSupporters,
+            maxSelectedSupporters:
+                (JSONDataLoader.load("battleConfig", as: BattleConfigData.self)?
+                    .maxSupporters) ?? 3,
             modelContext: modelContext
         )
     }
@@ -340,7 +425,8 @@ struct GameStore {
                     modelContext: context,
                     saves: [save],
                     ownedMonsters: [monster],
-                    ownedTamers: [tamer]
+                    ownedTamers: [tamer],
+                    ownedSupporters: []
                 )
             } catch {
                 fatalError("Failed to create preview GameStore: \(error)")

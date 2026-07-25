@@ -33,6 +33,7 @@ enum ShopSection: CaseIterable, Identifiable {
 
 private enum ShopProductVisual {
     case diamonds
+    case bits
     case emeralds
     case tickets
     case farm
@@ -489,11 +490,13 @@ private func productVisual(from visual: String) -> ShopProductVisual {
     switch visual {
     case "crystals":
         .diamonds
+    case "bits", "bit", "icon_bit":
+        .bits
     case "coins":
         .emeralds
     case "pass":
         .pass(.purple)
-    case "tickets":
+    case "tickets", "summon_ticket", "icon_summon_ticket":
         .tickets
     case "farm":
         .farm
@@ -520,6 +523,15 @@ private struct ShopProductIcon: View {
                         .offset(y: CGFloat(index % 2 * 12))
                     }
                 }
+            case .bits:
+                HStack(spacing: -12) {
+                    ForEach(0..<4, id: \.self) { index in
+                        GameResourceIcon(id: "bit", fallbackImage: "icon_bit")
+                            .frame(width: 48, height: 48)
+                            .rotationEffect(.degrees(Double(index * 10 - 14)))
+                            .offset(y: CGFloat(index % 2 * 12))
+                    }
+                }
             case .emeralds:
                 HStack(spacing: -12) {
                     ForEach(0..<4, id: \.self) { index in
@@ -534,7 +546,7 @@ private struct ShopProductIcon: View {
                     ForEach(0..<4, id: \.self) { index in
                         GameResourceIcon(
                             id: "summon_ticket",
-                            fallbackImage: "icon_ticket"
+                            fallbackImage: "icon_summon_ticket"
                         )
                         .frame(width: 42, height: 72)
                         .rotationEffect(.degrees(Double(index * 7 - 10)))

@@ -23,6 +23,8 @@ final class RemoteContentService {
         string: "https://remotemontam.tufancakir.com/music/"
     )!
     fileprivate static let backgroundJSONFileName = "background"
+    private static let downloadedContentVersionKey =
+        "RemoteContentService.downloadedContentVersion"
 
     private(set) var isUpdating = false
     private(set) var statusText: String?
@@ -97,7 +99,8 @@ final class RemoteContentService {
             }
         }
 
-        await updateRemoteConfig(showOverlay: showOverlay)
+        let previousContentVersion = Self.downloadedContentVersion
+        let remoteConfigResult = await updateRemoteConfig(showOverlay: showOverlay)
 
         let config = Self.loadRemoteConfig()
         guard config.isCompatibleWithCurrentApp else {
@@ -108,28 +111,47 @@ final class RemoteContentService {
         }
 
         let plan = Self.contentUpdatePlan(config: config)
+        let shouldRefreshContent =
+            remoteConfigResult.didDownload
+            && config.contentVersion != nil
+            && config.contentVersion != previousContentVersion
+
+        if !shouldRefreshContent && Self.hasAllCachedFiles(plan: plan) {
+            return
+        }
+
         prepareProgressTotal(plan: plan)
 
         await updateBackgroundFiles(
             plan: plan,
             config: config,
-            showOverlay: showOverlay
+            showOverlay: showOverlay,
+            forceDownload: shouldRefreshContent
         )
         await updateJSONFiles(
             plan: plan,
-            showOverlay: showOverlay
+            showOverlay: showOverlay,
+            forceDownload: shouldRefreshContent
         )
 
+        let assetPlan = Self.contentUpdatePlan(config: config)
+
         await updateAssetFiles(
-            plan: plan,
+            plan: assetPlan,
             config: config,
-            showOverlay: showOverlay
+            showOverlay: showOverlay,
+            forceDownload: shouldRefreshContent
         )
 
         await updateMusicFiles(
-            plan: plan,
-            showOverlay: showOverlay
+            plan: assetPlan,
+            showOverlay: showOverlay,
+            forceDownload: shouldRefreshContent
         )
+
+        if let contentVersion = config.contentVersion {
+            Self.downloadedContentVersion = contentVersion
+        }
     }
 
     nonisolated static func clearCachedContent() {
@@ -148,20 +170,25 @@ final class RemoteContentService {
         return fileManager.fileExists(atPath: url.path()) ? url : nil
     }
 
-    private func updateRemoteConfig(showOverlay: Bool) async {
+    private func updateRemoteConfig(showOverlay: Bool) async -> FileDownloadResult {
         if showOverlay {
             statusText = "Lade Konfiguration"
         }
 
-        recordDownload(
-            await Self.downloadJSON("remoteConfig", session: session)
+        let result = await Self.downloadJSON(
+            "remoteConfig",
+            session: session,
+            forceDownload: true
         )
+        recordDownload(result)
+        return result
     }
 
     private func updateBackgroundFiles(
         plan: ContentUpdatePlan,
         config: RemoteContentConfig,
-        showOverlay: Bool
+        showOverlay: Bool,
+        forceDownload: Bool
     ) async {
         guard plan.jsonFiles.contains(Self.backgroundJSONFileName) else {
             return
@@ -173,7 +200,8 @@ final class RemoteContentService {
         recordDownload(
             await Self.downloadJSON(
                 Self.backgroundJSONFileName,
-                session: session
+                session: session,
+                forceDownload: forceDownload
             )
         )
 
@@ -182,7 +210,8 @@ final class RemoteContentService {
                 await Self.downloadAsset(
                     named: assetName,
                     extensions: config.resolvedAssetExtensions,
-                    session: session
+                    session: session,
+                    forceDownload: forceDownload
                 )
             )
         }
@@ -190,7 +219,8 @@ final class RemoteContentService {
 
     private func updateJSONFiles(
         plan: ContentUpdatePlan,
-        showOverlay: Bool
+        showOverlay: Bool,
+        forceDownload: Bool
     ) async {
 
         if showOverlay {
@@ -199,14 +229,19 @@ final class RemoteContentService {
 
         for fileName in plan.regularJSONFiles {
             recordDownload(
-                await Self.downloadJSON(fileName, session: session)
+                await Self.downloadJSON(
+                    fileName,
+                    session: session,
+                    forceDownload: forceDownload
+                )
             )
         }
     }
 
     private func updateMusicFiles(
         plan: ContentUpdatePlan,
-        showOverlay: Bool
+        showOverlay: Bool,
+        forceDownload: Bool
     ) async {
 
         if showOverlay {
@@ -218,7 +253,8 @@ final class RemoteContentService {
                 await Self.downloadFile(
                     remoteURL: Self.musicURL.appending(path: fileName),
                     destinationURL: Self.cachedMusicURL(named: fileName),
-                    session: session
+                    session: session,
+                    forceDownload: forceDownload
                 )
             )
         }
@@ -227,7 +263,8 @@ final class RemoteContentService {
     private func updateAssetFiles(
         plan: ContentUpdatePlan,
         config: RemoteContentConfig,
-        showOverlay: Bool
+        showOverlay: Bool,
+        forceDownload: Bool
     ) async {
 
         if showOverlay {
@@ -239,7 +276,8 @@ final class RemoteContentService {
                 await Self.downloadAsset(
                     named: assetName,
                     extensions: config.resolvedAssetExtensions,
-                    session: session
+                    session: session,
+                    forceDownload: forceDownload
                 )
             )
         }
@@ -258,7 +296,11 @@ final class RemoteContentService {
         downloadedBytes += result.bytes
     }
 
-    private static func downloadJSON(_ fileName: String, session: URLSession)
+    private static func downloadJSON(
+        _ fileName: String,
+        session: URLSession,
+        forceDownload: Bool
+    )
         async -> FileDownloadResult
     {
         let primaryURL = Self.rootURL.appending(path: "JSON/\(fileName).json")
@@ -268,7 +310,8 @@ final class RemoteContentService {
         let primaryResult = await downloadFile(
             remoteURL: primaryURL,
             destinationURL: destinationURL,
-            session: session
+            session: session,
+            forceDownload: forceDownload
         )
         if primaryResult.didDownload {
             return primaryResult
@@ -277,14 +320,16 @@ final class RemoteContentService {
         return await downloadFile(
             remoteURL: fallbackURL,
             destinationURL: destinationURL,
-            session: session
+            session: session,
+            forceDownload: forceDownload
         )
     }
 
     private static func downloadAsset(
         named fileName: String,
         extensions: [String],
-        session: URLSession
+        session: URLSession,
+        forceDownload: Bool
     ) async -> FileDownloadResult {
         let destinationURL = Self.cachedAssetURL(named: fileName)
 
@@ -292,7 +337,8 @@ final class RemoteContentService {
             return await downloadFile(
                 remoteURL: Self.assetsURL.appending(path: fileName),
                 destinationURL: destinationURL,
-                session: session
+                session: session,
+                forceDownload: forceDownload
             )
         }
 
@@ -303,7 +349,8 @@ final class RemoteContentService {
             let result = await downloadFile(
                 remoteURL: remoteURL,
                 destinationURL: destinationURL,
-                session: session
+                session: session,
+                forceDownload: forceDownload
             )
             if result.didDownload {
                 return result
@@ -317,12 +364,19 @@ final class RemoteContentService {
     private static func downloadFile(
         remoteURL: URL,
         destinationURL: URL,
-        session: URLSession
+        session: URLSession,
+        forceDownload: Bool
     ) async -> FileDownloadResult {
+        if !forceDownload,
+            FileManager.default.fileExists(atPath: destinationURL.path())
+        {
+            return .skipped
+        }
+
         do {
             let request = URLRequest(
                 url: remoteURL,
-                cachePolicy: .reloadRevalidatingCacheData,
+                cachePolicy: .reloadIgnoringLocalCacheData,
                 timeoutInterval: 8
             )
             let (data, response) = try await session.data(for: request)
@@ -360,6 +414,20 @@ final class RemoteContentService {
     private static func loadRemoteConfig() -> RemoteContentConfig {
         JSONDataLoader.load("remoteConfig", as: RemoteContentConfig.self)
             ?? RemoteContentConfig()
+    }
+
+    private static func hasAllCachedFiles(plan: ContentUpdatePlan) -> Bool {
+        let hasJSONFiles = plan.jsonFiles.allSatisfy {
+            FileManager.default.fileExists(atPath: cachedJSONURL(for: $0).path())
+        }
+        let hasAssetFiles = plan.assetNames.allSatisfy {
+            FileManager.default.fileExists(atPath: cachedAssetURL(named: $0).path())
+        }
+        let hasMusicFiles = plan.musicFiles.allSatisfy {
+            FileManager.default.fileExists(atPath: cachedMusicURL(named: $0).path())
+        }
+
+        return hasJSONFiles && hasAssetFiles && hasMusicFiles
     }
 
     private static func assetNamesFromCurrentJSON(
@@ -488,6 +556,18 @@ final class RemoteContentService {
         let megabytes = Double(bytes) / 1_048_576
         return String(format: "%.1f MB", megabytes)
     }
+
+    private static var downloadedContentVersion: Int? {
+        get {
+            let value = UserDefaults.standard.integer(
+                forKey: downloadedContentVersionKey
+            )
+            return value == 0 ? nil : value
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: downloadedContentVersionKey)
+        }
+    }
 }
 
 private struct FileDownloadResult {
@@ -495,6 +575,7 @@ private struct FileDownloadResult {
     let bytes: Int
 
     static let failed = FileDownloadResult(didDownload: false, bytes: 0)
+    static let skipped = FileDownloadResult(didDownload: false, bytes: 0)
 }
 
 private struct ContentUpdatePlan {

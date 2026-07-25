@@ -32,7 +32,7 @@ struct AppFlowView: View {
             }
         }
         .task {
-            await remoteContent.updateAtLaunch(showOverlay: false)
+            await remoteContent.updateAtLaunch(showOverlay: true)
         }
         .statusBarHidden(true)
     }

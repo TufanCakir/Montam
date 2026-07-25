@@ -1,9 +1,9 @@
 {
     "products": [
         {
-            "id": "item_ticket_single",
+            "id": "item_summon_ticket_single",
             "title": "Beschwörungsticket",
-            "subtitle": "+1 Support-Ticket",
+            "subtitle": "+1 Summon Ticket",
             "visual": "tickets",
             "badge": "SUPPORT",
             "priceCurrency": "bits",

@@ -33,7 +33,7 @@ struct SummonHeader: View {
             HStack(spacing: 10) {
                 SummonWalletPill(
                     iconId: "summon_ticket",
-                    fallbackImage: "icon_ticket",
+                    fallbackImage: "icon_summon_ticket",
                     value: ticketCount
                 )
 
