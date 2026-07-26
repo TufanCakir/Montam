@@ -89,15 +89,15 @@ struct ShopView: View {
 
     private func buyItem(_ product: ItemShopProductData) {
         let didBuy = gameStore.purchaseItem(product)
-        viewModel.purchaseMessage =
-            didBuy ? "Item gekauft." : "Nicht genug Währung."
+        showPurchaseMessage(didBuy ? "Item gekauft." : "Nicht genug Währung.")
     }
 
     private func buy(_ product: ShopProductData) {
         if product.purchaseType == .softCurrency {
             let didBuy = gameStore.purchaseSoftCurrencyProduct(product)
-            viewModel.purchaseMessage =
+            showPurchaseMessage(
                 didBuy ? "Item gekauft." : "Nicht genug Währung."
+            )
             return
         }
 
@@ -113,13 +113,13 @@ struct ShopView: View {
                         productIds: paymentStore.purchasedProductIds
                     )
                 }
-                viewModel.purchaseMessage = "Kauf abgeschlossen."
+                showPurchaseMessage("Kauf abgeschlossen.")
             case .pending:
-                viewModel.purchaseMessage = "Kauf wartet auf Bestätigung."
+                showPurchaseMessage("Kauf wartet auf Bestätigung.")
             case .cancelled:
                 viewModel.purchaseMessage = nil
             case .failed(let message):
-                viewModel.purchaseMessage = message
+                handlePurchaseFailure(message)
             }
         }
     }
@@ -130,7 +130,26 @@ struct ShopView: View {
             gameStore.syncShopEntitlements(
                 productIds: paymentStore.purchasedProductIds
             )
-            viewModel.purchaseMessage = "Käufe wurden wiederhergestellt."
+            showPurchaseMessage("Käufe wurden wiederhergestellt.")
+        }
+    }
+
+    private func handlePurchaseFailure(_ message: String) {
+        guard !message.contains("StoreKit findet") else {
+            viewModel.purchaseMessage = nil
+            return
+        }
+
+        showPurchaseMessage(message)
+    }
+
+    private func showPurchaseMessage(_ message: String) {
+        viewModel.purchaseMessage = message
+        Task {
+            try? await Task.sleep(for: .seconds(2.2))
+            if viewModel.purchaseMessage == message {
+                viewModel.purchaseMessage = nil
+            }
         }
     }
 

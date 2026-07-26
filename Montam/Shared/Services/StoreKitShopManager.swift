@@ -52,6 +52,10 @@ final class StoreKitShopManager: ObservableObject {
             isLoadingProducts = true
             defer { isLoadingProducts = false }
 
+            #if DEBUG
+                debugPrintStoreKitRequest(uniqueIds)
+            #endif
+
             let products = try await Product.products(for: uniqueIds)
             productsById = Dictionary(
                 uniqueKeysWithValues: products.map { ($0.id, $0) }
@@ -64,18 +68,11 @@ final class StoreKitShopManager: ObservableObject {
                 ? nil : "Einige Store-Produkte sind nicht verfügbar."
 
             #if DEBUG
-                print(
-                    "StoreKit requested product IDs: \(uniqueIds.joined(separator: ", "))"
+                debugPrintStoreKitResponse(
+                    requestedIds: uniqueIds,
+                    products: products,
+                    unavailableIds: unavailableProductIds
                 )
-                print(
-                    "StoreKit loaded product IDs: \(productsById.keys.sorted().joined(separator: ", "))"
-                )
-
-                if !unavailableProductIds.isEmpty {
-                    print(
-                        "StoreKit missing product IDs: \(unavailableProductIds.sorted().joined(separator: ", "))"
-                    )
-                }
             #endif
 
             await refreshEntitlements()
@@ -89,6 +86,7 @@ final class StoreKitShopManager: ObservableObject {
                 print(
                     "StoreKit product loading failed for IDs: \(uniqueIds.joined(separator: ", "))"
                 )
+                print("StoreKit loading error: \(error)")
             #endif
         }
     }
@@ -104,12 +102,30 @@ final class StoreKitShopManager: ObservableObject {
 
         do {
             let wasPurchased = purchasedProductIds.contains(productId)
+
+            #if DEBUG
+                print("========== STOREKIT PURCHASE DEBUG ==========")
+                print("Starting purchase: \(productId)")
+                print("Product type: \(product.type)")
+                print("Display name: \(product.displayName)")
+                print("Display price: \(product.displayPrice)")
+                print("Was already entitled: \(wasPurchased)")
+                print("=============================================")
+            #endif
+
             let result = try await product.purchase()
 
             switch result {
             case .success(let verification):
                 let transaction = try verifiedTransaction(from: verification)
                 await transaction.finish()
+
+                #if DEBUG
+                    print(
+                        "StoreKit purchase verified: \(transaction.productID)"
+                    )
+                    print("StoreKit transaction id: \(transaction.id)")
+                #endif
 
                 if productData.purchaseType == .nonConsumable {
                     purchasedProductIds.insert(productId)
@@ -123,21 +139,42 @@ final class StoreKitShopManager: ObservableObject {
                 )
 
             case .pending:
+                #if DEBUG
+                    print("StoreKit purchase pending: \(productId)")
+                #endif
                 return .pending
 
             case .userCancelled:
+                #if DEBUG
+                    print("StoreKit purchase cancelled: \(productId)")
+                #endif
                 return .cancelled
 
             @unknown default:
+                #if DEBUG
+                    print(
+                        "StoreKit purchase returned unknown result: \(productId)"
+                    )
+                #endif
                 return .failed("Unbekannter StoreKit-Status.")
             }
         } catch {
+            #if DEBUG
+                print("StoreKit purchase failed: \(productId)")
+                print("StoreKit purchase error: \(error)")
+            #endif
             return .failed("Kauf konnte nicht abgeschlossen werden.")
         }
     }
 
     func restorePurchases() async {
         do {
+            #if DEBUG
+                print("========== STOREKIT RESTORE DEBUG ==========")
+                print("Starting AppStore.sync()")
+                print("============================================")
+            #endif
+
             try await AppStore.sync()
             await refreshEntitlements()
         } catch {
@@ -179,6 +216,14 @@ final class StoreKitShopManager: ObservableObject {
         }
 
         purchasedProductIds = purchasedIds
+
+        #if DEBUG
+            print("========== STOREKIT ENTITLEMENTS DEBUG ==========")
+            print(
+                "Current entitlements: \(purchasedProductIds.sorted().joined(separator: ", "))"
+            )
+            print("=================================================")
+        #endif
     }
 
     private func listenForTransactions() -> Task<Void, Never> {
@@ -209,6 +254,69 @@ final class StoreKitShopManager: ObservableObject {
     private func normalizedProductId(_ productId: String) -> String {
         productId.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+
+    #if DEBUG
+        private func debugPrintStoreKitRequest(_ productIds: [String]) {
+            print("========== STOREKIT REQUEST DEBUG ==========")
+            print("Bundle ID: \(Bundle.main.bundleIdentifier ?? "-")")
+            print("Can make payments: \(AppStore.canMakePayments)")
+            print("Requested count: \(productIds.count)")
+            for productId in productIds {
+                print("REQUEST \(debugProductIdLine(productId))")
+            }
+            print("============================================")
+        }
+
+        private func debugPrintStoreKitResponse(
+            requestedIds: [String],
+            products: [Product],
+            unavailableIds: Set<String>
+        ) {
+            print("========== STOREKIT RESPONSE DEBUG ==========")
+            print("Requested IDs:")
+            requestedIds.forEach { print("  - \($0)") }
+
+            print("Loaded products:")
+            if products.isEmpty {
+                print("  - none")
+            } else {
+                for product in products.sorted(by: { $0.id < $1.id }) {
+                    print(
+                        [
+                            "id=\(product.id)",
+                            "type=\(product.type)",
+                            "name=\(product.displayName)",
+                            "price=\(product.displayPrice)",
+                            "description=\(product.description)",
+                        ].joined(separator: " | ")
+                    )
+                }
+            }
+
+            print("Missing IDs:")
+            if unavailableIds.isEmpty {
+                print("  - none")
+            } else {
+                for productId in unavailableIds.sorted() {
+                    print("  - \(debugProductIdLine(productId))")
+                }
+                print(
+                    "Hinweis: StoreKit liefert keinen Grund pro fehlender ID. Wenn die ID hier fehlt, ist sie fuer diese Bundle-ID/Sandbox/ASC-Konfiguration nicht verfuegbar."
+                )
+            }
+            print("=============================================")
+        }
+
+        private func debugProductIdLine(_ productId: String) -> String {
+            let scalars = productId.unicodeScalars.map {
+                "U+\(String($0.value, radix: 16, uppercase: true))"
+            }
+            .joined(separator: " ")
+
+            return
+                "'\(productId)' length=\(productId.count) scalars=[\(scalars)]"
+        }
+    #endif
 
     private func verifiedTransaction(
         from result: VerificationResult<Transaction>

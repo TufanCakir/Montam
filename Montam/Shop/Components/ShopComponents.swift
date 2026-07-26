@@ -501,7 +501,7 @@ private struct ShopProductCard: View {
             return "LÄDT"
         }
 
-        return "STORE FEHLT"
+        return "BALD"
     }
 }
 
@@ -698,7 +698,8 @@ private struct ShopPassCard: View {
                             .system(size: 22, weight: .heavy, design: .rounded)
                         )
                         .foregroundStyle(
-                            purchased ? .green : storeUnavailable ? .gray : .black
+                            purchased
+                                ? .green : storeUnavailable ? .gray : .black
                         )
                         .frame(width: 112)
                         .frame(maxHeight: .infinity)
