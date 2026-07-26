@@ -9,9 +9,25 @@ import SpriteKit
 import UIKit
 
 enum ImageEnvironmentNodes {
+    static func worldBackgroundNode(
+        for data: BackgroundData,
+        size: CGSize
+    ) -> SKNode {
+        guard let imageName = data.resolvedBackgroundImageName else {
+            return fallbackBackgroundNode(size: size)
+        }
+
+        let node = SKSpriteNode(texture: texture(named: imageName))
+        node.name = "background"
+        node.anchorPoint = .zero
+        node.size = CGSize(width: size.width, height: size.height * 1.08)
+        node.position = .zero
+        return node
+    }
+
     static func backgroundNode(for data: BackgroundData, size: CGSize) -> SKNode
     {
-        guard let imageName = data.resolvedBackgroundImageName else {
+        guard let imageName = data.resolvedSkyImageName else {
             return fallbackBackgroundNode(size: size)
         }
 
@@ -27,8 +43,23 @@ enum ImageEnvironmentNodes {
         size: CGSize,
         groundHeight: CGFloat
     ) -> SKNode {
+        guard
+            let imageName = data.resolvedGroundImageName
+                ?? data.resolvedBackgroundImageName
+        else {
+            return SKNode()
+        }
+
         let root = SKNode()
         root.name = "ground"
+
+        let node = SKSpriteNode(texture: texture(named: imageName))
+        node.name = "groundImage"
+        node.anchorPoint = .zero
+        node.size = CGSize(width: size.width, height: groundHeight)
+        node.position = .zero
+        root.addChild(node)
+
         return root
     }
 

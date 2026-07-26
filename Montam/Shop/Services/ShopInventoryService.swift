@@ -102,16 +102,33 @@ enum ShopInventoryService {
 
     static func syncEntitlements(
         productIds: Set<String>,
+        products: [ShopProductData],
         saves: [GameSaveData],
         modelContext: ModelContext
     ) {
-        guard productIds.contains("montam.pass.event"), let save = saves.first
-        else {
+        let entitledProducts = products.filter { product in
+            product.purchaseType == .nonConsumable
+                && productIds.contains(product.productId)
+        }
+
+        guard !entitledProducts.isEmpty else {
             return
         }
 
-        save.hasEventPass = true
+        let save = ensureSave(saves: saves, modelContext: modelContext)
+        for product in entitledProducts {
+            applyNonConsumableEntitlement(from: product.rewards, to: save)
+        }
         try? modelContext.save()
+    }
+
+    private static func applyNonConsumableEntitlement(
+        from rewards: ShopProductRewards,
+        to save: GameSaveData
+    ) {
+        if rewards.unlockEventPass == true {
+            save.hasEventPass = true
+        }
     }
 
     private static func ensureSave(

@@ -105,6 +105,7 @@ struct RootQuickMenuButton: View {
 }
 
 struct RootQuickMenuPanel: View {
+    let onPassTap: () -> Void
     let onDailyTap: () -> Void
     let onGiftTap: () -> Void
     let onNewsTap: () -> Void
@@ -136,6 +137,12 @@ struct RootQuickMenuPanel: View {
                 }
 
                 LazyVGrid(columns: columns, spacing: 10) {
+                    RootQuickMenuItem(
+                        title: "Pass",
+                        systemName: "ticket.fill",
+                        action: onPassTap
+                    )
+
                     RootQuickMenuItem(
                         title: "Daily",
                         systemName: "calendar",

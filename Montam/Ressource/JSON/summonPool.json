@@ -2,85 +2,36 @@
     {
         "bannerId": "support_tamer_aren_banner",
         "characterId": "aren",
-        "weight": 80,
-        "xOffset": -100,
-        "yOffset": 130,
-        "zOffset": 180,
-        "scaleMultiplier": 0.80,
-        "attackBonus": 0.18,
-        "defenseBonus": 0.08,
-        "healthBonus": 0.15
+        "weight": 80
     },
     {
         "bannerId": "support_tamer_aren_banner",
         "characterId": "rick",
-        "weight": 20,
-        "xOffset": -150,
-        "yOffset": 90,
-        "zOffset": 160,
-        "scaleMultiplier": 0.80,
-        "attackBonus": 0.18,
-        "defenseBonus": 0.08,
-        "healthBonus": 0.15
+        "weight": 20
     },
     {
         "bannerId": "support_tamer_rick_banner",
         "characterId": "rick",
-        "weight": 80,
-        "xOffset": -150,
-        "yOffset": 90,
-        "zOffset": 160,
-        "scaleMultiplier": 0.80,
-        "attackBonus": 0.18,
-        "defenseBonus": 0.08,
-        "healthBonus": 0.15
+        "weight": 80
     },
     {
         "bannerId": "support_tamer_rick_banner",
         "characterId": "aren",
-        "weight": 20,
-        "xOffset": -100,
-        "yOffset": 120,
-        "zOffset": 180,
-        "scaleMultiplier": 0.80,
-        "attackBonus": 0.18,
-        "defenseBonus": 0.08,
-        "healthBonus": 0.15
+        "weight": 20
     },
     {
         "bannerId": "support_mon_sovereon_banner",
         "characterId": "sovereon",
-        "weight": 100,
-        "xOffset": -100,
-        "yOffset": 140,
-        "zOffset": 260,
-        "scaleMultiplier": 1,
-        "attackBonus": 0.16,
-        "defenseBonus": 0.10,
-        "healthBonus": 0.12
+        "weight": 100
     },
     {
         "bannerId": "support_mon_cubon_banner",
         "characterId": "cubon",
-        "weight": 100,
-        "xOffset": -100,
-        "yOffset": 100,
-        "zOffset": 160,
-        "scaleMultiplier": 0.80,
-        "attackBonus": 0.08,
-        "defenseBonus": 0.04,
-        "healthBonus": 0.08
+        "weight": 100
     },
     {
         "bannerId": "support_mon_embon_banner",
         "characterId": "embon",
-        "weight": 100,
-        "xOffset": -100,
-        "yOffset": 75,
-        "zOffset": 140,
-        "scaleMultiplier": 0.80,
-        "attackBonus": 0.08,
-        "defenseBonus": 0.04,
-        "healthBonus": 0.08
+        "weight": 100
     }
 ]

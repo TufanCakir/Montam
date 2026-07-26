@@ -11,6 +11,12 @@ struct SummonPoolData: Codable {
     let bannerId: String
     let characterId: String
     let weight: Int
+}
+
+struct SupporterData: Codable {
+    let bannerId: String
+    let characterId: String
+    let weight: Int?
     let xOffset: Int?
     let yOffset: Int?
     let zOffset: Int?
@@ -23,4 +29,19 @@ struct SummonPoolData: Codable {
     let crystalBonus: Double?
     let bitBonus: Double?
     let ticketBonus: Double?
+}
+
+extension SupporterData {
+    static func loadAll() -> [SupporterData] {
+        let supportMonsters =
+            JSONDataLoader.load("supportMonster", as: [SupporterData].self)
+            ?? []
+        let supportMegaMonsters =
+            JSONDataLoader.load("supportMegaMonster", as: [SupporterData].self)
+            ?? []
+        let supportTamers =
+            JSONDataLoader.load("supportTamer", as: [SupporterData].self) ?? []
+
+        return supportMonsters + supportMegaMonsters + supportTamers
+    }
 }

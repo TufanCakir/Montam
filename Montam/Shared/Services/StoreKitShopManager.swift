@@ -15,10 +15,30 @@ final class StoreKitShopManager: ObservableObject {
     @Published private(set) var productsById: [String: Product] = [:]
     @Published private(set) var purchasedProductIds: Set<String> = []
     @Published private(set) var unavailableProductIds: Set<String> = []
+    @Published private(set) var isLoadingProducts = false
     @Published var errorMessage: String?
 
-    func loadProducts(productIds: [String]) async {
-        let uniqueIds = Array(Set(productIds)).sorted()
+    private var transactionUpdatesTask: Task<Void, Never>?
+
+    init() {
+        transactionUpdatesTask = listenForTransactions()
+    }
+
+    deinit {
+        transactionUpdatesTask?.cancel()
+    }
+
+    func loadProducts(productIds: [String], force: Bool = false) async {
+        let uniqueIds = normalizedProductIds(productIds)
+        let requestedIds = Set(uniqueIds)
+
+        if !force, requestedProductIds == requestedIds,
+            !productsById.isEmpty || !unavailableProductIds.isEmpty
+        {
+            await refreshEntitlements()
+            return
+        }
+
         requestedProductIds = Set(uniqueIds)
         errorMessage = nil
 
@@ -29,6 +49,9 @@ final class StoreKitShopManager: ObservableObject {
         }
 
         do {
+            isLoadingProducts = true
+            defer { isLoadingProducts = false }
+
             let products = try await Product.products(for: uniqueIds)
             productsById = Dictionary(
                 uniqueKeysWithValues: products.map { ($0.id, $0) }
@@ -36,6 +59,9 @@ final class StoreKitShopManager: ObservableObject {
             unavailableProductIds = Set(uniqueIds).subtracting(
                 productsById.keys
             )
+            errorMessage =
+                unavailableProductIds.isEmpty
+                ? nil : "Einige Store-Produkte sind nicht verfügbar."
 
             #if DEBUG
                 print(
@@ -54,6 +80,7 @@ final class StoreKitShopManager: ObservableObject {
 
             await refreshEntitlements()
         } catch {
+            isLoadingProducts = false
             productsById = [:]
             errorMessage = "Store konnte nicht geladen werden."
             unavailableProductIds = Set(uniqueIds)
@@ -67,11 +94,16 @@ final class StoreKitShopManager: ObservableObject {
     }
 
     func purchase(_ productData: ShopProductData) async -> StorePurchaseResult {
-        guard let product = productsById[productData.productId] else {
-            return .failed("StoreKit findet \(productData.productId) nicht.")
+        let productId = productData.productId.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+
+        guard let product = productsById[productId] else {
+            return .failed("StoreKit findet \(productId) nicht.")
         }
 
         do {
+            let wasPurchased = purchasedProductIds.contains(productId)
             let result = try await product.purchase()
 
             switch result {
@@ -80,10 +112,15 @@ final class StoreKitShopManager: ObservableObject {
                 await transaction.finish()
 
                 if productData.purchaseType == .nonConsumable {
-                    purchasedProductIds.insert(productData.productId)
+                    purchasedProductIds.insert(productId)
                 }
 
-                return .purchased(productData)
+                let shouldApplyRewards =
+                    productData.purchaseType == .consumable || !wasPurchased
+                return .purchased(
+                    productData,
+                    shouldApplyRewards: shouldApplyRewards
+                )
 
             case .pending:
                 return .pending
@@ -109,18 +146,23 @@ final class StoreKitShopManager: ObservableObject {
     }
 
     func localizedPrice(for productData: ShopProductData) -> String {
-        productsById[productData.productId]?.displayPrice ?? "..."
+        productsById[normalizedProductId(productData.productId)]?.displayPrice
+            ?? "..."
     }
 
     func isStoreKitUnavailable(_ productData: ShopProductData) -> Bool {
-        productData.purchaseType != .softCurrency
-            && requestedProductIds.contains(productData.productId)
-            && unavailableProductIds.contains(productData.productId)
+        let productId = normalizedProductId(productData.productId)
+
+        return productData.purchaseType != .softCurrency
+            && requestedProductIds.contains(productId)
+            && unavailableProductIds.contains(productId)
     }
 
     func isPurchased(_ productData: ShopProductData) -> Bool {
-        productData.purchaseType == .nonConsumable
-            && purchasedProductIds.contains(productData.productId)
+        return productData.purchaseType == .nonConsumable
+            && purchasedProductIds.contains(
+                normalizedProductId(productData.productId)
+            )
     }
 
     private func refreshEntitlements() async {
@@ -139,6 +181,35 @@ final class StoreKitShopManager: ObservableObject {
         purchasedProductIds = purchasedIds
     }
 
+    private func listenForTransactions() -> Task<Void, Never> {
+        Task { [weak self] in
+            for await result in Transaction.updates {
+                guard let self else { return }
+
+                do {
+                    let transaction = try self.verifiedTransaction(from: result)
+                    if transaction.revocationDate == nil {
+                        self.purchasedProductIds.insert(transaction.productID)
+                    } else {
+                        self.purchasedProductIds.remove(transaction.productID)
+                    }
+                    await transaction.finish()
+                } catch {
+                    self.errorMessage = "Kauf konnte nicht verifiziert werden."
+                }
+            }
+        }
+    }
+
+    private func normalizedProductIds(_ productIds: [String]) -> [String] {
+        Array(Set(productIds.map(normalizedProductId).filter { !$0.isEmpty }))
+            .sorted()
+    }
+
+    private func normalizedProductId(_ productId: String) -> String {
+        productId.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     private func verifiedTransaction(
         from result: VerificationResult<Transaction>
     ) throws -> Transaction {
@@ -152,7 +223,7 @@ final class StoreKitShopManager: ObservableObject {
 }
 
 enum StorePurchaseResult {
-    case purchased(ShopProductData)
+    case purchased(ShopProductData, shouldApplyRewards: Bool)
     case pending
     case cancelled
     case failed(String)

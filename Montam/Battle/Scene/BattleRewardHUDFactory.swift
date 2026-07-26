@@ -77,11 +77,16 @@ enum BattleRewardHUDFactory {
         container.zPosition = 900
         container.position = CGPoint(
             x: sceneSize.width / 2,
-            y: sceneSize.height * 0.72
+            y: sceneSize.height * 0.61
         )
 
+        let rewardItems = waveRewardItems(from: reward)
+        let panelWidth = min(
+            sceneSize.width - 96,
+            max(CGFloat(rewardItems.count) * 72 + 28, 118)
+        )
         let panel = SKShapeNode(
-            rectOf: CGSize(width: min(sceneSize.width - 80, 260), height: 48),
+            rectOf: CGSize(width: panelWidth, height: 42),
             cornerRadius: 12
         )
         panel.fillColor = SKColor.black.withAlphaComponent(0.62)
@@ -89,27 +94,18 @@ enum BattleRewardHUDFactory {
         panel.lineWidth = 1.2
         container.addChild(panel)
 
-        var x: CGFloat = -90
-        addRewardIcon("exp", text: "+\(reward.xp)", x: x, to: container)
-        x += 62
-        if reward.coins > 0 {
-            addRewardIcon("coin", text: "+\(reward.coins)", x: x, to: container)
-            x += 62
-        }
-        if reward.crystals > 0 {
+        let spacing: CGFloat = 72
+        let startX = -CGFloat(rewardItems.count - 1) * spacing * 0.5
+        for (index, item) in rewardItems.enumerated() {
             addRewardIcon(
-                "crystal",
-                text: "+\(reward.crystals)",
-                x: x,
+                item.resourceId,
+                text: item.text,
+                x: startX + CGFloat(index) * spacing,
                 to: container
             )
-            x += 62
-        }
-        if reward.bits > 0 {
-            addRewardIcon("bit", text: "+\(reward.bits)", x: x, to: container)
         }
 
-        container.setScale(0.82)
+        container.setScale(0.78)
         container.alpha = 0
         return container
     }
@@ -124,6 +120,25 @@ enum BattleRewardHUDFactory {
             .fadeOut(withDuration: 0.25),
             .removeFromParent(),
         ])
+    }
+
+    private static func waveRewardItems(
+        from reward: BattleWaveReward
+    ) -> [(resourceId: String, text: String)] {
+        var items: [(resourceId: String, text: String)] = []
+        if reward.xp > 0 {
+            items.append(("exp", "+\(reward.xp)"))
+        }
+        if reward.coins > 0 {
+            items.append(("coin", "+\(reward.coins)"))
+        }
+        if reward.crystals > 0 {
+            items.append(("crystal", "+\(reward.crystals)"))
+        }
+        if reward.bits > 0 {
+            items.append(("bit", "+\(reward.bits)"))
+        }
+        return items.isEmpty ? [("exp", "+0")] : items
     }
 
     private static func addRewardIcon(

@@ -16,7 +16,6 @@ struct BattleConfigData: Decodable {
     let maxMontamSupporters: Int?
     let maxTamerSupporters: Int?
     let maxMegaSupporters: Int?
-    let cameraZoom: Double?
     let cameraXOffset: Double?
     let cameraYOffset: Double?
     let walkDuration: Double
@@ -173,7 +172,6 @@ extension BattleConfigData {
             maxMontamSupporters: maxMontamSupporters,
             maxTamerSupporters: maxTamerSupporters,
             maxMegaSupporters: maxMegaSupporters,
-            cameraZoom: cameraZoom,
             cameraXOffset: cameraXOffset,
             cameraYOffset: cameraYOffset,
             walkDuration: walkDuration,

@@ -10,7 +10,7 @@
         "attack": 50,
         "defense": 34,
         "enemyGrowthRate": 1.12,
-        "yOffset": -300,
+        "yOffset": -40,
         "xOffset": 0,
         "zOffset": 0
     },
@@ -25,7 +25,7 @@
         "attack": 50,
         "defense": 34,
         "enemyGrowthRate": 1.12,
-        "yOffset": -300,
+        "yOffset": -40,
         "xOffset": 0,
         "zOffset": 0
     },
@@ -40,7 +40,7 @@
         "attack": 50,
         "defense": 34,
         "enemyGrowthRate": 1.12,
-        "yOffset": -300,
+        "yOffset": -40,
         "xOffset": 0,
         "zOffset": 0
     },
@@ -55,7 +55,7 @@
         "attack": 50,
         "defense": 34,
         "enemyGrowthRate": 1.12,
-        "yOffset": -300,
+        "yOffset": -40,
         "xOffset": 0,
         "zOffset": 0
     }

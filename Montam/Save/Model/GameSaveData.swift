@@ -22,10 +22,12 @@ final class GameSaveData {
     var crystals: Int
     var summonTickets: Int
     var hasEventPass: Bool
+    var montamPassPoints: Int
     var lastDailyClaimDate: Date?
     var dailyLoginDay: Int
     var claimedGiftIds: [String]
     var claimedMissionRewardIds: [String] = []
+    var claimedBattlePassRewardIds: [String] = []
 
     init(
         createdAt: Date = .now,
@@ -40,10 +42,12 @@ final class GameSaveData {
         crystals: Int = 0,
         summonTickets: Int = 0,
         hasEventPass: Bool = false,
+        montamPassPoints: Int = 0,
         lastDailyClaimDate: Date? = nil,
         dailyLoginDay: Int = 0,
         claimedGiftIds: [String] = [],
-        claimedMissionRewardIds: [String] = []
+        claimedMissionRewardIds: [String] = [],
+        claimedBattlePassRewardIds: [String] = []
     ) {
         self.createdAt = createdAt
         self.didCompleteOnboarding = didCompleteOnboarding
@@ -57,10 +61,12 @@ final class GameSaveData {
         self.crystals = crystals
         self.summonTickets = summonTickets
         self.hasEventPass = hasEventPass
+        self.montamPassPoints = montamPassPoints
         self.lastDailyClaimDate = lastDailyClaimDate
         self.dailyLoginDay = dailyLoginDay
         self.claimedGiftIds = claimedGiftIds
         self.claimedMissionRewardIds = claimedMissionRewardIds
+        self.claimedBattlePassRewardIds = claimedBattlePassRewardIds
     }
 }
 

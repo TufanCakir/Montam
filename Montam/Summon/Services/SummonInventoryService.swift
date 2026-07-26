@@ -71,43 +71,9 @@ enum SummonInventoryService {
 
             switch result.kind {
             case .monster:
-                guard
-                    let monster = monsters.first(where: {
-                        $0.monsterName == result.imageName
-                            || $0.name == result.title
-                    })
-                else {
-                    continue
-                }
-
-                let owned =
-                    ownedMonsters.first { $0.monsterId == monster.id }
-                    ?? OwnedMonsterData(monsterId: monster.id)
-
-                if owned.modelContext == nil {
-                    modelContext.insert(owned)
-                } else {
-                    owned.xp += 25
-                }
+                continue
             case .tamer:
-                guard
-                    let tamer = tamers.first(where: {
-                        $0.tamerName == result.imageName
-                            || $0.name == result.title
-                    })
-                else {
-                    continue
-                }
-
-                let owned =
-                    ownedTamers.first { $0.tamerId == tamer.id }
-                    ?? OwnedTamerData(tamerId: tamer.id)
-
-                if owned.modelContext == nil {
-                    modelContext.insert(owned)
-                } else {
-                    owned.xp += 25
-                }
+                continue
             case .supportCard:
                 continue
             }
@@ -150,7 +116,9 @@ enum SummonInventoryService {
                 characterId: characterId,
                 imageName: imageName,
                 isMonster: isMonster,
-                isSelected: !ownedSupporters.values.contains(where: \.isSelected)
+                isSelected: !ownedSupporters.values.contains(
+                    where: \.isSelected
+                )
             )
 
         if owned.modelContext == nil {

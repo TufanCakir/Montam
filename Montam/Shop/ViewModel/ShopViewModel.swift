@@ -33,17 +33,15 @@ final class ShopViewModel {
                 itemData?.products.sorted { $0.sortOrder < $1.sortOrder } ?? []
         }
 
-        guard products.isEmpty else {
-            return
+        if products.isEmpty {
+            let data = JSONDataLoader.load("shop", as: ShopData.self)
+            products =
+                data?.products.sorted { $0.sortOrder < $1.sortOrder } ?? []
         }
 
-        let data = JSONDataLoader.load("shop", as: ShopData.self)
-        let loadedProducts =
-            data?.products.sorted { $0.sortOrder < $1.sortOrder } ?? []
-        products = loadedProducts
         await store.loadProducts(
             productIds:
-                loadedProducts
+                products
                 .filter { $0.purchaseType != .softCurrency }
                 .map(\.productId)
         )
@@ -60,6 +58,10 @@ final class ShopViewModel {
             let priceCurrency = product.priceCurrency,
             let priceAmount = product.priceAmount
         else {
+            if store.isLoadingProducts {
+                return "Lade..."
+            }
+
             if store.isStoreKitUnavailable(product) {
                 #if DEBUG
                     return "StoreKit fehlt"

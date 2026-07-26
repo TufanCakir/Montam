@@ -8,9 +8,9 @@
         "supportAttackBonus": 0.18,
         "supportDefenseBonus": 0.08,
         "supportHealthBonus": 0.15,
-        "yOffset": -300,
+        "yOffset": -30,
         "xOffset": -50,
-        "zOffset": 180
+        "zOffset": 18
     },
     {
         "id": "rick",
@@ -21,8 +21,8 @@
         "supportAttackBonus": 0.18,
         "supportDefenseBonus": 0.08,
         "supportHealthBonus": 0.15,
-        "yOffset": -300,
+        "yOffset": -30,
         "xOffset": -50,
-        "zOffset": 180
+        "zOffset": 18
     }
 ]

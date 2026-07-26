@@ -7,7 +7,6 @@
     "maxMontamSupporters": 1,
     "maxTamerSupporters": 1,
     "maxMegaSupporters": 1,
-    "cameraZoom": 1.18,
     "cameraXOffset": 0,
     "cameraYOffset": 0,
     "walkDuration": 0.72,
@@ -26,14 +25,11 @@
     "backgroundSequence": [
         "bg_tropical_beach",
         "bg_lava_world_with_volcanoes",
-        "bg_snowy_mountain_valley",
+        "bg_snow_covered_mountai_valley",
         "bg_desert_canyon",
-        "bg_crystal_cave_entrance",
         "bg_ancient_ruins",
-        "bg_floating_islands",
         "bg_autumn_forest",
-        "bg_haunted_wasteland",
-        "bg_heavenly_grasslands"
+        "bg_haunted_wasteland"
     ],
     "playerMonsters": [
         {

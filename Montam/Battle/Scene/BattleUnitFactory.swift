@@ -22,7 +22,7 @@ struct BattleUnitFactory {
     let enemies: [EnemyData]
     let sceneSize: CGSize
     let battleConfig: BattleConfigData
-    
+
     func supporterUnits(
         from configuredSupporters: [RuntimeOwnedSupporter]
     ) -> [BattleUnit] {
@@ -30,7 +30,7 @@ struct BattleUnitFactory {
             supporterUnit(from: supporter, slot: index)
         }
     }
-    
+
     private func supporterUnit(
         from supporter: RuntimeOwnedSupporter,
         slot: Int
@@ -160,7 +160,7 @@ struct BattleUnitFactory {
         _ explicitValue: Int?,
         fallback: Int
     ) -> Int {
-        (explicitValue ?? fallback) * 10
+        explicitValue ?? fallback
     }
 
     func playerUnits(from configuredMonsters: [BattleUnitConfig])

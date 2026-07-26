@@ -43,19 +43,19 @@ enum TeamInventoryService {
             )
             didChange = true
         }
-        
+
         if !ownedMonsters.contains(where: \.isSelected),
             let first = ownedMonsters.first
         {
             first.isSelected = true
             didChange = true
         }
-        
+
         if didChange {
             try? modelContext.save()
         }
     }
-    
+
     static func selectSupporter(
         id: String,
         ownedSupporters: [OwnedSupporterData],
@@ -91,11 +91,11 @@ enum TeamInventoryService {
             }
 
             if selectedInCategory.count >= categoryLimit,
-               let oldestCategorySelection = selectedInCategory.first
+                let oldestCategorySelection = selectedInCategory.first
             {
                 oldestCategorySelection.isSelected = false
             } else if selected.count >= max(maxSelectedSupporters, 1),
-               let oldestSelection = selected.first
+                let oldestSelection = selected.first
             {
                 oldestSelection.isSelected = false
             }
@@ -130,13 +130,40 @@ enum TeamInventoryService {
 
     static func selectMonster(
         id: String,
+        imageName: String? = nil,
         ownedMonsters: [OwnedMonsterData],
         modelContext: ModelContext
     ) {
+        let selectedMonster =
+            ownedMonsters.first { $0.monsterId == id }
+            ?? makeOwnedMonster(id: id, imageName: imageName)
+
+        if selectedMonster.modelContext == nil {
+            modelContext.insert(selectedMonster)
+        }
+
         for monster in ownedMonsters {
             monster.isSelected = monster.monsterId == id
         }
+        selectedMonster.isSelected = true
         try? modelContext.save()
+    }
+
+    private static func makeOwnedMonster(
+        id: String,
+        imageName: String?
+    ) -> OwnedMonsterData {
+        let monsterCatalog =
+            JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+        let catalogImageName = monsterCatalog.first { $0.id == id }?.monsterName
+
+        return OwnedMonsterData(
+            monsterId: id,
+            level: 1,
+            xp: 0,
+            isSelected: true,
+            equippedImageName: imageName ?? catalogImageName
+        )
     }
 
     static func selectTamer(

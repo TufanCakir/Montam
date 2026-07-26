@@ -32,15 +32,23 @@ struct MonsterSelectView: View {
                     let owned = store.ownedMonsters.first {
                         $0.monsterId == monster.id
                     }
+                    let hasSelectedMonster = store.ownedMonsters.contains {
+                        $0.isSelected
+                    }
                     SelectionRow(
                         imageName: monster.monsterName,
                         title: monster.name,
                         subtitle: owned.map { "Lv. \($0.level) · XP \($0.xp)" }
-                            ?? "Noch nicht besitzt",
-                        isSelected: owned?.isSelected == true,
-                        isEnabled: owned != nil
+                            ?? "Lv. 1 · immer verfügbar",
+                        isSelected: owned?.isSelected == true
+                            || (!hasSelectedMonster
+                                && monster.id == monsters.first?.id),
+                        isEnabled: true
                     ) {
-                        store.selectMonster(id: monster.id)
+                        store.selectMonster(
+                            id: monster.id,
+                            imageName: monster.monsterName
+                        )
                     }
                 }
 

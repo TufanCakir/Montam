@@ -1,5 +1,5 @@
 {
-    "contentVersion": 1,
+    "contentVersion": 5,
     "minimumAppVersion": "1.0",
     "notes": "Basis Remote-Inhalte",
     "jsonFiles": [
@@ -16,6 +16,7 @@
         "monster",
         "monsterAppearance",
         "mission",
+        "montamPass",
         "music",
         "news",
         "shop",
@@ -34,6 +35,10 @@
     ],
     "assetKeys": [
         "imageName",
+        "skyImageName",
+        "farImageName",
+        "midImageName",
+        "groundImageName",
         "monsterName",
         "tamerName",
         "enemyName",

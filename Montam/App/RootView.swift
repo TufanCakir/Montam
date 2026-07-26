@@ -23,6 +23,7 @@ struct RootView: View {
     @State private var isSettingsPresented = false
     @State private var isNewsPresented = false
     @State private var isMissionPresented = false
+    @State private var isPassPresented = false
     @State private var isQuickMenuPresented = false
 
     private let monsterCatalog =
@@ -44,6 +45,7 @@ struct RootView: View {
             || isSettingsPresented
             || isNewsPresented
             || isMissionPresented
+            || isPassPresented
             || isQuickMenuPresented
     }
 
@@ -84,6 +86,9 @@ struct RootView: View {
 
             if isQuickMenuPresented {
                 RootQuickMenuPanel(
+                    onPassTap: {
+                        presentModal(.pass)
+                    },
                     onDailyTap: {
                         presentModal(.daily)
                     },
@@ -127,6 +132,11 @@ struct RootView: View {
                     .transition(.scale.combined(with: .opacity))
             }
 
+            if isPassPresented {
+                BattlePassPanel(store: gameStore, onClose: closeModals)
+                    .transition(.scale.combined(with: .opacity))
+            }
+
             if isDailyPresented {
                 DailyLoginPanel(onClose: closeModals)
                     .transition(.scale.combined(with: .opacity))
@@ -159,6 +169,7 @@ struct RootView: View {
             isSettingsPresented = false
             isNewsPresented = false
             isMissionPresented = false
+            isPassPresented = false
             isQuickMenuPresented = false
         }
     }
@@ -176,6 +187,8 @@ struct RootView: View {
                 isNewsPresented = true
             case .mission:
                 isMissionPresented = true
+            case .pass:
+                isPassPresented = true
             case .settings:
                 isSettingsPresented = true
             case .quickMenu:
@@ -246,6 +259,7 @@ private enum RootModal {
     case gift
     case news
     case mission
+    case pass
     case settings
     case quickMenu
 }

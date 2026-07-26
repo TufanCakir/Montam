@@ -68,6 +68,7 @@ struct GameView: View {
             selectedSupporters: store.runtimeSelectedSupporters()
         )
     }
+
 }
 
 #Preview {

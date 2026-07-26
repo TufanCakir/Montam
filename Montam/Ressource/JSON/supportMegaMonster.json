@@ -1,0 +1,14 @@
+[
+    {
+        "bannerId": "support_mon_sovereon_banner",
+        "characterId": "sovereon",
+        "weight": 100,
+        "xOffset": -100,
+        "yOffset": 140,
+        "zOffset": 260,
+        "scaleMultiplier": 1,
+        "attackBonus": 0.16,
+        "defenseBonus": 0.10,
+        "healthBonus": 0.12
+    }
+]

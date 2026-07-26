@@ -49,11 +49,8 @@ final class RemoteContentService {
 
     private init() {
         let configuration = URLSessionConfiguration.default
-        configuration.urlCache = URLCache(
-            memoryCapacity: 20 * 1024 * 1024,
-            diskCapacity: 250 * 1024 * 1024
-        )
-        configuration.requestCachePolicy = .returnCacheDataElseLoad
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
         session = URLSession(configuration: configuration)
         Self.createDirectoriesIfNeeded()
     }
@@ -100,7 +97,7 @@ final class RemoteContentService {
         }
 
         let previousContentVersion = Self.downloadedContentVersion
-        let remoteConfigResult = await updateRemoteConfig(showOverlay: showOverlay)
+        _ = await updateRemoteConfig(showOverlay: showOverlay)
 
         let config = Self.loadRemoteConfig()
         guard config.isCompatibleWithCurrentApp else {
@@ -111,10 +108,10 @@ final class RemoteContentService {
         }
 
         let plan = Self.contentUpdatePlan(config: config)
-        let shouldRefreshContent =
-            remoteConfigResult.didDownload
-            && config.contentVersion != nil
+        let didChangeContentVersion =
+            config.contentVersion != nil
             && config.contentVersion != previousContentVersion
+        let shouldRefreshContent = didChangeContentVersion
 
         if !shouldRefreshContent && Self.hasAllCachedFiles(plan: plan) {
             return
@@ -170,7 +167,9 @@ final class RemoteContentService {
         return fileManager.fileExists(atPath: url.path()) ? url : nil
     }
 
-    private func updateRemoteConfig(showOverlay: Bool) async -> FileDownloadResult {
+    private func updateRemoteConfig(showOverlay: Bool) async
+        -> FileDownloadResult
+    {
         if showOverlay {
             statusText = "Lade Konfiguration"
         }
@@ -334,12 +333,16 @@ final class RemoteContentService {
         let destinationURL = Self.cachedAssetURL(named: fileName)
 
         if fileName.contains(".") {
-            return await downloadFile(
+            let result = await downloadFile(
                 remoteURL: Self.assetsURL.appending(path: fileName),
                 destinationURL: destinationURL,
                 session: session,
                 forceDownload: forceDownload
             )
+            if forceDownload && !result.didDownload {
+                removeCachedFile(at: destinationURL)
+            }
+            return result
         }
 
         for fileExtension in extensions {
@@ -357,6 +360,9 @@ final class RemoteContentService {
             }
         }
 
+        if forceDownload {
+            removeCachedFile(at: destinationURL)
+        }
         return .failed
     }
 
@@ -374,24 +380,73 @@ final class RemoteContentService {
         }
 
         do {
-            let request = URLRequest(
-                url: remoteURL,
+            var request = URLRequest(
+                url: forceDownload ? cacheBustedURL(remoteURL) : remoteURL,
                 cachePolicy: .reloadIgnoringLocalCacheData,
                 timeoutInterval: 8
             )
+            request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+            request.setValue("no-cache", forHTTPHeaderField: "Pragma")
             let (data, response) = try await session.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse,
                 (200..<300).contains(httpResponse.statusCode)
             else {
+                if forceDownload {
+                    let statusCode =
+                        (response as? HTTPURLResponse)?.statusCode ?? -1
+                    print(
+                        "RemoteContent failed:",
+                        remoteURL.absoluteString,
+                        "status:",
+                        statusCode
+                    )
+                }
                 return .failed
             }
 
             try data.write(to: destinationURL, options: .atomic)
+            if forceDownload {
+                print(
+                    "RemoteContent downloaded:",
+                    remoteURL.absoluteString,
+                    "->",
+                    destinationURL.lastPathComponent,
+                    "\(data.count) bytes"
+                )
+            }
             return FileDownloadResult(didDownload: true, bytes: data.count)
         } catch {
+            if forceDownload {
+                print(
+                    "RemoteContent error:",
+                    remoteURL.absoluteString,
+                    error.localizedDescription
+                )
+            }
             return .failed
         }
+    }
+
+    private static func cacheBustedURL(_ url: URL) -> URL {
+        guard
+            var components = URLComponents(
+                url: url,
+                resolvingAgainstBaseURL: false
+            )
+        else {
+            return url
+        }
+
+        var queryItems = components.queryItems ?? []
+        queryItems.append(
+            URLQueryItem(
+                name: "v",
+                value: String(Int(Date().timeIntervalSince1970))
+            )
+        )
+        components.queryItems = queryItems
+        return components.url ?? url
     }
 
     nonisolated private static func createDirectoriesIfNeeded() {
@@ -411,6 +466,14 @@ final class RemoteContentService {
         )
     }
 
+    nonisolated private static func removeCachedFile(at url: URL) {
+        guard FileManager.default.fileExists(atPath: url.path()) else {
+            return
+        }
+
+        try? FileManager.default.removeItem(at: url)
+    }
+
     private static func loadRemoteConfig() -> RemoteContentConfig {
         JSONDataLoader.load("remoteConfig", as: RemoteContentConfig.self)
             ?? RemoteContentConfig()
@@ -418,13 +481,19 @@ final class RemoteContentService {
 
     private static func hasAllCachedFiles(plan: ContentUpdatePlan) -> Bool {
         let hasJSONFiles = plan.jsonFiles.allSatisfy {
-            FileManager.default.fileExists(atPath: cachedJSONURL(for: $0).path())
+            FileManager.default.fileExists(
+                atPath: cachedJSONURL(for: $0).path()
+            )
         }
         let hasAssetFiles = plan.assetNames.allSatisfy {
-            FileManager.default.fileExists(atPath: cachedAssetURL(named: $0).path())
+            FileManager.default.fileExists(
+                atPath: cachedAssetURL(named: $0).path()
+            )
         }
         let hasMusicFiles = plan.musicFiles.allSatisfy {
-            FileManager.default.fileExists(atPath: cachedMusicURL(named: $0).path())
+            FileManager.default.fileExists(
+                atPath: cachedMusicURL(named: $0).path()
+            )
         }
 
         return hasJSONFiles && hasAssetFiles && hasMusicFiles
@@ -487,7 +556,7 @@ final class RemoteContentService {
             ) ?? []
 
         var seen = Set<String>()
-        return backgrounds.compactMap(\.resolvedBackgroundImageName).filter {
+        return backgrounds.flatMap(\.resolvedEnvironmentImageNames).filter {
             seen.insert($0).inserted
         }
     }
@@ -565,7 +634,10 @@ final class RemoteContentService {
             return value == 0 ? nil : value
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: downloadedContentVersionKey)
+            UserDefaults.standard.set(
+                newValue,
+                forKey: downloadedContentVersionKey
+            )
         }
     }
 }

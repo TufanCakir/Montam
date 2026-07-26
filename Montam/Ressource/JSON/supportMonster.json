@@ -1,0 +1,26 @@
+[
+    {
+        "bannerId": "support_mon_cubon_banner",
+        "characterId": "cubon",
+        "weight": 100,
+        "xOffset": -100,
+        "yOffset": 100,
+        "zOffset": 160,
+        "scaleMultiplier": 0.80,
+        "attackBonus": 0.08,
+        "defenseBonus": 0.04,
+        "healthBonus": 0.08
+    },
+    {
+        "bannerId": "support_mon_embon_banner",
+        "characterId": "embon",
+        "weight": 100,
+        "xOffset": -100,
+        "yOffset": 75,
+        "zOffset": 140,
+        "scaleMultiplier": 0.80,
+        "attackBonus": 0.08,
+        "defenseBonus": 0.04,
+        "healthBonus": 0.08
+    }
+]

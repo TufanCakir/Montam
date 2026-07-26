@@ -1,0 +1,40 @@
+{
+    "rewards": [
+        {
+            "id": "pass_001",
+            "requiredPoints": 12,
+            "title": "Start-Bonus",
+            "coins": 500,
+            "bits": 10,
+            "summonTickets": 1,
+            "xp": 50
+        },
+        {
+            "id": "pass_002",
+            "requiredPoints": 30,
+            "title": "Tamer-Vorrat",
+            "coins": 1250,
+            "bits": 20,
+            "summonTickets": 2,
+            "xp": 90
+        },
+        {
+            "id": "pass_003",
+            "requiredPoints": 50,
+            "title": "Beschwörer-Paket",
+            "coins": 2000,
+            "bits": 35,
+            "summonTickets": 4,
+            "xp": 140
+        },
+        {
+            "id": "pass_004",
+            "requiredPoints": 90,
+            "title": "Champion-Bonus",
+            "coins": 4000,
+            "bits": 60,
+            "summonTickets": 7,
+            "xp": 250
+        }
+    ]
+}

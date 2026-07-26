@@ -8,9 +8,9 @@
         "attack": 100,
         "defense": 45,
         "monsterGrowthRate": 1.065,
-        "yOffset": -300,
+        "yOffset": -40,
         "xOffset": -30,
-        "zOffset": 180
+        "zOffset": 18
     },
     {
         "id": "embon",
@@ -21,8 +21,8 @@
         "attack": 100,
         "defense": 58,
         "monsterGrowthRate": 1.07,
-        "yOffset": -300,
+        "yOffset": -40,
         "xOffset": -30,
-        "zOffset": 180
+        "zOffset": 18
     }
 ]

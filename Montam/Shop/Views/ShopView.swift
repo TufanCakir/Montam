@@ -107,8 +107,14 @@ struct ShopView: View {
             let result = await paymentStore.purchase(product)
 
             switch result {
-            case .purchased(let product):
-                gameStore.applyShopRewards(from: product)
+            case .purchased(let product, let shouldApplyRewards):
+                if shouldApplyRewards {
+                    gameStore.applyShopRewards(from: product)
+                } else {
+                    gameStore.syncShopEntitlements(
+                        productIds: paymentStore.purchasedProductIds
+                    )
+                }
                 viewModel.purchaseMessage = "Kauf abgeschlossen."
             case .pending:
                 viewModel.purchaseMessage = "Kauf wartet auf Bestätigung."

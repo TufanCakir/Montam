@@ -14,7 +14,7 @@ struct GameStore {
     let ownedMonsters: [OwnedMonsterData]
     let ownedTamers: [OwnedTamerData]
     let ownedSupporters: [OwnedSupporterData]
-    
+
     private var save: GameSaveData? {
         saves.first
     }
@@ -71,15 +71,28 @@ struct GameStore {
         save?.currentStage ?? 1
     }
 
+    var hasEventPass: Bool {
+        save?.hasEventPass ?? false
+    }
+
+    var montamPassPoints: Int {
+        save?.montamPassPoints ?? 0
+    }
+
+    var claimedBattlePassRewardIds: Set<String> {
+        Set(save?.claimedBattlePassRewardIds ?? [])
+    }
+
     func runtimeSelectedMonsters() -> [RuntimeOwnedMonster] {
         let progression =
             JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
             ?? GameProgressionData()
+        let monsterCatalog =
+            JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
 
-        return
-            ownedMonsters
-            .filter(\.isSelected)
-            .map {
+        let selected = ownedMonsters.filter(\.isSelected)
+        if !selected.isEmpty {
+            return selected.map {
                 RuntimeOwnedMonster(
                     monsterId: $0.monsterId,
                     level: $0.level,
@@ -91,22 +104,40 @@ struct GameStore {
                     imageName: $0.equippedImageName
                 )
             }
+        }
+
+        guard let firstMonster = monsterCatalog.first else {
+            return []
+        }
+
+        return [
+            RuntimeOwnedMonster(
+                monsterId: firstMonster.id,
+                level: 1,
+                xp: 0,
+                maxXP: GameProgressionCalculator.xpNeeded(
+                    for: 1,
+                    progression: progression
+                ),
+                imageName: firstMonster.monsterName
+            )
+        ]
     }
 
     func runtimeSelectedTamers() -> [RuntimeOwnedTamer] {
         []
     }
-    
+
     func runtimeSelectedSupporters() -> [RuntimeOwnedSupporter] {
         let battleConfig =
             JSONDataLoader.load("battleConfig", as: BattleConfigData.self)
-        let summonPool =
-            JSONDataLoader.load("summonPool", as: [SummonPoolData].self) ?? []
+        let supporterData = SupporterData.loadAll()
         let summons =
             JSONDataLoader.load("summon", as: [SummonData].self) ?? []
         var seenCharacterIds = Set<String>()
         var categoryCounts: [String: Int] = [:]
-        let selectedSupporters = ownedSupporters
+        let selectedSupporters =
+            ownedSupporters
             .filter(\.isSelected)
             .filter {
                 seenCharacterIds.insert($0.characterId).inserted
@@ -129,27 +160,27 @@ struct GameStore {
             .prefix(battleConfig?.maxSupporters ?? 3)
 
         return selectedSupporters.map { owned in
-            let matchingBannerEntry = summonPool.first { entry in
+            let matchingBannerEntry = supporterData.first { entry in
                 entry.bannerId == owned.bannerId
                     && entry.characterId == owned.characterId
             }
-            let matchingCharacterEntry = summonPool.first { entry in
+            let matchingCharacterEntry = supporterData.first { entry in
                 entry.characterId == owned.characterId
             }
-            let poolEntry = matchingBannerEntry ?? matchingCharacterEntry
+            let supportEntry = matchingBannerEntry ?? matchingCharacterEntry
 
             return RuntimeOwnedSupporter(
                 characterId: owned.characterId,
                 imageName: owned.imageName,
                 level: owned.level,
                 isMonster: owned.isMonster,
-                xOffset: poolEntry?.xOffset,
-                yOffset: poolEntry?.yOffset,
-                zOffset: poolEntry?.zOffset,
-                scaleMultiplier: poolEntry?.scaleMultiplier,
-                attackBonus: poolEntry?.attackBonus,
-                defenseBonus: poolEntry?.defenseBonus,
-                healthBonus: poolEntry?.healthBonus
+                xOffset: supportEntry?.xOffset,
+                yOffset: supportEntry?.yOffset,
+                zOffset: supportEntry?.zOffset,
+                scaleMultiplier: supportEntry?.scaleMultiplier,
+                attackBonus: supportEntry?.attackBonus,
+                defenseBonus: supportEntry?.defenseBonus,
+                healthBonus: supportEntry?.healthBonus
             )
         }
     }
@@ -196,6 +227,7 @@ struct GameStore {
         save.coins += reward.coins
         save.crystals += reward.crystals
         save.bits += reward.bits
+        save.montamPassPoints += reward.xp
         refreshPlayerStats(
             save: save,
             monsterCatalog: monsterCatalog,
@@ -203,6 +235,40 @@ struct GameStore {
         )
 
         try? modelContext.save()
+    }
+
+    func claimBattlePassReward(_ reward: BattlePassRewardDefinition) -> Bool {
+        let save = ensureSave()
+        guard save.hasEventPass,
+            save.montamPassPoints >= reward.requiredPoints,
+            !save.claimedBattlePassRewardIds.contains(reward.id)
+        else {
+            return false
+        }
+
+        save.coins += reward.coins
+        save.bits += reward.bits
+        save.summonTickets += reward.summonTickets
+        save.claimedBattlePassRewardIds.append(reward.id)
+
+        let progression =
+            JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
+            ?? GameProgressionData()
+        let monsterCatalog =
+            JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+
+        for monster in ownedMonsters where monster.isSelected {
+            monster.xp += reward.xp
+            levelUpIfNeeded(monster, progression: progression)
+        }
+
+        refreshPlayerStats(
+            save: save,
+            monsterCatalog: monsterCatalog,
+            progression: progression
+        )
+        try? modelContext.save()
+        return true
     }
 
     func spendSummon(cost: Int, currency: String) -> Bool {
@@ -255,8 +321,12 @@ struct GameStore {
     }
 
     func syncShopEntitlements(productIds: Set<String>) {
+        let shopProducts =
+            JSONDataLoader.load("shop", as: ShopData.self)?.products ?? []
+
         ShopInventoryService.syncEntitlements(
             productIds: productIds,
+            products: shopProducts,
             saves: saves,
             modelContext: modelContext
         )
@@ -271,9 +341,10 @@ struct GameStore {
         )
     }
 
-    func selectMonster(id: String) {
+    func selectMonster(id: String, imageName: String? = nil) {
         TeamInventoryService.selectMonster(
             id: id,
+            imageName: imageName,
             ownedMonsters: ownedMonsters,
             modelContext: modelContext
         )
@@ -286,14 +357,16 @@ struct GameStore {
             modelContext: modelContext
         )
     }
-    
+
     func selectSupporter(id: String) {
         TeamInventoryService.selectSupporter(
             id: id,
             ownedSupporters: ownedSupporters,
-            maxSelectedSupporters:
-                (JSONDataLoader.load("battleConfig", as: BattleConfigData.self)?
-                    .maxSupporters) ?? 3,
+            maxSelectedSupporters: (JSONDataLoader.load(
+                "battleConfig",
+                as: BattleConfigData.self
+            )?
+            .maxSupporters) ?? 3,
             modelContext: modelContext
         )
     }

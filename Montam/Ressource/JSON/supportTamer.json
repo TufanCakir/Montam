@@ -1,0 +1,26 @@
+[
+    {
+        "bannerId": "support_tamer_rick_banner",
+        "characterId": "rick",
+        "weight": 80,
+        "xOffset": -150,
+        "yOffset": 90,
+        "zOffset": 160,
+        "scaleMultiplier": 0.80,
+        "attackBonus": 0.18,
+        "defenseBonus": 0.08,
+        "healthBonus": 0.15
+    },
+    {
+        "bannerId": "support_tamer_rick_banner",
+        "characterId": "aren",
+        "weight": 20,
+        "xOffset": -100,
+        "yOffset": 120,
+        "zOffset": 180,
+        "scaleMultiplier": 0.80,
+        "attackBonus": 0.18,
+        "defenseBonus": 0.08,
+        "healthBonus": 0.15
+    }
+]

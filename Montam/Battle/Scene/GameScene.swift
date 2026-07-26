@@ -6,11 +6,8 @@
 //
 
 import SpriteKit
-import UIKit
 
 final class GameScene: SKScene {
-
-    private static let cameraZoomGestureName = "Montam.Battle.CameraZoom"
 
     private var battleConfig: BattleConfigData?
     private var backgrounds: [BackgroundData] = []
@@ -36,9 +33,6 @@ final class GameScene: SKScene {
     private var currentBackgroundIndex = 0
     private var completedFightCount = 0
     private var didStartBattle = false
-    private weak var gestureView: SKView?
-    private var pinchStartCameraZoom: CGFloat = 1
-    private var currentCameraZoom: CGFloat?
     private var eventData: EventData?
     var onStageChanged: ((BattleStageState) -> Void)?
     var onStageCompleted: ((Int) -> Void)?
@@ -84,7 +78,6 @@ final class GameScene: SKScene {
     override func didMove(to view: SKView) {
         scaleMode = .resizeFill
         anchorPoint = .zero
-        installSceneGestures(on: view)
         loadBattleData()
         startMusicIfNeeded()
         startIfReady()
@@ -155,58 +148,13 @@ final class GameScene: SKScene {
             return
         }
 
-        let zoom = resolvedCameraZoom()
-        battleCamera.xScale = zoom
-        battleCamera.yScale = zoom
+        battleCamera.xScale = 1
+        battleCamera.yScale = 1
         battleCamera.position = CGPoint(
             x: size.width / 2 + (battleConfig?.cameraXOffset ?? 0),
             y: size.height / 2 + (battleConfig?.cameraYOffset ?? 0)
         )
         layoutFadeNode()
-    }
-
-    private func installSceneGestures(on view: SKView) {
-        guard gestureView !== view else {
-            return
-        }
-
-        gestureView?.gestureRecognizers?
-            .filter { $0.name == Self.cameraZoomGestureName }
-            .forEach { gestureView?.removeGestureRecognizer($0) }
-
-        let pinchGesture = UIPinchGestureRecognizer(
-            target: self,
-            action: #selector(handleCameraPinch(_:))
-        )
-        pinchGesture.name = Self.cameraZoomGestureName
-        view.addGestureRecognizer(pinchGesture)
-        gestureView = view
-    }
-
-    @objc private func handleCameraPinch(_ gesture: UIPinchGestureRecognizer) {
-        switch gesture.state {
-        case .began:
-            pinchStartCameraZoom = resolvedCameraZoom()
-        case .changed:
-            setCameraZoom(pinchStartCameraZoom / max(gesture.scale, 0.01))
-        default:
-            pinchStartCameraZoom = resolvedCameraZoom()
-        }
-    }
-
-    private func setCameraZoom(_ zoom: CGFloat) {
-        currentCameraZoom = clampedCameraZoom(zoom)
-        applyBattleCamera()
-    }
-
-    private func resolvedCameraZoom() -> CGFloat {
-        clampedCameraZoom(
-            currentCameraZoom ?? CGFloat(battleConfig?.cameraZoom ?? 1)
-        )
-    }
-
-    private func clampedCameraZoom(_ zoom: CGFloat) -> CGFloat {
-        min(max(zoom, 0.65), 1.85)
     }
 
     private func startWave(at index: Int) {
@@ -283,7 +231,7 @@ final class GameScene: SKScene {
         )
         let worldSize = CGSize(width: worldWidth, height: size.height)
 
-        if currentBackgroundData.resolvedBackgroundImageName == nil {
+        if hasExplicitEnvironmentLayers(currentBackgroundData) {
             let sky = ImageEnvironmentNodes.backgroundNode(
                 for: currentBackgroundData,
                 size: size
@@ -292,26 +240,31 @@ final class GameScene: SKScene {
             sky.zPosition = -120
             skyNode = sky
             addChild(sky)
+
+            let groundHeight = max(size.height * 0.66, 430)
+            let ground = ImageEnvironmentNodes.groundNode(
+                for: currentBackgroundData,
+                size: worldSize,
+                groundHeight: groundHeight
+            )
+            ground.zPosition = 10
+            world.addChild(ground)
         } else {
-            let scrollingBackground = ImageEnvironmentNodes.backgroundNode(
+            let background = ImageEnvironmentNodes.worldBackgroundNode(
                 for: currentBackgroundData,
                 size: worldSize
             )
-            scrollingBackground.zPosition = 0
-            world.addChild(scrollingBackground)
+            background.zPosition = 0
+            world.addChild(background)
         }
-
-        let groundHeight = max(size.height * config.groundYRatio, 80)
-        let ground = ImageEnvironmentNodes.groundNode(
-            for: currentBackgroundData,
-            size: worldSize,
-            groundHeight: groundHeight
-        )
-        ground.zPosition = 10
-        world.addChild(ground)
 
         worldNode = world
         addChild(world)
+    }
+
+    private func hasExplicitEnvironmentLayers(_ data: BackgroundData) -> Bool {
+        data.skyImageName?.isEmpty == false
+            || data.groundImageName?.isEmpty == false
     }
 
     private func backgroundData(for key: String) -> BackgroundData? {
@@ -331,12 +284,12 @@ final class GameScene: SKScene {
     }
 
     private func layoutFadeNode() {
-        let zoom = max(resolvedCameraZoom(), 1)
         fadeNode?.size = CGSize(
-            width: size.width * zoom,
-            height: size.height * zoom
+            width: size.width,
+            height: size.height
         )
-        fadeNode?.position = battleCamera?.position
+        fadeNode?.position =
+            battleCamera?.position
             ?? CGPoint(x: size.width / 2, y: size.height / 2)
     }
 
@@ -427,7 +380,9 @@ final class GameScene: SKScene {
 
         let factory = unitFactory(config: config)
         let supporterPlacements = Dictionary(
-            uniqueKeysWithValues: supporterUnits.enumerated().map { index, unit in
+            uniqueKeysWithValues: supporterUnits.enumerated().map {
+                index,
+                unit in
                 (
                     unitPlacementKey(for: unit, index: index),
                     BattleUnitPlacement(
@@ -533,7 +488,7 @@ final class GameScene: SKScene {
     }
 
     private func movePlayersToStart(config: BattleConfigData) {
-        let groundY = size.height * config.groundYRatio
+        let groundY = battleGroundY(config: config)
         let monsterSpacing = max(size.width * 0.095, 46)
         let supportSpacing = max(size.width * 0.1, 44)
 
@@ -549,7 +504,7 @@ final class GameScene: SKScene {
             )
             unit.node.zPosition = zPosition(for: unit, index: index)
         }
-        
+
         for (index, unit) in supporterUnits.enumerated() {
             unit.node.position = CGPoint(
                 x: -config.edgeXPadding - CGFloat(index) * supportSpacing,
@@ -574,7 +529,7 @@ final class GameScene: SKScene {
                 unit.node.position,
                 unit: unit
             )
-            unit.node.zPosition = CGFloat(10 + index)
+            unit.node.zPosition = zPosition(for: unit, index: index)
         }
     }
 
@@ -583,7 +538,7 @@ final class GameScene: SKScene {
         enemyUnits = unitFactory(config: config).enemyUnits(from: scaledWave)
         enemyUnits.forEach { addChild($0.node) }
 
-        let groundY = size.height * config.groundYRatio
+        let groundY = battleGroundY(config: config)
         let spacing = max(size.width * 0.16, 72)
 
         for (index, unit) in enemyUnits.enumerated() {
@@ -605,7 +560,7 @@ final class GameScene: SKScene {
         includePlayers: Bool,
         completion: @escaping () -> Void
     ) {
-        let groundY = size.height * config.groundYRatio
+        let groundY = battleGroundY(config: config)
         let playerSpacing = max(size.width * 0.095, 46)
         let enemySpacing = max(size.width * 0.16, 72)
         let supportSpacing = max(size.width * 0.1, 44)
@@ -634,10 +589,10 @@ final class GameScene: SKScene {
                     }
                 )
             }
-            
+
             for (index, unit) in supporterUnits.enumerated() {
 
-            let target = CGPoint(
+                let target = CGPoint(
                     x: size.width * 0.34 + CGFloat(index) * supportSpacing,
                     y: groundedY(for: unit, groundY: groundY)
                         - max(size.height * 0.06, 46)
@@ -709,6 +664,10 @@ final class GameScene: SKScene {
         return groundY - transparentPaddingCompensation - groundAdjustment
     }
 
+    private func battleGroundY(config: BattleConfigData) -> CGFloat {
+        max(size.height * config.groundYRatio, size.height * 0.28)
+    }
+
     private func waveScaledForCurrentTeam(_ wave: BattleWaveData)
         -> BattleWaveData
     {
@@ -742,13 +701,13 @@ final class GameScene: SKScene {
         -> CGPoint
     {
         CGPoint(
-            x: position.x + CGFloat(unit.xOffset) * 0.1,
-            y: position.y + CGFloat(unit.yOffset) * 0.1
+            x: position.x + CGFloat(unit.xOffset),
+            y: position.y + CGFloat(unit.yOffset)
         )
     }
 
     private func zPosition(for unit: BattleUnit, index: Int) -> CGFloat {
-        40 + unit.node.position.y * 0.01 + CGFloat(unit.zOffset) * 0.1
+        520 + unit.node.position.y * 0.01 + CGFloat(unit.zOffset)
             + CGFloat(index)
     }
 
@@ -857,29 +816,15 @@ final class GameScene: SKScene {
         onBattleWon?(reward)
 
         if wave.isBossWave {
-            showBossVictory(
-                rewards: config.rewards,
-                reward: reward
-            )
             onBossBattleWon?()
             currentWaveIndex = 0
             resetPlayerHealth()
-            run(
-                .sequence([
-                    .wait(forDuration: 1.65),
-                    .run { [weak self] in
-                        self?.advanceEnvironmentAfterFight(config: config) {
-                            [weak self] in
-                            self?.removeRewardsAfterDelay()
-                            self?.startWave(at: 0)
-                        }
-                    },
-                ])
-            )
+            advanceEnvironmentAfterFight(config: config) { [weak self] in
+                self?.startWave(at: 0)
+            }
             return
         }
 
-        showWaveReward(reward)
         currentWaveIndex = min(currentWaveIndex + 1, config.waves.count - 1)
         resetPlayerHealth()
         advanceEnvironmentAfterFight(config: config) { [weak self] in
@@ -1021,11 +966,11 @@ final class GameScene: SKScene {
 
                     completion()
                 },
-                .fadeOut(withDuration: config.fadeDuration)
+                .fadeOut(withDuration: config.fadeDuration),
             ])
         )
     }
-    
+
     private func endBattle() {
 
         guard let config = battleConfig else {
@@ -1054,42 +999,9 @@ final class GameScene: SKScene {
 
                     self.startWave(at: 0)
                 },
-                .fadeOut(withDuration: config.fadeDuration)
+                .fadeOut(withDuration: config.fadeDuration),
             ])
         )
-    }
-
-    private func removeRewardsAfterDelay() {
-        run(
-            .sequence([
-                .wait(forDuration: 0.8),
-                .run { [weak self] in
-                    self?.removeNodes(named: "reward")
-                },
-            ])
-        )
-    }
-
-    private func showBossVictory(
-        rewards: BattleRewardConfig,
-        reward: BattleWaveReward
-    ) {
-        let container = BattleRewardHUDFactory.bossVictoryNode(
-            rewards: rewards,
-            reward: reward,
-            sceneSize: size
-        )
-        addChild(container)
-        container.run(BattleRewardHUDFactory.presentationAction())
-    }
-
-    private func showWaveReward(_ reward: BattleWaveReward) {
-        let container = BattleRewardHUDFactory.waveRewardNode(
-            reward: reward,
-            sceneSize: size
-        )
-        addChild(container)
-        container.run(BattleRewardHUDFactory.presentationAction())
     }
 
     private func startMusicIfNeeded() {
