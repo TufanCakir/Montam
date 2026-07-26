@@ -24,12 +24,17 @@ struct RemoteAssetImage: View {
     }
 
     private var cachedImage: UIImage? {
-        let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
-        guard FileManager.default.fileExists(atPath: cachedURL.path()) else {
-            return nil
+        for cachedURL in candidateCachedURLs {
+            guard FileManager.default.fileExists(atPath: cachedURL.path()),
+                let image = UIImage(contentsOfFile: cachedURL.path())
+            else {
+                continue
+            }
+
+            return image
         }
 
-        return UIImage(contentsOfFile: cachedURL.path())
+        return nil
     }
 
     private var bundledStartupImage: UIImage? {
@@ -44,6 +49,23 @@ struct RemoteAssetImage: View {
         "montam_logo",
         "montem_badge_logo",
     ]
+
+    private var candidateCachedURLs: [URL] {
+        var urls = [RemoteContentService.cachedAssetURL(named: imageName)]
+
+        guard !imageName.contains(".") else {
+            return urls
+        }
+
+        urls.append(
+            contentsOf: ["png", "jpg", "jpeg", "webp"].map {
+                RemoteContentService.cachedAssetURL(
+                    named: "\(imageName).\($0)"
+                )
+            }
+        )
+        return urls
+    }
 }
 
 private struct RemoteAssetPlaceholder: View {

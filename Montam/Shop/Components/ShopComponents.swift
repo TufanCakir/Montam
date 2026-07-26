@@ -37,7 +37,7 @@ private enum ShopProductVisual {
     case emeralds
     case tickets
     case farm
-    case pass(Color)
+    case resource(String)
     case normal(String, Color)
 }
 
@@ -215,6 +215,7 @@ struct ShopPassContent: View {
     let products: [ShopProductData]
     @ObservedObject var store: StoreKitShopManager
     let onBuy: (ShopProductData) -> Void
+    let isPurchased: (ShopProductData) -> Bool
     let priceTitle: (ShopProductData) -> String
     let onRestore: () -> Void
 
@@ -227,7 +228,7 @@ struct ShopPassContent: View {
                     ShopPassCard(
                         product: product,
                         price: priceTitle(product),
-                        purchased: store.isPurchased(product),
+                        purchased: isPurchased(product),
                         storeUnavailable: store.isStoreKitUnavailable(product),
                         storeLoading: store.isLoadingProducts,
                         onBuy: onBuy
@@ -512,14 +513,14 @@ private func productVisual(from visual: String) -> ShopProductVisual {
         .bits
     case "coins":
         .emeralds
-    case "pass":
-        .pass(.purple)
     case "tickets", "summon_ticket", "icon_summon_ticket":
         .tickets
     case "farm":
         .farm
+    case "pass":
+        .resource("pass")
     default:
-        .normal("shippingbox.fill", .cyan)
+        .resource(visual)
     }
 }
 
@@ -579,16 +580,10 @@ private struct ShopProductIcon: View {
                 .font(.system(size: 48, weight: .heavy))
                 .foregroundStyle(.green)
                 .shadow(color: .white, radius: 2)
-            case .pass(let color):
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(color.gradient)
-                    .frame(width: 120, height: 78)
-                    .rotationEffect(.degrees(8))
-                    .overlay(
-                        Image(systemName: "percent").font(
-                            .system(size: 38, weight: .heavy)
-                        ).foregroundStyle(.white.opacity(0.85))
-                    )
+            case .resource(let id):
+                GameResourceIcon(id: id, fallbackImage: id)
+                    .scaledToFit()
+                    .padding(12)
             case .normal(let icon, let color):
                 Image(systemName: icon)
                     .font(.system(size: 74, weight: .heavy))
@@ -691,7 +686,9 @@ private struct ShopPassCard: View {
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        ShopProductIcon(visual: .pass(color))
+                        ShopProductIcon(
+                            visual: productVisual(from: product.visual)
+                        )
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 150)
@@ -701,7 +698,7 @@ private struct ShopPassCard: View {
                             .system(size: 22, weight: .heavy, design: .rounded)
                         )
                         .foregroundStyle(
-                            purchased ? .green : storeUnavailable ? .gray : .red
+                            purchased ? .green : storeUnavailable ? .gray : .black
                         )
                         .frame(width: 112)
                         .frame(maxHeight: .infinity)

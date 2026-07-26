@@ -22,6 +22,7 @@ final class GameSaveData {
     var crystals: Int
     var summonTickets: Int
     var hasEventPass: Bool
+    var ownedStoreProductIds: [String] = []
     var montamPassPoints: Int
     var lastDailyClaimDate: Date?
     var dailyLoginDay: Int
@@ -42,6 +43,7 @@ final class GameSaveData {
         crystals: Int = 0,
         summonTickets: Int = 0,
         hasEventPass: Bool = false,
+        ownedStoreProductIds: [String] = [],
         montamPassPoints: Int = 0,
         lastDailyClaimDate: Date? = nil,
         dailyLoginDay: Int = 0,
@@ -61,6 +63,7 @@ final class GameSaveData {
         self.crystals = crystals
         self.summonTickets = summonTickets
         self.hasEventPass = hasEventPass
+        self.ownedStoreProductIds = ownedStoreProductIds
         self.montamPassPoints = montamPassPoints
         self.lastDailyClaimDate = lastDailyClaimDate
         self.dailyLoginDay = dailyLoginDay

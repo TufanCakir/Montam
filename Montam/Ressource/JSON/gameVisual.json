@@ -19,6 +19,10 @@
         {
             "id": "exp",
             "imageName": "icon_exp"
+        },
+        {
+            "id": "pass",
+            "imageName": "icon_crystal"
         }
     ]
 }

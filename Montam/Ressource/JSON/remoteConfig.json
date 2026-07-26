@@ -1,5 +1,5 @@
 {
-    "contentVersion": 5,
+    "contentVersion": 8,
     "minimumAppVersion": "1.0",
     "notes": "Basis Remote-Inhalte",
     "jsonFiles": [
@@ -42,7 +42,8 @@
         "monsterName",
         "tamerName",
         "enemyName",
-        "bannerImage"
+        "bannerImage",
+        "visual"
     ],
     "assetFiles": [
         "icon_coin",
@@ -50,6 +51,7 @@
         "icon_bit",
         "icon_exp",
         "icon_ticket",
+        "pass",
         "mon_cubon",
         "mon_kyron",
         "mon_pyron",

@@ -47,9 +47,6 @@ struct ShopView: View {
         .task {
             await viewModel.loadIfNeeded(store: paymentStore)
         }
-        .onChange(of: paymentStore.purchasedProductIds) { _, productIds in
-            gameStore.syncShopEntitlements(productIds: productIds)
-        }
         .padding(.top, 50)
     }
 
@@ -61,6 +58,7 @@ struct ShopView: View {
                 products: viewModel.selectedProducts,
                 store: paymentStore,
                 onBuy: buy,
+                isPurchased: isPurchased,
                 priceTitle: priceTitle,
                 onRestore: restorePurchases
             )
@@ -138,6 +136,16 @@ struct ShopView: View {
 
     private func priceTitle(_ product: ShopProductData) -> String {
         viewModel.priceTitle(for: product, store: paymentStore)
+    }
+
+    private func isPurchased(_ product: ShopProductData) -> Bool {
+        if product.purchaseType == .nonConsumable,
+            product.rewards.unlockEventPass == true
+        {
+            return gameStore.hasEventPass
+        }
+
+        return paymentStore.isPurchased(product)
     }
 }
 

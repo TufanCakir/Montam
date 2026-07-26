@@ -71,6 +71,9 @@ enum ShopInventoryService {
     ) {
         let save = ensureSave(saves: saves, modelContext: modelContext)
         applyRewards(product.rewards, to: save)
+        if product.purchaseType == .nonConsumable {
+            markOwned(productId: product.productId, in: save)
+        }
         try? modelContext.save()
     }
 
@@ -117,6 +120,7 @@ enum ShopInventoryService {
 
         let save = ensureSave(saves: saves, modelContext: modelContext)
         for product in entitledProducts {
+            markOwned(productId: product.productId, in: save)
             applyNonConsumableEntitlement(from: product.rewards, to: save)
         }
         try? modelContext.save()
@@ -129,6 +133,14 @@ enum ShopInventoryService {
         if rewards.unlockEventPass == true {
             save.hasEventPass = true
         }
+    }
+
+    private static func markOwned(productId: String, in save: GameSaveData) {
+        guard !save.ownedStoreProductIds.contains(productId) else {
+            return
+        }
+
+        save.ownedStoreProductIds.append(productId)
     }
 
     private static func ensureSave(

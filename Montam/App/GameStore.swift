@@ -72,7 +72,7 @@ struct GameStore {
     }
 
     var hasEventPass: Bool {
-        save?.hasEventPass ?? false
+        save?.ownedStoreProductIds.contains("montam.pass.event") ?? false
     }
 
     var montamPassPoints: Int {
@@ -239,7 +239,7 @@ struct GameStore {
 
     func claimBattlePassReward(_ reward: BattlePassRewardDefinition) -> Bool {
         let save = ensureSave()
-        guard save.hasEventPass,
+        guard save.ownedStoreProductIds.contains("montam.pass.event"),
             save.montamPassPoints >= reward.requiredPoints,
             !save.claimedBattlePassRewardIds.contains(reward.id)
         else {

@@ -54,22 +54,9 @@ private struct GameVisualCatalog {
     private let resources: [GameVisualResourceData]
 
     init() {
-        guard
-            let url = Bundle.main.url(
-                forResource: "gameVisual",
-                withExtension: "json"
-            ),
-            let data = try? Data(contentsOf: url),
-            let catalog = try? JSONDecoder().decode(
-                GameVisualCatalogData.self,
-                from: data
-            )
-        else {
-            resources = []
-            return
-        }
-
-        resources = catalog.resources
+        resources =
+            JSONDataLoader.load("gameVisual", as: GameVisualCatalogData.self)?
+            .resources ?? []
     }
 
     func resource(id: String) -> GameVisualResourceData? {
