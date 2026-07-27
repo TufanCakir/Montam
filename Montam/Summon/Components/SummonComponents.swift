@@ -464,12 +464,6 @@ struct SummonSideChevron: View {
     }
 }
 
-struct SummonScreenBackground: View {
-    var body: some View {
-        AppScreenBackground()
-    }
-}
-
 struct SparkView: View {
     var body: some View {
         ZStack {
@@ -482,4 +476,3 @@ struct SparkView: View {
         }
     }
 }
-

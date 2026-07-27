@@ -29,7 +29,11 @@
         "bg_desert_canyon",
         "bg_ancient_ruins",
         "bg_autumn_forest",
-        "bg_haunted_wasteland"
+        "bg_haunted_wasteland",
+        "bg_hidden_lagoon",
+        "bg_flower_meadow",
+        "bg_bamboo_forest",
+        "bg_cherry_blossom_valley"
     ],
     "playerMonsters": [
         {
@@ -39,7 +43,7 @@
     ],
     "supportTamers": [
         {
-            "id": "kael",
+            "id": "rick",
             "slot": 0
         }
     ],

@@ -27,7 +27,7 @@ struct TeamView: View {
 
             TeamSectionTabs(selectedSection: $selectedSection)
         }
-        .background(TeamBackground())
+        .background(AppScreenBackground())
         .overlay {
             if let evolutionPreview {
                 TeamEvolutionPreviewOverlay(preview: evolutionPreview)
@@ -64,7 +64,7 @@ struct TeamView: View {
             )
         }
     }
-    
+
     private func selectSupporter(_ id: String) {
         store.selectSupporter(id: id)
     }

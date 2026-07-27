@@ -99,12 +99,6 @@ struct TradeEmptyState: View {
     }
 }
 
-struct TradeBackground: View {
-    var body: some View {
-        AppScreenBackground()
-    }
-}
-
 private struct TradeOfferRow: View {
     let offer: TradeOfferData
     let isEnabled: Bool

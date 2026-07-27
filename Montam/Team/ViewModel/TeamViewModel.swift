@@ -100,7 +100,34 @@ final class TeamViewModel {
     private let progression =
         JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
         ?? GameProgressionData()
-    
+    private let monstersById: [String: MonsterData]
+    private let tamersById: [String: TamerData]
+    private let summonCategoriesById: [String: String]
+    private let appearancesByImageName: [String: MonsterAppearanceData]
+    private let appearancesByMonsterId: [String: [MonsterAppearanceData]]
+
+    init() {
+        monstersById = monsters.reduce(into: [:]) { result, monster in
+            result[monster.id] = monster
+        }
+        tamersById = tamers.reduce(into: [:]) { result, tamer in
+            result[tamer.id] = tamer
+        }
+        summonCategoriesById = summons.reduce(into: [:]) { result, summon in
+            result[summon.id] = summon.category
+        }
+        appearancesByImageName = appearances.reduce(into: [:]) {
+            result,
+            appearance in
+            result[appearance.imageName] = appearance
+        }
+        appearancesByMonsterId = Dictionary(grouping: appearances) {
+            $0.monsterId
+        }.mapValues {
+            $0.sorted { ($0.requiredLevel ?? 1) < ($1.requiredLevel ?? 1) }
+        }
+    }
+
     func supporterRows(
         ownedSupporters: [OwnedSupporterData]
     ) -> [TeamSupporterRow] {
@@ -108,7 +135,8 @@ final class TeamViewModel {
         ownedSupporters.compactMap { owned in
 
             if owned.isMonster,
-               let monster = monsters.first(where: { $0.id == owned.characterId }) {
+                let monster = monstersById[owned.characterId]
+            {
 
                 return TeamSupporterRow(
                     id: owned.characterId,
@@ -124,7 +152,8 @@ final class TeamViewModel {
             }
 
             if owned.isMonster,
-               let appearance = appearance(for: owned) {
+                let appearance = appearance(for: owned)
+            {
 
                 return TeamSupporterRow(
                     id: owned.characterId,
@@ -139,7 +168,7 @@ final class TeamViewModel {
                 )
             }
 
-            if let tamer = tamers.first(where: { $0.id == owned.characterId }) {
+            if let tamer = tamersById[owned.characterId] {
 
                 return TeamSupporterRow(
                     id: owned.characterId,
@@ -195,12 +224,12 @@ final class TeamViewModel {
         supporterData.first {
             $0.bannerId == owned.bannerId && $0.characterId == owned.characterId
         }
-        ?? supporterData.first { $0.characterId == owned.characterId }
+            ?? supporterData.first { $0.characterId == owned.characterId }
     }
 
     private func category(for owned: OwnedSupporterData) -> SupporterCategory {
         let categoryId =
-            summons.first(where: { $0.id == owned.bannerId })?.category
+            summonCategoriesById[owned.bannerId]
             ?? owned.bannerId
 
         switch categoryId {
@@ -228,10 +257,7 @@ final class TeamViewModel {
 
     func monsterRows(ownedMonsters: [OwnedMonsterData]) -> [TeamMonsterRow] {
         ownedMonsters.compactMap { owned in
-            guard
-                let monster = monsters.first(where: { $0.id == owned.monsterId }
-                )
-            else {
+            guard let monster = monstersById[owned.monsterId] else {
                 return nil
             }
 
@@ -276,8 +302,7 @@ final class TeamViewModel {
 
     func tamerRows(ownedTamers: [OwnedTamerData]) -> [TeamTamerRow] {
         ownedTamers.compactMap { owned in
-            guard let tamer = tamers.first(where: { $0.id == owned.tamerId })
-            else {
+            guard let tamer = tamersById[owned.tamerId] else {
                 return nil
             }
 
@@ -305,7 +330,7 @@ final class TeamViewModel {
         -> TeamEvolutionState?
     {
         guard let active = ownedMonsters.first(where: \.isSelected),
-            let monster = monsters.first(where: { $0.id == active.monsterId })
+            let monster = monstersById[active.monsterId]
         else {
             return nil
         }
@@ -349,7 +374,7 @@ final class TeamViewModel {
 
     func activeMonsterImageName(ownedMonsters: [OwnedMonsterData]) -> String? {
         guard let active = ownedMonsters.first(where: \.isSelected),
-            let monster = monsters.first(where: { $0.id == active.monsterId })
+            let monster = monstersById[active.monsterId]
         else {
             return nil
         }
@@ -383,9 +408,7 @@ final class TeamViewModel {
         equippedImageName: String? = nil
     ) -> [MonsterAppearanceData] {
         let configured =
-            appearances
-            .filter { $0.monsterId == monster.id }
-            .sorted { ($0.requiredLevel ?? 1) < ($1.requiredLevel ?? 1) }
+            appearancesByMonsterId[monster.id] ?? []
 
         if !configured.isEmpty {
             return configured
@@ -395,9 +418,7 @@ final class TeamViewModel {
             let equippedAppearance = appearance(for: equippedImageName)
         {
             let lineage =
-                appearances
-                .filter { $0.monsterId == equippedAppearance.monsterId }
-                .sorted { ($0.requiredLevel ?? 1) < ($1.requiredLevel ?? 1) }
+                appearancesByMonsterId[equippedAppearance.monsterId] ?? []
             if !lineage.isEmpty {
                 return lineage
             }
@@ -436,7 +457,7 @@ final class TeamViewModel {
     }
 
     private func appearance(for imageName: String) -> MonsterAppearanceData? {
-        appearances.first { $0.imageName == imageName }
+        appearancesByImageName[imageName]
     }
 
     private func currentEvolutionIndex(

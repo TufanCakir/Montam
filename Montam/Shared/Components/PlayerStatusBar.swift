@@ -34,23 +34,13 @@ struct PlayerStatusBar: View {
             .layoutPriority(1)
 
             HStack(spacing: 7) {
-                CurrencyPill(
-                    iconId: "coin",
-                    fallbackImage: "icon_coin",
-                    amount: state.coins
-                )
-
-                CurrencyPill(
-                    iconId: "crystal",
-                    fallbackImage: "icon_crystal",
-                    amount: state.crystals
-                )
-
-                CurrencyPill(
-                    iconId: "bit",
-                    fallbackImage: "icon_bit",
-                    amount: state.bits
-                )
+                ForEach(currencyItems, id: \.iconId) { item in
+                    CurrencyPill(
+                        iconId: item.iconId,
+                        fallbackImage: item.fallbackImage,
+                        amount: item.amount
+                    )
+                }
             }
             .fixedSize(horizontal: true, vertical: false)
         }
@@ -63,6 +53,32 @@ struct PlayerStatusBar: View {
         let maxXP = Double(max(state.maxXP, 1))
         return min(max(xp / maxXP, 0), 1)
     }
+
+    private var currencyItems: [CurrencyItem] {
+        [
+            CurrencyItem(
+                iconId: "coin",
+                fallbackImage: "icon_coin",
+                amount: state.coins
+            ),
+            CurrencyItem(
+                iconId: "crystal",
+                fallbackImage: "icon_crystal",
+                amount: state.crystals
+            ),
+            CurrencyItem(
+                iconId: "bit",
+                fallbackImage: "icon_bit",
+                amount: state.bits
+            ),
+        ]
+    }
+}
+
+private struct CurrencyItem {
+    let iconId: String
+    let fallbackImage: String
+    let amount: Int
 }
 
 private enum PlayerStatusBarMetrics {
@@ -130,14 +146,11 @@ private struct PowerMeter: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 5) {
-
-                Text(GameNumberFormatter.compact(power))
-                    .font(.system(size: 14, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-            }
+            Text(GameNumberFormatter.compact(power))
+                .font(.system(size: 14, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
 
             ProgressView(value: progress)
                 .tint(.green)

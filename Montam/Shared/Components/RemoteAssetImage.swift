@@ -10,6 +10,11 @@ import UIKit
 
 struct RemoteAssetImage: View {
     let imageName: String
+    private static let imageCache = NSCache<NSString, UIImage>()
+
+    static func invalidateCache() {
+        imageCache.removeAllObjects()
+    }
 
     var body: some View {
         if let image = cachedImage {
@@ -25,12 +30,21 @@ struct RemoteAssetImage: View {
 
     private var cachedImage: UIImage? {
         for cachedURL in candidateCachedURLs {
-            guard FileManager.default.fileExists(atPath: cachedURL.path()),
-                let image = UIImage(contentsOfFile: cachedURL.path())
+            let cacheKey = cachedURL.path() as NSString
+            if let image = Self.imageCache.object(forKey: cacheKey) {
+                return image
+            }
+
+            guard FileManager.default.fileExists(atPath: cachedURL.path())
             else {
                 continue
             }
 
+            guard let image = UIImage(contentsOfFile: cachedURL.path()) else {
+                continue
+            }
+
+            Self.imageCache.setObject(image, forKey: cacheKey)
             return image
         }
 
@@ -42,7 +56,17 @@ struct RemoteAssetImage: View {
             return nil
         }
 
-        return UIImage(named: imageName)
+        let cacheKey = "bundle:\(imageName)" as NSString
+        if let image = Self.imageCache.object(forKey: cacheKey) {
+            return image
+        }
+
+        guard let image = UIImage(named: imageName) else {
+            return nil
+        }
+
+        Self.imageCache.setObject(image, forKey: cacheKey)
+        return image
     }
 
     private static let bundledStartupImageNames: Set<String> = [

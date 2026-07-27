@@ -9,20 +9,12 @@ import Foundation
 
 enum AppBundleInfo {
     static var appVersion: String {
-        Bundle.main.object(
-            forInfoDictionaryKey: "CFBundleShortVersionString"
-        ) as? String ?? "0"
+        infoValue("CFBundleShortVersionString") ?? "0"
     }
 
     static var versionDisplay: String {
-        let version =
-            Bundle.main.object(
-                forInfoDictionaryKey: "CFBundleShortVersionString"
-            )
-            as? String
-        let build =
-            Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion")
-            as? String
+        let version = infoValue("CFBundleShortVersionString")
+        let build = infoValue("CFBundleVersion")
 
         switch (version, build) {
         case (let version?, let build?)
@@ -35,5 +27,17 @@ enum AppBundleInfo {
         default:
             return "Version unbekannt"
         }
+    }
+
+    private static func infoValue(_ key: String) -> String? {
+        guard
+            let value = Bundle.main.object(forInfoDictionaryKey: key)
+                as? String,
+            !value.isEmpty
+        else {
+            return nil
+        }
+
+        return value
     }
 }

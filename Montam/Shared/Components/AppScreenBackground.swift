@@ -26,11 +26,15 @@ struct AppScreenBackground: View {
 
 private struct AppScreenLinePattern: View {
     var body: some View {
-        VStack(spacing: 3) {
-            ForEach(0..<28, id: \.self) { _ in
-                Rectangle()
-                    .fill(.cyan.opacity(0.16))
-                    .frame(height: 1)
+        Canvas { context, size in
+            let spacing: CGFloat = 4
+            let lineCount = Int(size.height / spacing)
+            let color = Color.cyan.opacity(0.16)
+
+            for index in 0...lineCount {
+                let y = CGFloat(index) * spacing
+                let rect = CGRect(x: 0, y: y, width: size.width, height: 1)
+                context.fill(Path(rect), with: .color(color))
             }
         }
     }

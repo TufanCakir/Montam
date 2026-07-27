@@ -20,8 +20,11 @@ struct RemoteContentLoadingOverlay: View {
             Text(text)
                 .font(.system(size: 14, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.75)
 
-            ProgressView(value: progress)
+            ProgressView(value: clampedProgress)
                 .progressViewStyle(.linear)
                 .tint(.cyan)
                 .frame(width: 180)
@@ -29,6 +32,8 @@ struct RemoteContentLoadingOverlay: View {
             Text(detailText)
                 .font(.system(size: 11, weight: .bold, design: .rounded))
                 .foregroundStyle(.white.opacity(0.72))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
@@ -40,5 +45,9 @@ struct RemoteContentLoadingOverlay: View {
                 lineWidth: 1
             )
         )
+    }
+
+    private var clampedProgress: Double {
+        min(max(progress, 0), 1)
     }
 }

@@ -47,42 +47,7 @@ struct OnboardingView: View {
                     Button {
                         startGame(with: monster)
                     } label: {
-                        VStack(spacing: 10) {
-                            RemoteAssetImage(imageName: monster.monsterName)
-                                .scaledToFit()
-                                .frame(height: 150)
-
-                            Text(monster.name)
-                                .font(
-                                    .system(
-                                        size: 22,
-                                        weight: .heavy,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(.white)
-
-                            Text("Lv. 1")
-                                .font(
-                                    .system(
-                                        size: 16,
-                                        weight: .heavy,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(.green)
-                        }
-                        .padding(14)
-                        .frame(maxWidth: .infinity)
-                        .background(.blue.opacity(0.45))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12).stroke(
-                                .cyan.opacity(0.75),
-                                lineWidth: 2
-                            )
-                        )
-                        .contentShape(RoundedRectangle(cornerRadius: 12))
+                        StarterMonsterCard(monster: monster)
                     }
                     .buttonStyle(.plain)
                 }
@@ -93,9 +58,7 @@ struct OnboardingView: View {
         }
         .padding(.top, 84)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            AppScreenBackground()
-        }
+        .background(AppScreenBackground())
         .overlay {
             if let message {
                 Text(message)
@@ -152,6 +115,37 @@ struct OnboardingView: View {
     private func starterPower(for monster: MonsterData) -> Int {
         let hpScore = (monster.hp ?? 0) / 10
         return hpScore + (monster.attack ?? 0) + (monster.defense ?? 0)
+    }
+}
+
+private struct StarterMonsterCard: View {
+    let monster: MonsterData
+
+    var body: some View {
+        VStack(spacing: 10) {
+            RemoteAssetImage(imageName: monster.monsterName)
+                .scaledToFit()
+                .frame(height: 150)
+
+            Text(monster.name)
+                .font(.system(size: 22, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+
+            Text("Lv. 1")
+                .font(.system(size: 16, weight: .heavy, design: .rounded))
+                .foregroundStyle(.green)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity)
+        .background(.blue.opacity(0.45))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12).stroke(
+                .cyan.opacity(0.75),
+                lineWidth: 2
+            )
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

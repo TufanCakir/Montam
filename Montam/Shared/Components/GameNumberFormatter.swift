@@ -9,14 +9,25 @@ import Foundation
 
 enum GameNumberFormatter {
     static func compact(_ value: Int) -> String {
-        if value >= 1_000_000 {
-            return String(format: "%.1f M", Double(value) / 1_000_000)
+        let absoluteValue = abs(value)
+
+        if absoluteValue >= 1_000_000 {
+            return scaled(value, by: 1_000_000, suffix: "M")
         }
 
-        if value >= 1_000 {
-            return String(format: "%.1f K", Double(value) / 1_000)
+        if absoluteValue >= 1_000 {
+            return scaled(value, by: 1_000, suffix: "K")
         }
 
         return "\(value)"
+    }
+
+    private static func scaled(_ value: Int, by divisor: Double, suffix: String)
+        -> String
+    {
+        let scaledValue = Double(value) / divisor
+        let format =
+            scaledValue.rounded() == scaledValue ? "%.0f %@" : "%.1f %@"
+        return String(format: format, scaledValue, suffix)
     }
 }

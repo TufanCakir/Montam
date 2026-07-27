@@ -44,6 +44,8 @@ enum RootSaveMigrationService {
             current.level = max(current.level, legacy.level)
             current.xp = max(current.xp, legacy.xp)
             current.isSelected = current.isSelected || legacy.isSelected
+            current.equippedImageName =
+                current.equippedImageName ?? legacy.equippedImageName
             modelContext.delete(legacy)
         }
     }

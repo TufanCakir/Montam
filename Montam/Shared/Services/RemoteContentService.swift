@@ -13,13 +13,13 @@ import Observation
 final class RemoteContentService {
     static let shared = RemoteContentService()
 
-    private static let rootURL = URL(
+    nonisolated private static let rootURL = URL(
         string: "https://remotemontam.tufancakir.com/"
     )!
-    private static let assetsURL = URL(
+    nonisolated private static let assetsURL = URL(
         string: "https://remotemontam.tufancakir.com/assets/"
     )!
-    private static let musicURL = URL(
+    nonisolated private static let musicURL = URL(
         string: "https://remotemontam.tufancakir.com/music/"
     )!
     fileprivate static let backgroundJSONFileName = "background"
@@ -149,12 +149,22 @@ final class RemoteContentService {
         if let contentVersion = config.contentVersion {
             Self.downloadedContentVersion = contentVersion
         }
+
+        Self.invalidateLoadedContentCaches()
     }
 
-    nonisolated static func clearCachedContent() {
+    static func clearCachedContent() {
         let fileManager = FileManager.default
         try? fileManager.removeItem(at: cacheDirectory)
         createDirectoriesIfNeeded()
+        invalidateLoadedContentCaches()
+    }
+
+    private static func invalidateLoadedContentCaches() {
+        JSONDataLoader.invalidateCache()
+        GameVisualCatalog.invalidate()
+        RemoteAssetImage.invalidateCache()
+        BattleTextureCache.invalidate()
     }
 
     func cachedAssetIfAvailable(named fileName: String) -> URL? {
@@ -204,15 +214,22 @@ final class RemoteContentService {
             )
         )
 
-        for assetName in Self.backgroundAssetNamesInOrder() {
-            recordDownload(
-                await Self.downloadAsset(
-                    named: assetName,
-                    extensions: config.resolvedAssetExtensions,
-                    session: session,
-                    forceDownload: forceDownload
-                )
-            )
+        let session = self.session
+        await withTaskGroup(of: FileDownloadResult.self) { group in
+            for assetName in Self.backgroundAssetNamesInOrder() {
+                group.addTask {
+                    await Self.downloadAsset(
+                        named: assetName,
+                        extensions: config.resolvedAssetExtensions,
+                        session: session,
+                        forceDownload: forceDownload
+                    )
+                }
+            }
+
+            for await result in group {
+                recordDownload(result)
+            }
         }
     }
 
@@ -226,14 +243,21 @@ final class RemoteContentService {
             statusText = "Lade Daten"
         }
 
-        for fileName in plan.regularJSONFiles {
-            recordDownload(
-                await Self.downloadJSON(
-                    fileName,
-                    session: session,
-                    forceDownload: forceDownload
-                )
-            )
+        let session = self.session
+        await withTaskGroup(of: FileDownloadResult.self) { group in
+            for fileName in plan.regularJSONFiles {
+                group.addTask {
+                    await Self.downloadJSON(
+                        fileName,
+                        session: session,
+                        forceDownload: forceDownload
+                    )
+                }
+            }
+
+            for await result in group {
+                recordDownload(result)
+            }
         }
     }
 
@@ -247,15 +271,22 @@ final class RemoteContentService {
             statusText = "Lade Musik"
         }
 
-        for fileName in plan.musicFiles.sorted() {
-            recordDownload(
-                await Self.downloadFile(
-                    remoteURL: Self.musicURL.appending(path: fileName),
-                    destinationURL: Self.cachedMusicURL(named: fileName),
-                    session: session,
-                    forceDownload: forceDownload
-                )
-            )
+        let session = self.session
+        await withTaskGroup(of: FileDownloadResult.self) { group in
+            for fileName in plan.musicFiles {
+                group.addTask {
+                    await Self.downloadFile(
+                        remoteURL: Self.musicURL.appending(path: fileName),
+                        destinationURL: Self.cachedMusicURL(named: fileName),
+                        session: session,
+                        forceDownload: forceDownload
+                    )
+                }
+            }
+
+            for await result in group {
+                recordDownload(result)
+            }
         }
     }
 
@@ -270,15 +301,22 @@ final class RemoteContentService {
             statusText = "Lade Bilder"
         }
 
-        for assetName in plan.regularAssetNames {
-            recordDownload(
-                await Self.downloadAsset(
-                    named: assetName,
-                    extensions: config.resolvedAssetExtensions,
-                    session: session,
-                    forceDownload: forceDownload
-                )
-            )
+        let session = self.session
+        await withTaskGroup(of: FileDownloadResult.self) { group in
+            for assetName in plan.regularAssetNames {
+                group.addTask {
+                    await Self.downloadAsset(
+                        named: assetName,
+                        extensions: config.resolvedAssetExtensions,
+                        session: session,
+                        forceDownload: forceDownload
+                    )
+                }
+            }
+
+            for await result in group {
+                recordDownload(result)
+            }
         }
     }
 
@@ -295,7 +333,7 @@ final class RemoteContentService {
         downloadedBytes += result.bytes
     }
 
-    private static func downloadJSON(
+    nonisolated private static func downloadJSON(
         _ fileName: String,
         session: URLSession,
         forceDownload: Bool
@@ -324,7 +362,7 @@ final class RemoteContentService {
         )
     }
 
-    private static func downloadAsset(
+    nonisolated private static func downloadAsset(
         named fileName: String,
         extensions: [String],
         session: URLSession,
@@ -367,7 +405,7 @@ final class RemoteContentService {
     }
 
     @discardableResult
-    private static func downloadFile(
+    nonisolated private static func downloadFile(
         remoteURL: URL,
         destinationURL: URL,
         session: URLSession,
@@ -428,7 +466,7 @@ final class RemoteContentService {
         }
     }
 
-    private static func cacheBustedURL(_ url: URL) -> URL {
+    nonisolated private static func cacheBustedURL(_ url: URL) -> URL {
         guard
             var components = URLComponents(
                 url: url,
@@ -642,12 +680,18 @@ final class RemoteContentService {
     }
 }
 
-private struct FileDownloadResult {
+private struct FileDownloadResult: Sendable {
     let didDownload: Bool
     let bytes: Int
 
-    static let failed = FileDownloadResult(didDownload: false, bytes: 0)
-    static let skipped = FileDownloadResult(didDownload: false, bytes: 0)
+    nonisolated static let failed = FileDownloadResult(
+        didDownload: false,
+        bytes: 0
+    )
+    nonisolated static let skipped = FileDownloadResult(
+        didDownload: false,
+        bytes: 0
+    )
 }
 
 private struct ContentUpdatePlan {

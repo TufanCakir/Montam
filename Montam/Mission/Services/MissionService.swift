@@ -139,18 +139,7 @@ enum MissionService {
 
     private static func apply(rewards: [RewardData], to save: GameSaveData) {
         for reward in rewards {
-            switch GameCurrency.normalized(reward.resourceId) {
-            case "coins":
-                save.coins += reward.amount
-            case "crystals":
-                save.crystals += reward.amount
-            case "bits":
-                save.bits += reward.amount
-            case "summon_ticket":
-                save.summonTickets += reward.amount
-            default:
-                continue
-            }
+            save.changeCurrency(reward.resourceId, by: reward.amount)
         }
     }
 

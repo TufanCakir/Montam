@@ -16,20 +16,12 @@ enum ShopInventoryService {
     ) -> Bool {
         let save = ensureSave(saves: saves, modelContext: modelContext)
         guard
-            canSpend(
-                currency: product.priceCurrency,
-                amount: product.priceAmount,
-                from: save
-            )
+            save.canSpend(product.priceCurrency, amount: product.priceAmount)
         else {
             return false
         }
 
-        spend(
-            currency: product.priceCurrency,
-            amount: product.priceAmount,
-            from: save
-        )
+        save.spend(product.priceCurrency, amount: product.priceAmount)
         applyRewards(product.rewards, to: save)
         try? modelContext.save()
         return true
@@ -49,16 +41,12 @@ enum ShopInventoryService {
 
         let save = ensureSave(saves: saves, modelContext: modelContext)
         guard
-            canSpend(
-                currency: priceCurrency,
-                amount: priceAmount,
-                from: save
-            )
+            save.canSpend(priceCurrency, amount: priceAmount)
         else {
             return false
         }
 
-        spend(currency: priceCurrency, amount: priceAmount, from: save)
+        save.spend(priceCurrency, amount: priceAmount)
         applyRewards(product.rewards, to: save)
         try? modelContext.save()
         return true
@@ -81,21 +69,20 @@ enum ShopInventoryService {
         _ rewards: ShopProductRewards,
         to save: GameSaveData
     ) {
-
         if let crystals = rewards.crystals {
-            save.crystals += crystals
+            save.changeCurrency("crystals", by: crystals)
         }
 
         if let coins = rewards.coins {
-            save.coins += coins
+            save.changeCurrency("coins", by: coins)
         }
 
         if let bits = rewards.bits {
-            save.bits += bits
+            save.changeCurrency("bits", by: bits)
         }
 
         if let summonTickets = rewards.summonTickets {
-            save.summonTickets += summonTickets
+            save.changeCurrency("summon_ticket", by: summonTickets)
         }
 
         if rewards.unlockEventPass == true {
@@ -136,11 +123,7 @@ enum ShopInventoryService {
     }
 
     private static func markOwned(productId: String, in save: GameSaveData) {
-        guard !save.ownedStoreProductIds.contains(productId) else {
-            return
-        }
-
-        save.ownedStoreProductIds.append(productId)
+        save.markStoreProductOwned(productId)
     }
 
     private static func ensureSave(
@@ -156,41 +139,4 @@ enum ShopInventoryService {
         return save
     }
 
-    private static func canSpend(
-        currency: String,
-        amount: Int,
-        from save: GameSaveData
-    ) -> Bool {
-        switch GameCurrency.normalized(currency) {
-        case "coins":
-            return save.coins >= amount
-        case "crystals":
-            return save.crystals >= amount
-        case "bits":
-            return save.bits >= amount
-        case "summon_ticket":
-            return save.summonTickets >= amount
-        default:
-            return false
-        }
-    }
-
-    private static func spend(
-        currency: String,
-        amount: Int,
-        from save: GameSaveData
-    ) {
-        switch GameCurrency.normalized(currency) {
-        case "coins":
-            save.coins -= amount
-        case "crystals":
-            save.crystals -= amount
-        case "bits":
-            save.bits -= amount
-        case "summon_ticket":
-            save.summonTickets -= amount
-        default:
-            return
-        }
-    }
 }

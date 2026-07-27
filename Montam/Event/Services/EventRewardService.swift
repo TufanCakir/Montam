@@ -28,14 +28,6 @@ enum EventRewardService {
 
         for reward in event.rewards {
             switch GameCurrency.normalized(reward.currency) {
-            case "coins":
-                save.coins += reward.amount
-            case "crystals":
-                save.crystals += reward.amount
-            case "summon_ticket":
-                save.summonTickets += reward.amount
-            case "bits":
-                save.bits += reward.amount
             case "exp":
                 applyXP(
                     reward.amount,
@@ -43,7 +35,7 @@ enum EventRewardService {
                     progression: progression
                 )
             default:
-                break
+                save.changeCurrency(reward.currency, by: reward.amount)
             }
         }
 

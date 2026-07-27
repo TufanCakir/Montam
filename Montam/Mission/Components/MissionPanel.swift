@@ -15,6 +15,10 @@ struct MissionPanel: View {
     @Query private var saves: [GameSaveData]
     @State private var progressItems: [MissionProgress] = []
 
+    private var hasClaimableReward: Bool {
+        progressItems.contains(where: \.canClaim)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             header
@@ -38,30 +42,15 @@ struct MissionPanel: View {
                     .padding(14)
                 }
                 .frame(maxHeight: 480)
-                .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+                .gamePanelBodyBackground()
             }
         }
-        .frame(width: 352)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16).stroke(
-                .cyan.opacity(0.9),
-                lineWidth: 3
-            )
-        )
+        .gamePanelFrame()
         .onAppear(perform: reload)
     }
 
     private var header: some View {
-        HStack(spacing: 10) {
-            Text("Missionen")
-                .font(.system(size: 27, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-
-            Spacer()
-
+        GamePanelHeader(title: "Missionen", onClose: onClose) {
             Button("Alle") {
                 MissionService.claimAll(
                     progressItems: progressItems,
@@ -77,38 +66,13 @@ struct MissionPanel: View {
             .background(Color.yellow)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .buttonStyle(.plain)
-            .opacity(progressItems.contains(where: \.canClaim) ? 1 : 0.45)
-            .disabled(!progressItems.contains(where: \.canClaim))
-
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
-                    .background(Color.black.opacity(0.24))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .buttonStyle(.plain)
+            .opacity(hasClaimableReward ? 1 : 0.45)
+            .disabled(!hasClaimableReward)
         }
-        .padding(.horizontal, 18)
-        .frame(height: 60)
-        .background(
-            LinearGradient(
-                colors: [.blue, .cyan.opacity(0.78)],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
     }
 
     private var emptyState: some View {
-        Text("Missionen werden vorbereitet.")
-            .font(.system(size: 17, weight: .heavy, design: .rounded))
-            .foregroundStyle(.cyan)
-            .multilineTextAlignment(.center)
-            .padding(22)
-            .frame(maxWidth: .infinity)
-            .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+        GamePanelEmptyState(title: "Missionen werden vorbereitet.")
     }
 
     private func reload() {

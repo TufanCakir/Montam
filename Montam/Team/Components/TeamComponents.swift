@@ -219,7 +219,7 @@ struct SupportTeamContent: View {
 
     private func selectAvailableCategoryIfNeeded() {
         guard !rows.contains(where: { $0.category == selectedCategory }),
-              let firstCategory = rows.first?.category
+            let firstCategory = rows.first?.category
         else {
             return
         }
@@ -334,7 +334,9 @@ private struct SupporterCategoryTabs: View {
                     selectedCategory = category
                 } label: {
                     Text(category.title)
-                        .font(.system(size: 12, weight: .heavy, design: .rounded))
+                        .font(
+                            .system(size: 12, weight: .heavy, design: .rounded)
+                        )
                         .foregroundStyle(
                             selectedCategory == category ? .black : .cyan
                         )
@@ -407,12 +409,6 @@ struct CompactTeamInfo: View {
         .frame(maxWidth: .infinity)
         .background(Color.black.opacity(0.28))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-}
-
-struct TeamBackground: View {
-    var body: some View {
-        AppScreenBackground()
     }
 }
 

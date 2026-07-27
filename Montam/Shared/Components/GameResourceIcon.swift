@@ -25,14 +25,10 @@ struct GameResourceIcon: View {
     }
 
     private var imageName: String? {
-        nonEmpty(resource?.imageName) ?? nonEmpty(fallbackImage)
-    }
-
-    private var resource: GameVisualResourceData? {
-        GameVisualCatalog.shared.resource(id: id)
-            ?? GameVisualCatalog.shared.resource(
-                id: GameCurrency.iconId(for: id)
-            )
+        let normalizedId = GameCurrency.iconId(for: id)
+        return GameVisualCatalog.imageName(for: id)
+            ?? GameVisualCatalog.imageName(for: normalizedId)
+            ?? nonEmpty(fallbackImage)
     }
 
     private var fallbackSystemName: String {
@@ -48,18 +44,41 @@ struct GameResourceIcon: View {
     }
 }
 
-private struct GameVisualCatalog {
-    static let shared = GameVisualCatalog()
+enum GameVisualCatalog {
+    private static let lock = NSLock()
+    private static var cachedResourcesById: [String: GameVisualResourceData]?
 
-    private let resources: [GameVisualResourceData]
-
-    init() {
-        resources =
-            JSONDataLoader.load("gameVisual", as: GameVisualCatalogData.self)?
-            .resources ?? []
+    static func imageName(for id: String) -> String? {
+        resource(id: id)?.imageName
     }
 
-    func resource(id: String) -> GameVisualResourceData? {
-        resources.first { $0.id == id }
+    static func invalidate() {
+        lock.lock()
+        cachedResourcesById = nil
+        lock.unlock()
+    }
+
+    private static func resource(id: String) -> GameVisualResourceData? {
+        resourcesById[id]
+    }
+
+    private static var resourcesById: [String: GameVisualResourceData] {
+        lock.lock()
+        defer { lock.unlock() }
+
+        if let cachedResourcesById {
+            return cachedResourcesById
+        }
+
+        let resources =
+            JSONDataLoader.load("gameVisual", as: GameVisualCatalogData.self)?
+            .resources ?? []
+        let resourcesById = Dictionary(
+            uniqueKeysWithValues: resources.map {
+                ($0.id, $0)
+            }
+        )
+        cachedResourcesById = resourcesById
+        return resourcesById
     }
 }

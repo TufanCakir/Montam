@@ -8,37 +8,35 @@
 import SwiftUI
 
 struct StartView: View {
-    
+
     var onStart: () -> Void = {}
     var onDataDeleted: () -> Void = {}
-    
-    @State private var isMenuPresented = false
-    @State private var isSettingsPresented = false
+
+    @State private var presentedOverlay: StartOverlay?
     @State private var menuMessage: String?
     @State private var isLogoOpen = false
     @State private var backgroundImageName = "bg_tropical_beach"
     @State private var remoteContent = RemoteContentService.shared
-    
+
     var body: some View {
         ZStack {
             mainContent
-            
-            if isMenuPresented || isSettingsPresented {
+
+            if presentedOverlay != nil {
                 Color.black.opacity(0.62)
                     .ignoresSafeArea()
                     .onTapGesture {
                         closeOverlays()
                     }
             }
-            
-            if isMenuPresented {
+
+            if presentedOverlay == .menu {
                 StartMenuPanel(
                     onSettings: {
                         withAnimation(
                             .spring(response: 0.28, dampingFraction: 0.86)
                         ) {
-                            isMenuPresented = false
-                            isSettingsPresented = true
+                            presentedOverlay = .settings
                         }
                     },
                     onCacheClear: {
@@ -50,8 +48,8 @@ struct StartView: View {
                 .environment(\.menuMessage, menuMessage)
                 .transition(.scale.combined(with: .opacity))
             }
-            
-            if isSettingsPresented {
+
+            if presentedOverlay == .settings {
                 AppSettingsPanel(
                     onClose: closeOverlays,
                     onDataDeleted: {
@@ -65,30 +63,30 @@ struct StartView: View {
         .ignoresSafeArea()
         .onAppear {
             isLogoOpen = false
-            
+
             withAnimation(.easeOut(duration: 1.15).delay(0.2)) {
                 isLogoOpen = true
             }
-            
+
             if let remote = Self.launchBackgroundImageName(),
-               RemoteContentService.cachedAssetExists(named: remote)
+                RemoteContentService.cachedAssetExists(named: remote)
             {
                 backgroundImageName = remote
             }
         }
     }
-    
+
     private var mainContent: some View {
         VStack(spacing: 0) {
             Spacer(minLength: 0)
-            
+
             RevealingLogo(progress: isLogoOpen ? 1 : 0)
                 .frame(maxWidth: 340)
                 .frame(height: 150)
                 .padding(.horizontal, 34)
-            
+
             Spacer(minLength: 0)
-            
+
             Button(action: onStart) {
                 startPrompt
             }
@@ -96,7 +94,7 @@ struct StartView: View {
             .disabled(remoteContent.isUpdating)
             .padding(.horizontal, 82)
             .padding(.bottom, 76)
-            
+
             bottomRow
                 .padding(.horizontal, 32)
                 .padding(.bottom, 48)
@@ -106,12 +104,12 @@ struct StartView: View {
             StartBackgroundImage(imageName: backgroundImageName)
         }
     }
-    
+
     private var startPrompt: some View {
         Text(
             remoteContent.isUpdating
-            ? "Downloading..."
-            : "Touch To Start"
+                ? "Downloading..."
+                : "Touch To Start"
         )
         .font(.system(size: 25, weight: .heavy, design: .rounded))
         .foregroundStyle(.white)
@@ -129,7 +127,8 @@ struct StartView: View {
     private var bottomRow: some View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 16) {
-                MontamBadge()
+                RemoteAssetImage(imageName: "montem_badge_logo")
+                    .scaledToFit()
                     .frame(width: 50, height: 50)
 
                 Text(AppBundleInfo.versionDisplay)
@@ -149,7 +148,7 @@ struct StartView: View {
 
             Button {
                 withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-                    isMenuPresented = true
+                    presentedOverlay = .menu
                 }
             } label: {
                 Text("Menü")
@@ -177,8 +176,7 @@ struct StartView: View {
 
     private func closeOverlays() {
         withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-            isMenuPresented = false
-            isSettingsPresented = false
+            presentedOverlay = nil
         }
     }
 
@@ -200,6 +198,11 @@ struct StartView: View {
     }
 }
 
+private enum StartOverlay {
+    case menu
+    case settings
+}
+
 private struct StartBackgroundImage: View {
     let imageName: String?
 
@@ -214,7 +217,8 @@ private struct StartBackgroundImage: View {
 
                 if let imageName {
 
-                    if RemoteContentService.cachedAssetExists(named: imageName) {
+                    if RemoteContentService.cachedAssetExists(named: imageName)
+                    {
                         RemoteAssetImage(imageName: imageName)
                             .scaledToFill()
                             .frame(
@@ -302,41 +306,14 @@ private struct StartMenuPanel: View {
                 .padding(18)
             }
             .frame(maxHeight: 520)
-            .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+            .gamePanelBodyBackground()
         }
-        .frame(width: 360)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .overlay(RoundedRectangle(cornerRadius: 18).stroke(.blue, lineWidth: 3))
+        .gamePanelFrame(width: 360)
     }
 
     private var menuHeader: some View {
-        HStack {
-            Text("Menü")
-                .font(.system(size: 31, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
-                    .background(Color.black.opacity(0.24))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 22)
-        .frame(height: 64)
-        .background(
-            LinearGradient(
-                colors: [.blue, .cyan.opacity(0.75)],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
+        GamePanelHeader(title: "Menü", onClose: onClose)
             .overlay(StartSquarePattern().opacity(0.22))
-        )
     }
 
     private func icon(for id: String) -> String {
@@ -433,15 +410,6 @@ private struct RevealingLogo: View {
                         )
                 }
             }
-    }
-}
-
-private struct MontamBadge: View {
-    var body: some View {
-        VStack(spacing: 0) {
-            RemoteAssetImage(imageName: "montem_badge_logo")
-                .scaledToFit()
-        }
     }
 }
 

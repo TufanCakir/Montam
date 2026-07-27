@@ -72,7 +72,8 @@ struct GameStore {
     }
 
     var hasEventPass: Bool {
-        save?.ownedStoreProductIds.contains("montam.pass.event") ?? false
+        save?.hasEventPass == true
+            || save?.ownedStoreProductIds.contains("montam.pass.event") == true
     }
 
     var montamPassPoints: Int {
@@ -256,31 +257,43 @@ struct GameStore {
             levelUpIfNeeded(monster, progression: progression)
         }
 
-        save.coins += boostedCoins
-            + bonusDropAmount(
-                baseAmount: reward.coins,
-                fallbackAmount: 1,
-                chance: supportBonuses.coinDropChanceBonus
-            )
-        save.crystals += boostedCrystals
-            + bonusDropAmount(
-                baseAmount: reward.crystals,
-                fallbackAmount: 1,
-                chance: supportBonuses.crystalDropChanceBonus
-            )
-        save.bits += boostedBits
-            + bonusDropAmount(
-                baseAmount: reward.bits,
-                fallbackAmount: 1,
-                chance: supportBonuses.bitDropChanceBonus
-            )
-        save.summonTickets += boostedTickets
-            + bonusDropAmount(
-                baseAmount: reward.summonTickets,
-                fallbackAmount: 1,
-                chance: supportBonuses.ticketDropChanceBonus
-            )
-        save.montamPassPoints += boostedXP
+        save.changeCurrency(
+            "coins",
+            by: boostedCoins
+                + bonusDropAmount(
+                    baseAmount: reward.coins,
+                    fallbackAmount: 1,
+                    chance: supportBonuses.coinDropChanceBonus
+                )
+        )
+        save.changeCurrency(
+            "crystals",
+            by: boostedCrystals
+                + bonusDropAmount(
+                    baseAmount: reward.crystals,
+                    fallbackAmount: 1,
+                    chance: supportBonuses.crystalDropChanceBonus
+                )
+        )
+        save.changeCurrency(
+            "bits",
+            by: boostedBits
+                + bonusDropAmount(
+                    baseAmount: reward.bits,
+                    fallbackAmount: 1,
+                    chance: supportBonuses.bitDropChanceBonus
+                )
+        )
+        save.changeCurrency(
+            "summon_ticket",
+            by: boostedTickets
+                + bonusDropAmount(
+                    baseAmount: reward.summonTickets,
+                    fallbackAmount: 1,
+                    chance: supportBonuses.ticketDropChanceBonus
+                )
+        )
+        save.montamPassPoints += montamPassPointsEarned(from: boostedXP)
         refreshPlayerStats(
             save: save,
             monsterCatalog: monsterCatalog,
@@ -307,18 +320,26 @@ struct GameStore {
         return max(baseAmount, fallbackAmount)
     }
 
+    private func montamPassPointsEarned(from battleXP: Int) -> Int {
+        guard battleXP > 0 else {
+            return 0
+        }
+
+        return min(max(battleXP / 24, 1), 6)
+    }
+
     func claimBattlePassReward(_ reward: BattlePassRewardDefinition) -> Bool {
         let save = ensureSave()
-        guard save.ownedStoreProductIds.contains("montam.pass.event"),
+        guard hasEventPass,
             save.montamPassPoints >= reward.requiredPoints,
             !save.claimedBattlePassRewardIds.contains(reward.id)
         else {
             return false
         }
 
-        save.coins += reward.coins
-        save.bits += reward.bits
-        save.summonTickets += reward.summonTickets
+        save.changeCurrency("coins", by: reward.coins)
+        save.changeCurrency("bits", by: reward.bits)
+        save.changeCurrency("summon_ticket", by: reward.summonTickets)
         save.claimedBattlePassRewardIds.append(reward.id)
 
         let progression =
@@ -502,12 +523,14 @@ struct GameStore {
             for: save.playerLevel,
             progression: progression
         )
+        let monstersById = monsterCatalog.reduce(into: [String: MonsterData]())
+        {
+            result,
+            monster in
+            result[monster.id] = monster
+        }
         save.playerPower = selected.reduce(0) { total, owned in
-            guard
-                let base = monsterCatalog.first(where: {
-                    $0.id == owned.monsterId
-                })
-            else {
+            guard let base = monstersById[owned.monsterId] else {
                 return total
             }
 

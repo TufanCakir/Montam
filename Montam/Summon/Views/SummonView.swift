@@ -15,7 +15,7 @@ struct SummonView: View {
 
     var body: some View {
         ZStack {
-            SummonScreenBackground()
+            AppScreenBackground()
 
             VStack(spacing: SummonLayoutMetrics.sectionSpacing) {
                 SummonHeader(

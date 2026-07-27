@@ -22,23 +22,16 @@ struct ShopView: View {
             )
 
             ScrollView(.vertical, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 10) {
-                    ShopSideCategories(
-                        section: viewModel.selectedSection,
-                        hasProducts: hasProductsInSelectedSection
-                    )
-
-                    shopContent
-                        .frame(maxWidth: .infinity)
-                }
-                .padding(.horizontal, 18)
-                .padding(.top, 22)
-                .padding(.bottom, 24)
+                shopContent
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 18)
+                    .padding(.top, 22)
+                    .padding(.bottom, 24)
             }
 
             ShopSectionTabs(selectedSection: $viewModel.selectedSection)
         }
-        .background(ShopBackground())
+        .background(AppScreenBackground())
         .overlay {
             if let message = viewModel.purchaseMessage {
                 ShopToast(message: message)
@@ -72,18 +65,9 @@ struct ShopView: View {
             )
         case .item:
             ItemShopContent(
-                products: viewModel.selectedItemProducts,
+                products: viewModel.itemProducts,
                 onBuy: buyItem
             )
-        }
-    }
-
-    private var hasProductsInSelectedSection: Bool {
-        switch viewModel.selectedSection {
-        case .item:
-            !viewModel.selectedItemProducts.isEmpty
-        case .pass, .premiumCurrency:
-            !viewModel.selectedProducts.isEmpty
         }
     }
 

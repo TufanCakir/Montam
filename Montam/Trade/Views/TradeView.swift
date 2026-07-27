@@ -27,7 +27,7 @@ struct TradeView: View {
                 tradeList
             }
         }
-        .background(TradeBackground())
+        .background(AppScreenBackground())
         .overlay(alignment: .center) {
             if let message = viewModel.message {
                 TradeToast(message: message)

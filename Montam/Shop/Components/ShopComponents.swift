@@ -22,6 +22,14 @@ enum ShopSection: CaseIterable, Identifiable {
         }
     }
 
+    var tabTitle: String {
+        switch self {
+        case .pass: "Pass"
+        case .premiumCurrency: "Premium\nWährung"
+        case .item: "Item"
+        }
+    }
+
     var jsonKey: String {
         switch self {
         case .pass: "pass"
@@ -38,13 +46,6 @@ private enum ShopProductVisual {
     case tickets
     case farm
     case resource(String)
-    case normal(String, Color)
-}
-
-struct ShopBackground: View {
-    var body: some View {
-        AppScreenBackground()
-    }
 }
 
 struct ShopWalletState {
@@ -58,8 +59,7 @@ struct ShopWalletFilterBar: View {
     @Binding var selectedSection: ShopSection
 
     var body: some View {
-        HStack {
-
+        HStack(spacing: 14) {
             Menu {
                 ForEach(ShopSection.allCases) { section in
                     Button(section.title) {
@@ -87,71 +87,31 @@ struct ShopWalletFilterBar: View {
                 .background(Color.black.opacity(0.58))
                 .clipShape(RoundedRectangle(cornerRadius: 7))
             }
-        }
-        .padding(.horizontal, 28)
-        .frame(height: 54)
-        .background(Color.blue.opacity(0.45))
-    }
 
-    private func formatNumber(_ value: Int) -> String {
-        if value >= 1_000_000 {
-            return String(format: "%.1f M", Double(value) / 1_000_000)
-        }
+            Spacer(minLength: 10)
 
-        if value >= 1_000 {
-            return String(format: "%.1f K", Double(value) / 1_000)
-        }
-
-        return "\(value)"
-    }
-}
-
-struct ShopSideCategories: View {
-    let section: ShopSection
-    let hasProducts: Bool
-
-    private var entries: [(String, String)] {
-        guard hasProducts else {
-            return []
-        }
-
-        return switch section {
-        case .pass:
-            [("Pass", "star.circle")]
-        case .premiumCurrency:
-            [("Kristall", "seal")]
-        case .item:
-            [("Item", "calendar.badge.clock")]
-        }
-    }
-
-    var body: some View {
-        VStack(spacing: 12) {
-            ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
-                VStack(spacing: 10) {
-                    Image(systemName: entry.1)
-                        .font(.system(size: 24, weight: .heavy))
-                    Text(entry.0)
-                        .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
-                        )
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.75)
-                }
-                .foregroundStyle(.white.opacity(index == 0 ? 1 : 0.82))
-                .frame(width: 58, height: 118)
-                .background(Color.blue.opacity(0.74))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10).stroke(
-                        .black.opacity(0.28),
-                        lineWidth: 1
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    ShopWalletValue(image: "icon_coin", value: wallet.coins)
+                    ShopWalletValue(
+                        image: "icon_crystal",
+                        value: wallet.crystals
                     )
-                )
+                    ShopWalletValue(image: "icon_bit", value: wallet.bits)
+                }
+
+                HStack(spacing: 10) {
+                    ShopWalletValue(
+                        image: "icon_crystal",
+                        value: wallet.crystals
+                    )
+                    ShopWalletValue(image: "icon_bit", value: wallet.bits)
+                }
             }
         }
-        .frame(width: entries.isEmpty ? 0 : 58)
+        .padding(.horizontal, 20)
+        .frame(height: 54)
+        .background(Color.blue.opacity(0.45))
     }
 }
 
@@ -277,19 +237,7 @@ private struct ItemShopProductCard: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     if let badge = product.badge {
-                        Text(badge)
-                            .font(
-                                .system(
-                                    size: 12,
-                                    weight: .heavy,
-                                    design: .rounded
-                                )
-                            )
-                            .foregroundStyle(.blue)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 5)
-                            .background(.white.opacity(0.94))
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                        ShopBadge(title: badge, style: .light)
                             .padding(8)
                     }
                 }
@@ -401,24 +349,7 @@ private struct ShopProductCard: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                         if let badge = product.badge {
-                            Text(badge)
-                                .font(
-                                    .system(
-                                        size: 13,
-                                        weight: .heavy,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(.blue)
-                                .padding()
-                                .background(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 3))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 3).stroke(
-                                        .blue,
-                                        lineWidth: 1
-                                    )
-                                )
+                            ShopBadge(title: badge, style: .light)
                                 .offset(x: 5, y: -8)
                         }
 
@@ -584,11 +515,6 @@ private struct ShopProductIcon: View {
                 GameResourceIcon(id: id, fallbackImage: id)
                     .scaledToFit()
                     .padding(12)
-            case .normal(let icon, let color):
-                Image(systemName: icon)
-                    .font(.system(size: 74, weight: .heavy))
-                    .foregroundStyle(color)
-                    .shadow(color: .white.opacity(0.85), radius: 2)
             }
         }
     }
@@ -618,33 +544,15 @@ private struct ShopPassCard: View {
                 VStack(alignment: .leading, spacing: 9) {
                     HStack(spacing: 8) {
                         if let badge = product.badge {
-                            Text(badge)
-                                .font(
-                                    .system(
-                                        size: 12,
-                                        weight: .heavy,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(.purple)
-                                .clipShape(RoundedRectangle(cornerRadius: 3))
+                            ShopBadge(title: badge, style: .accent(.purple))
                         }
 
-                        Text(
-                            product.purchaseType == .nonConsumable
-                                ? "EINMALIG" : "KAUFBAR"
+                        ShopBadge(
+                            title:
+                                product.purchaseType == .nonConsumable
+                                ? "EINMALIG" : "KAUFBAR",
+                            style: .accent(.cyan)
                         )
-                        .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(.cyan)
-                        .clipShape(RoundedRectangle(cornerRadius: 3))
                     }
 
                     Text(product.title)
@@ -811,22 +719,21 @@ struct ShopSectionTabs: View {
                         Capsule()
                             .fill(selectedSection == section ? .cyan : .clear)
                             .frame(width: 90, height: 7)
-                        Text(
-                            section.title.replacingOccurrences(
-                                of: "-",
-                                with: "-\n"
-                            ).replacingOccurrences(of: " ", with: "\n")
-                        )
-                        .font(
-                            .system(size: 20, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(
-                            selectedSection == section ? .white : .cyan
-                        )
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.65)
-                        .frame(maxWidth: .infinity, minHeight: 62)
+                        Text(section.tabTitle)
+                            .font(
+                                .system(
+                                    size: 20,
+                                    weight: .heavy,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(
+                                selectedSection == section ? .white : .cyan
+                            )
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.65)
+                            .frame(maxWidth: .infinity, minHeight: 62)
                     }
                 }
                 .buttonStyle(.plain)
@@ -844,19 +751,18 @@ struct ShopSectionTabs: View {
 
 private struct ShopWalletValue: View {
     let image: String
-    let text: String
+    let value: Int
 
     var body: some View {
         HStack(spacing: 7) {
             GameResourceIcon(id: visualId, fallbackImage: image)
-                .frame(width: 31, height: 31)
-            Text(text)
-                .font(.system(size: 22, weight: .heavy, design: .rounded))
+                .frame(width: 25, height: 25)
+            Text(GameNumberFormatter.compact(value))
+                .font(.system(size: 17, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
-            Text("+")
-                .font(.system(size: 22, weight: .heavy))
-                .foregroundStyle(.cyan)
         }
+        .lineLimit(1)
+        .minimumScaleFactor(0.72)
     }
 
     private var visualId: String {
@@ -866,6 +772,50 @@ private struct ShopWalletValue: View {
         case "icon_bit": "bit"
         case "icon_exp": "exp"
         default: "crystal"
+        }
+    }
+}
+
+private struct ShopBadge: View {
+    enum Style {
+        case light
+        case accent(Color)
+    }
+
+    let title: String
+    let style: Style
+
+    var body: some View {
+        Text(title)
+            .font(.system(size: 12, weight: .heavy, design: .rounded))
+            .foregroundStyle(foregroundColor)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay {
+                if case .light = style {
+                    RoundedRectangle(cornerRadius: 4).stroke(
+                        .blue.opacity(0.85),
+                        lineWidth: 1
+                    )
+                }
+            }
+    }
+
+    private var foregroundColor: Color {
+        switch style {
+        case .light: .blue
+        case .accent: .white
+        }
+    }
+
+    private var backgroundColor: Color {
+        switch style {
+        case .light: .white.opacity(0.94)
+        case .accent(let color): color
         }
     }
 }

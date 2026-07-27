@@ -5,52 +5,54 @@
 //  Created by Tufan Cakir on 20.07.26.
 //
 
+import Foundation
+
 enum GameCurrency {
+    private struct CurrencyInfo {
+        let title: String
+        let iconId: String
+    }
+
+    private static let infoByCurrency: [String: CurrencyInfo] = [
+        "coins": CurrencyInfo(title: "Coins", iconId: "coin"),
+        "crystals": CurrencyInfo(title: "Kristalle", iconId: "crystal"),
+        "summon_ticket": CurrencyInfo(
+            title: "Tickets",
+            iconId: "summon_ticket"
+        ),
+        "bits": CurrencyInfo(title: "Bits", iconId: "bit"),
+        "exp": CurrencyInfo(title: "EXP", iconId: "exp"),
+    ]
+
+    private static let aliases: [String: String] = [
+        "coin": "coins",
+        "coins": "coins",
+        "crystal": "crystals",
+        "crystals": "crystals",
+        "ticket": "summon_ticket",
+        "tickets": "summon_ticket",
+        "summon_ticket": "summon_ticket",
+        "bit": "bits",
+        "bits": "bits",
+        "exp": "exp",
+        "xp": "exp",
+    ]
+
     static func normalized(_ currency: String) -> String {
-        switch currency {
-        case "coin", "coins": "coins"
-        case "crystal", "crystals": "crystals"
-        case "ticket", "tickets", "summon_ticket": "summon_ticket"
-        case "bit", "bits": "bits"
-        case "exp", "xp": "exp"
-        default: currency
-        }
+        let key = currency.trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+        return aliases[key] ?? key
     }
 
     static func title(for currency: String) -> String {
-        switch normalized(currency) {
-        case "coins": "Coins"
-        case "crystals": "Kristalle"
-        case "summon_ticket": "Tickets"
-        case "bits": "Bits"
-        case "exp": "EXP"
-        default: currency
-        }
+        infoByCurrency[normalized(currency)]?.title ?? currency
     }
 
     static func iconId(for currency: String) -> String {
-        switch normalized(currency) {
-        case "coins": "coin"
-        case "crystals": "crystal"
-        case "summon_ticket": "summon_ticket"
-        case "bits": "bit"
-        case "exp": "exp"
-        default: currency
-        }
+        infoByCurrency[normalized(currency)]?.iconId ?? currency
     }
 
     static func apply(_ reward: RewardData, to save: GameSaveData) {
-        switch normalized(reward.resourceId) {
-        case "coins":
-            save.coins += reward.amount
-        case "crystals":
-            save.crystals += reward.amount
-        case "bits":
-            save.bits += reward.amount
-        case "summon_ticket":
-            save.summonTickets += reward.amount
-        default:
-            return
-        }
+        save.changeCurrency(reward.resourceId, by: reward.amount)
     }
 }

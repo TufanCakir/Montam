@@ -26,5 +26,25 @@
     {
         "id": "bg_haunted_wasteland",
         "imageName": "bg_haunted_wasteland"
+    },
+    {
+        "id": "bg_hidden_lagoon",
+        "imageName": "bg_hidden_lagoon"
+    },
+    {
+        "id": "bg_palm_island",
+        "imageName": "bg_palm_island"
+    },
+    {
+        "id": "bg_flower_meadow",
+        "imageName": "bg_flower_meadow"
+    },
+    {
+        "id": "bg_bamboo_forest",
+        "imageName": "bg_bamboo_forest"
+    },
+    {
+        "id": "bg_cherry_blossom_valley",
+        "imageName": "bg_cherry_blossom_valley"
     }
 ]

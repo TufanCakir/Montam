@@ -50,7 +50,6 @@ struct BattleStageOverlay: View {
             )
         )
         .allowsHitTesting(false)
-        .offset(y: 50)
     }
 
     private var waveDots: some View {

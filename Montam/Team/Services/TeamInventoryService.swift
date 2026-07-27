@@ -77,9 +77,14 @@ enum TeamInventoryService {
                 JSONDataLoader.load("battleConfig", as: BattleConfigData.self)
             let summons =
                 JSONDataLoader.load("summon", as: [SummonData].self) ?? []
+            let categoriesByBannerId = summons.reduce(
+                into: [String: String]()
+            ) { result, summon in
+                result[summon.id] = summon.category
+            }
             let selectedCategory = supportCategory(
                 for: selectedSupporter,
-                summons: summons
+                categoriesByBannerId: categoriesByBannerId
             )
             let selected = ownedSupporters.filter(\.isSelected)
             let categoryLimit = supportLimit(
@@ -87,7 +92,10 @@ enum TeamInventoryService {
                 battleConfig: battleConfig
             )
             let selectedInCategory = selected.filter {
-                supportCategory(for: $0, summons: summons) == selectedCategory
+                supportCategory(
+                    for: $0,
+                    categoriesByBannerId: categoriesByBannerId
+                ) == selectedCategory
             }
 
             if selectedInCategory.count >= categoryLimit,
@@ -108,9 +116,9 @@ enum TeamInventoryService {
 
     private static func supportCategory(
         for supporter: OwnedSupporterData,
-        summons: [SummonData]
+        categoriesByBannerId: [String: String]
     ) -> String {
-        summons.first(where: { $0.id == supporter.bannerId })?.category
+        categoriesByBannerId[supporter.bannerId]
             ?? "montam"
     }
 

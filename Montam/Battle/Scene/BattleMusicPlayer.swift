@@ -35,10 +35,11 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
     }
 
     func configure(fileNames: [String]) {
+        var seen = Set<String>()
         let uniqueFileNames = fileNames.reduce(into: [String]()) {
             result,
             name in
-            guard !result.contains(name) else {
+            guard seen.insert(name).inserted else {
                 return
             }
 
@@ -53,6 +54,7 @@ final class BattleMusicPlayer: NSObject, AVAudioPlayerDelegate {
         currentFileNames = uniqueFileNames
         playlist = uniqueFileNames.compactMap(Self.audioURL(for:))
         currentIndex = min(currentIndex, max(playlist.count - 1, 0))
+        stop()
         applyMusicSetting()
     }
 

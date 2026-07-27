@@ -28,56 +28,18 @@ struct NewsPanel: View {
                     .padding(16)
                 }
                 .frame(maxHeight: 480)
-                .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+                .gamePanelBodyBackground()
             }
         }
-        .frame(width: 352)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16).stroke(
-                .cyan.opacity(0.9),
-                lineWidth: 3
-            )
-        )
+        .gamePanelFrame()
     }
 
     private var header: some View {
-        HStack {
-            Text("News")
-                .font(.system(size: 28, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
-                    .background(Color.black.opacity(0.24))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 20)
-        .frame(height: 60)
-        .background(
-            LinearGradient(
-                colors: [.blue, .cyan.opacity(0.78)],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
+        GamePanelHeader(title: "News", onClose: onClose)
     }
 
     private var emptyState: some View {
-        Text("Aktuell gibt es keine Neuigkeiten.")
-            .font(.system(size: 17, weight: .heavy, design: .rounded))
-            .foregroundStyle(.cyan)
-            .multilineTextAlignment(.center)
-            .padding(22)
-            .frame(maxWidth: .infinity)
-            .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+        GamePanelEmptyState(title: "Aktuell gibt es keine Neuigkeiten.")
     }
 }
 

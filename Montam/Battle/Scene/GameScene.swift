@@ -25,6 +25,7 @@ final class GameScene: SKScene {
     private var supportUnits: [BattleUnit] = []
     private var enemyUnits: [BattleUnit] = []
     private var supporterUnits: [BattleUnit] = []
+    private var healthBars: [ObjectIdentifier: BattleHealthBarNode] = [:]
     private var selectedMonsters: [RuntimeOwnedMonster] = []
     private var selectedTamers: [RuntimeOwnedTamer] = []
     private var selectedSupporters: [RuntimeOwnedSupporter] = []
@@ -125,6 +126,7 @@ final class GameScene: SKScene {
         supportUnits.removeAll()
         supporterUnits.removeAll()
         enemyUnits.removeAll()
+        healthBars.removeAll()
         currentWaveIndex = 0
         currentBackgroundIndex = 0
         completedFightCount = 0
@@ -164,7 +166,7 @@ final class GameScene: SKScene {
 
         enemyUnits.forEach { $0.node.removeFromParent() }
         enemyUnits.removeAll()
-        removeNodes(named: "healthBar")
+        removeAllHealthBars()
         removeNodes(named: "reward")
 
         let wave = config.waves[index]
@@ -742,7 +744,8 @@ final class GameScene: SKScene {
     private func adjustedAttackInterval(_ config: BattleConfigData)
         -> TimeInterval
     {
-        let speedBonus = supportUnits.reduce(0) { $0 + $1.speedBonus }
+        let speedBonus =
+            supportUnits.reduce(0) { $0 + $1.speedBonus }
             + supporterUnits.reduce(0) { $0 + $1.speedBonus }
         guard speedBonus > 0 else {
             return config.attackInterval
@@ -752,14 +755,18 @@ final class GameScene: SKScene {
     }
 
     private func regeneratePlayerUnits() {
-        let hpRegenBonus = supportUnits.reduce(0) { $0 + $1.hpRegenBonus }
+        let hpRegenBonus =
+            supportUnits.reduce(0) { $0 + $1.hpRegenBonus }
             + supporterUnits.reduce(0) { $0 + $1.hpRegenBonus }
         guard hpRegenBonus > 0 else {
             return
         }
 
         for unit in playerUnits where unit.isAlive {
-            let heal = max(1, Int((Double(unit.maxHP) * hpRegenBonus).rounded()))
+            let heal = max(
+                1,
+                Int((Double(unit.maxHP) * hpRegenBonus).rounded())
+            )
             unit.currentHP = min(unit.maxHP, unit.currentHP + heal)
         }
     }
@@ -1036,13 +1043,27 @@ final class GameScene: SKScene {
     }
 
     private func refreshHealthBars() {
-        removeNodes(named: "healthBar")
+        var visibleKeys = Set<ObjectIdentifier>()
 
         for unit in playerUnits + enemyUnits
         where unit.node.parent != nil && unit.isAlive {
-            let healthBar = BattleHUDFactory.healthBar(for: unit)
+            let key = ObjectIdentifier(unit)
+            let healthBar =
+                healthBars[key] ?? BattleHUDFactory.healthBar(for: unit)
+            healthBars[key] = healthBar
+            visibleKeys.insert(key)
+            healthBar.update(for: unit)
             healthBar.position = healthBarPosition(for: unit)
-            addChild(healthBar)
+
+            if healthBar.parent == nil {
+                addChild(healthBar)
+            }
+        }
+
+        let staleKeys = healthBars.keys.filter { !visibleKeys.contains($0) }
+        for key in staleKeys {
+            healthBars[key]?.removeFromParent()
+            healthBars.removeValue(forKey: key)
         }
     }
 
@@ -1067,6 +1088,11 @@ final class GameScene: SKScene {
         enumerateChildNodes(withName: "//\(name)") { node, _ in
             node.removeFromParent()
         }
+    }
+
+    private func removeAllHealthBars() {
+        healthBars.values.forEach { $0.removeFromParent() }
+        healthBars.removeAll()
     }
 }
 

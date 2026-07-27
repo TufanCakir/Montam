@@ -18,6 +18,11 @@ final class SummonViewModel {
     let monsters: [MonsterData]
     let tamers: [TamerData]
     let appearances: [MonsterAppearanceData]
+    private let summonsByCategory: [String: [SummonData]]
+    private let poolEntriesByBannerId: [String: [SummonPoolData]]
+    private let monstersByLookupId: [String: MonsterData]
+    private let tamersByLookupId: [String: TamerData]
+    private let appearancesByLookupId: [String: MonsterAppearanceData]
 
     var selectedCategoryId: String
     var summonResultTitle = "Beschwörung"
@@ -65,6 +70,32 @@ final class SummonViewModel {
                 as: [MonsterAppearanceData].self
             ) ?? []
 
+        summonsByCategory = Dictionary(grouping: loadedSummons) {
+            $0.category
+        }
+        poolEntriesByBannerId = Dictionary(grouping: summonPool) {
+            $0.bannerId
+        }
+        monstersByLookupId = Self.loadedLookupMap(
+            monsters,
+            keys: { [$0.id, $0.monsterName] }
+        )
+        tamersByLookupId = Self.loadedLookupMap(
+            tamers,
+            keys: { [$0.id, $0.tamerName] }
+        )
+        appearancesByLookupId = Self.loadedLookupMap(
+            appearances,
+            keys: {
+                [
+                    $0.id,
+                    $0.imageName,
+                    $0.title.lowercased(),
+                    "mon_\($0.title.lowercased())",
+                ]
+            }
+        )
+
         selectedCategoryId =
             loadedCategories.first?.id
             ?? loadedSummons.first?.category
@@ -78,9 +109,7 @@ final class SummonViewModel {
     }
 
     func summons(for categoryId: String) -> [SummonData] {
-        summons.filter {
-            $0.category == categoryId
-        }
+        summonsByCategory[categoryId] ?? []
     }
 
     func moveCategory(by offset: Int) {
@@ -88,9 +117,11 @@ final class SummonViewModel {
             return
         }
 
-        guard let currentIndex = categories.firstIndex(where: {
-            $0.id == selectedCategoryId
-        }) else {
+        guard
+            let currentIndex = categories.firstIndex(where: {
+                $0.id == selectedCategoryId
+            })
+        else {
             selectedCategoryId = categories[0].id
             return
         }
@@ -143,10 +174,12 @@ final class SummonViewModel {
             count: count
         )
 
-        guard let candidate = poolCandidate(
-            for: summon,
-            targetRarity: rolledRarity
-        ) else {
+        guard
+            let candidate = poolCandidate(
+                for: summon,
+                targetRarity: rolledRarity
+            )
+        else {
             return fallbackResult(
                 for: summon,
                 rarity: rolledRarity
@@ -237,10 +270,6 @@ final class SummonViewModel {
         let candidates = resolvedPoolCandidates(for: summon)
 
         guard !candidates.isEmpty else {
-            print(
-                "⚠️ Kein Summon-Pool für Banner:",
-                summon.id
-            )
             return nil
         }
 
@@ -268,9 +297,8 @@ final class SummonViewModel {
     private func resolvedPoolCandidates(
         for summon: SummonData
     ) -> [PoolCandidate] {
-        let entries = summonPool.filter {
-            $0.bannerId == summon.id && $0.weight > 0
-        }
+        let entries = (poolEntriesByBannerId[summon.id] ?? [])
+            .filter { $0.weight > 0 }
 
         return entries.compactMap { entry in
             if let monster = monster(for: entry.characterId) {
@@ -301,13 +329,6 @@ final class SummonViewModel {
                 )
             }
 
-            print(
-                "⚠️ Charakter nicht gefunden:",
-                entry.characterId,
-                "Banner:",
-                entry.bannerId
-            )
-
             return nil
         }
     }
@@ -315,32 +336,32 @@ final class SummonViewModel {
     private func monster(
         for characterId: String
     ) -> MonsterData? {
-        monsters.first {
-            $0.id == characterId
-                || $0.monsterName == characterId
-        }
+        monstersByLookupId[characterId]
     }
 
     private func tamer(
         for characterId: String
     ) -> TamerData? {
-        tamers.first {
-            $0.id == characterId
-                || $0.tamerName == characterId
-        }
+        tamersByLookupId[characterId]
     }
 
     private func appearance(
         for characterId: String
     ) -> MonsterAppearanceData? {
         let normalizedId = characterId.lowercased()
+        return appearancesByLookupId[characterId]
+            ?? appearancesByLookupId[normalizedId]
+            ?? appearancesByLookupId["mon_\(normalizedId)"]
+    }
 
-        return appearances.first {
-            $0.id == characterId
-                || $0.imageName == characterId
-                || $0.title.lowercased() == normalizedId
-                || $0.imageName.lowercased()
-                    == "mon_\(normalizedId)"
+    private static func loadedLookupMap<T>(
+        _ values: [T],
+        keys: (T) -> [String]
+    ) -> [String: T] {
+        values.reduce(into: [:]) { result, value in
+            for key in keys(value) where !key.isEmpty {
+                result[key] = value
+            }
         }
     }
 
@@ -392,18 +413,21 @@ final class SummonViewModel {
         }
 
         if let nearestHigherRank = equalOrHigher.map(\.rank).min() {
-            return equalOrHigher
+            return
+                equalOrHigher
                 .filter { $0.rank == nearestHigherRank }
                 .map(\.candidate)
         }
 
-        guard let highestAvailableRank =
-            rankedCandidates.map(\.rank).max()
+        guard
+            let highestAvailableRank =
+                rankedCandidates.map(\.rank).max()
         else {
             return []
         }
 
-        return rankedCandidates
+        return
+            rankedCandidates
             .filter { $0.rank == highestAvailableRank }
             .map(\.candidate)
     }

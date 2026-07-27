@@ -33,9 +33,7 @@ struct EventView: View {
                 .padding(.vertical, 14)
             }
         }
-        .background {
-            EventViewBackground()
-        }
+        .background(AppScreenBackground())
         .fullScreenCover(item: $selectedEvent) { event in
             EventBattleView(event: event) {
                 selectedEvent = nil
@@ -48,25 +46,31 @@ struct EventView: View {
 private struct EventBattleView: View {
     let event: EventData
     let onClose: () -> Void
-    
+
     @Environment(\.modelContext) private var modelContext
     @Query private var saves: [GameSaveData]
     @Query private var ownedMonsters: [OwnedMonsterData]
     @Query private var ownedTamers: [OwnedTamerData]
     @Query private var ownedSupporters: [OwnedSupporterData]
     @State private var rewardOverlay: EventRewardOverlayData?
-    
+
+    private let monsterCatalog =
+        JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
+    private let progression =
+        JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
+        ?? GameProgressionData()
+
     private let scene: GameScene = {
         let scene = GameScene()
         scene.scaleMode = .resizeFill
         return scene
     }()
-    
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             SpriteView(scene: scene)
                 .ignoresSafeArea()
-            
+
             Button(action: onClose) {
                 Image(systemName: "xmark")
                     .font(
@@ -80,7 +84,7 @@ private struct EventBattleView: View {
             .buttonStyle(.plain)
             .padding(.top, 48)
             .padding(.leading, 14)
-            
+
             if let rewardOverlay {
                 EventRewardOverlay(data: rewardOverlay)
                     .transition(.scale.combined(with: .opacity))
@@ -90,7 +94,7 @@ private struct EventBattleView: View {
             configureScene()
         }
     }
-    
+
     private func configureScene() {
         let store = GameStore(
             modelContext: modelContext,
@@ -102,22 +106,16 @@ private struct EventBattleView: View {
 
         scene.configureEvent(event)
         scene.configure(
-            selectedMonsters:
-                ownedMonsters
-                .filter(\.isSelected)
-                .map {
-                    RuntimeOwnedMonster(
-                        monsterId: $0.monsterId,
-                        level: $0.level,
-                        xp: $0.xp,
-                        imageName: $0.equippedImageName
-                    )
-                },
-            selectedTamers: [],
+            selectedMonsters: store.runtimeSelectedMonsters(),
+            selectedTamers: store.runtimeSelectedTamers(),
             selectedSupporters: store.runtimeSelectedSupporters()
         )
         scene.onBattleWon = { reward in
-            applyBattleReward(reward)
+            store.applyBattleReward(
+                reward,
+                monsterCatalog: monsterCatalog,
+                progression: progression
+            )
         }
         scene.onBossBattleWon = {
             applyRewards()
@@ -130,7 +128,7 @@ private struct EventBattleView: View {
             }
         }
     }
-    
+
     private func applyRewards() {
         EventRewardService.applyRewards(
             from: event,
@@ -139,30 +137,7 @@ private struct EventBattleView: View {
             modelContext: modelContext
         )
     }
-    
-    private func applyBattleReward(_ reward: BattleWaveReward) {
-        let store = GameStore(
-            modelContext: modelContext,
-            saves: saves,
-            ownedMonsters: ownedMonsters,
-            ownedTamers: ownedTamers,
-            ownedSupporters: ownedSupporters
-        )
-        
-        store.applyBattleReward(
-            reward,
-            monsterCatalog:
-                JSONDataLoader.load(
-                    "monster",
-                    as: [MonsterData].self
-                ) ?? [],
-            progression:
-                JSONDataLoader.load(
-                    "battleConfig",
-                    as: GameProgressionData.self
-                ) ?? GameProgressionData()
-        )
-    }
+
 }
 
 private struct DungeonEventCard: View {
@@ -236,8 +211,7 @@ private struct DungeonEventCard: View {
                             if let adProgress = item.adProgress {
                                 EventCounter(
                                     iconId: "summon_ticket",
-                                    text: adProgress,
-                                    color: .white
+                                    text: adProgress
                                 )
                             }
                         }
@@ -252,7 +226,7 @@ private struct DungeonEventCard: View {
                     Color.black.opacity(0.55)
                     Text("Bald verfügbar")
                         .font(
-                        .system(size: 12, weight: .heavy, design: .rounded)
+                            .system(size: 12, weight: .heavy, design: .rounded)
                         )
                         .foregroundStyle(.white)
                         .shadow(color: .black, radius: 2)
@@ -292,7 +266,6 @@ private struct DungeonEventCard: View {
 private struct EventCounter: View {
     let iconId: String
     let text: String
-    let color: Color
 
     var body: some View {
         HStack(spacing: 4) {
@@ -416,12 +389,6 @@ private struct EventRewardPills: View {
     }
 }
 
-private struct EventViewBackground: View {
-    var body: some View {
-        AppScreenBackground()
-    }
-}
-
 private struct EventCardPattern: View {
     var body: some View {
         HStack(spacing: 12) {
@@ -478,8 +445,9 @@ private struct DungeonEventItem: Identifiable {
 
 private enum EventViewDataSource {
     static func loadEvents() -> [DungeonEventItem] {
-        let eventData = loadJSON("event", as: [EventData].self) ?? []
-        let enemies = loadJSON("enemy", as: [EnemyData].self) ?? []
+        let eventData =
+            JSONDataLoader.load("event", as: [EventData].self) ?? []
+        let enemies = JSONDataLoader.load("enemy", as: [EnemyData].self) ?? []
 
         return eventData.map { event in
             let enemy = enemies.first { $0.id == event.enemyName }
@@ -520,18 +488,11 @@ private enum EventViewDataSource {
     }
 
     private static func formatGermanDate(_ value: String) -> String {
-        let input = DateFormatter()
-        input.locale = Locale(identifier: "de_DE")
-        input.dateFormat = "yyyy-MM-dd"
-
-        guard let date = input.date(from: value) else {
+        guard let date = inputDateFormatter.date(from: value) else {
             return value
         }
 
-        let output = DateFormatter()
-        output.locale = Locale(identifier: "de_DE")
-        output.dateFormat = "dd.MM.yyyy"
-        return output.string(from: date)
+        return outputDateFormatter.string(from: date)
     }
 
     private static func accent(for category: String) -> Color {
@@ -543,26 +504,19 @@ private enum EventViewDataSource {
         }
     }
 
-    private static func loadJSON<T: Decodable>(
-        _ fileName: String,
-        as type: T.Type
-    ) -> T? {
-        guard
-            let url = Bundle.main.url(
-                forResource: fileName,
-                withExtension: "json"
-            )
-        else {
-            return nil
-        }
+    private static let inputDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "de_DE")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
 
-        do {
-            let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode(T.self, from: data)
-        } catch {
-            return nil
-        }
-    }
+    private static let outputDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "de_DE")
+        formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
 }
 
 #Preview {

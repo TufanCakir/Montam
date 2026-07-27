@@ -2,39 +2,129 @@
     "rewards": [
         {
             "id": "pass_001",
-            "requiredPoints": 12,
-            "title": "Start-Bonus",
-            "coins": 500,
-            "bits": 10,
-            "summonTickets": 1,
-            "xp": 50
+            "requiredPoints": 10,
+            "title": "Premium Start",
+            "coins": 2500,
+            "bits": 75,
+            "summonTickets": 3,
+            "xp": 150
         },
         {
             "id": "pass_002",
-            "requiredPoints": 30,
-            "title": "Tamer-Vorrat",
-            "coins": 1250,
-            "bits": 20,
-            "summonTickets": 2,
-            "xp": 90
+            "requiredPoints": 25,
+            "title": "Tamer Vorrat",
+            "coins": 5000,
+            "bits": 125,
+            "summonTickets": 5,
+            "xp": 250
         },
         {
             "id": "pass_003",
-            "requiredPoints": 50,
-            "title": "Beschwörer-Paket",
-            "coins": 2000,
-            "bits": 35,
-            "summonTickets": 4,
-            "xp": 140
+            "requiredPoints": 45,
+            "title": "Beschwoerer Paket",
+            "coins": 8000,
+            "bits": 180,
+            "summonTickets": 8,
+            "xp": 400
         },
         {
             "id": "pass_004",
-            "requiredPoints": 90,
-            "title": "Champion-Bonus",
-            "coins": 4000,
-            "bits": 60,
-            "summonTickets": 7,
-            "xp": 250
+            "requiredPoints": 70,
+            "title": "Kristall Vorrat",
+            "coins": 12000,
+            "bits": 260,
+            "summonTickets": 10,
+            "xp": 600
+        },
+        {
+            "id": "pass_005",
+            "requiredPoints": 100,
+            "title": "Elite Training",
+            "coins": 18000,
+            "bits": 360,
+            "summonTickets": 14,
+            "xp": 900
+        },
+        {
+            "id": "pass_006",
+            "requiredPoints": 135,
+            "title": "Mega Vorrat",
+            "coins": 24000,
+            "bits": 480,
+            "summonTickets": 18,
+            "xp": 1200
+        },
+        {
+            "id": "pass_007",
+            "requiredPoints": 175,
+            "title": "Champion Paket",
+            "coins": 32000,
+            "bits": 650,
+            "summonTickets": 24,
+            "xp": 1600
+        },
+        {
+            "id": "pass_008",
+            "requiredPoints": 220,
+            "title": "Summon Rush",
+            "coins": 42000,
+            "bits": 850,
+            "summonTickets": 32,
+            "xp": 2100
+        },
+        {
+            "id": "pass_009",
+            "requiredPoints": 270,
+            "title": "Boss Jaeger Bonus",
+            "coins": 55000,
+            "bits": 1100,
+            "summonTickets": 42,
+            "xp": 2800
+        },
+        {
+            "id": "pass_010",
+            "requiredPoints": 325,
+            "title": "Legend Paket",
+            "coins": 70000,
+            "bits": 1400,
+            "summonTickets": 55,
+            "xp": 3600
+        },
+        {
+            "id": "pass_011",
+            "requiredPoints": 385,
+            "title": "Ultra Training",
+            "coins": 90000,
+            "bits": 1750,
+            "summonTickets": 70,
+            "xp": 4600
+        },
+        {
+            "id": "pass_012",
+            "requiredPoints": 450,
+            "title": "Premium Finale",
+            "coins": 125000,
+            "bits": 2400,
+            "summonTickets": 100,
+            "xp": 6500
+        },
+        {
+            "id": "pass_013",
+            "requiredPoints": 520,
+            "title": "Master Bonus",
+            "coins": 175000,
+            "bits": 3300,
+            "summonTickets": 140,
+            "xp": 9000
+        },
+        {
+            "id": "pass_014",
+            "requiredPoints": 600,
+            "title": "Montam Pass Jackpot",
+            "coins": 250000,
+            "bits": 5000,
+            "summonTickets": 200,
+            "xp": 14000
         }
     ]
 }

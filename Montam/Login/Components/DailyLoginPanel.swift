@@ -47,16 +47,9 @@ struct DailyLoginPanel: View {
                 }
             }
             .padding(20)
-            .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+            .gamePanelBodyBackground()
         }
-        .frame(width: 344)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16).stroke(
-                .cyan.opacity(0.9),
-                lineWidth: 3
-            )
-        )
+        .gamePanelFrame(width: 344)
         .onAppear {
             rewards = DailyLoginService.rewards()
             reward = DailyLoginService.availableReward(saves: saves)
@@ -68,32 +61,7 @@ struct DailyLoginPanel: View {
     }
 
     private var panelHeader: some View {
-        HStack {
-            Text("Daily Login")
-                .font(.system(size: 27, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
-                    .background(Color.black.opacity(0.24))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 20)
-        .frame(height: 60)
-        .background(
-            LinearGradient(
-                colors: [.blue, .cyan.opacity(0.78)],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
+        GamePanelHeader(title: "Daily Login", onClose: onClose)
     }
 }
 
@@ -214,7 +182,7 @@ private struct DailyRewardCard: View {
                 .foregroundStyle(.white)
 
             ForEach(reward.rewards.filter { $0.amount > 0 }) { item in
-                RewardRow(reward: item)
+                DailyRewardRow(reward: item)
             }
 
             Text("Zum Abholen tippen")
@@ -249,7 +217,7 @@ private struct DailyEmptyState: View {
     }
 }
 
-private struct RewardRow: View {
+private struct DailyRewardRow: View {
     let reward: RewardData
 
     var body: some View {

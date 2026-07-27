@@ -73,6 +73,73 @@ final class GameSaveData {
     }
 }
 
+extension GameSaveData {
+    func amount(for currency: String) -> Int {
+        return switch GameCurrency.normalized(currency) {
+        case "coins":
+            coins
+        case "crystals":
+            crystals
+        case "bits":
+            bits
+        case "summon_ticket":
+            summonTickets
+        default:
+            0
+        }
+    }
+
+    func canSpend(_ currency: String, amount: Int) -> Bool {
+        guard amount >= 0 else {
+            return false
+        }
+
+        switch GameCurrency.normalized(currency) {
+        case "coins", "crystals", "bits", "summon_ticket":
+            return self.amount(for: currency) >= amount
+        default:
+            return false
+        }
+    }
+
+    @discardableResult
+    func spend(_ currency: String, amount: Int) -> Bool {
+        guard canSpend(currency, amount: amount) else {
+            return false
+        }
+
+        return changeCurrency(currency, by: -amount)
+    }
+
+    @discardableResult
+    func changeCurrency(_ currency: String, by amount: Int) -> Bool {
+        switch GameCurrency.normalized(currency) {
+        case "coins":
+            coins += amount
+        case "crystals":
+            crystals += amount
+        case "bits":
+            bits += amount
+        case "summon_ticket":
+            summonTickets += amount
+        default:
+            return false
+        }
+
+        return true
+    }
+
+    @discardableResult
+    func markStoreProductOwned(_ productId: String) -> Bool {
+        guard !ownedStoreProductIds.contains(productId) else {
+            return false
+        }
+
+        ownedStoreProductIds.append(productId)
+        return true
+    }
+}
+
 @Model
 final class OwnedMonsterData {
     @Attribute(.unique) var monsterId: String

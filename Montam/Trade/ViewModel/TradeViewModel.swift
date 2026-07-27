@@ -12,13 +12,11 @@ import Observation
 final class TradeViewModel {
     var offers: [TradeOfferData] = []
     var message: String?
+    private var offersBySection: [String: [TradeOfferData]] = [:]
+    private var loadedSectionTitles: [String] = []
 
     var sectionTitles: [String] {
-        offers.reduce(into: []) { sections, offer in
-            if !sections.contains(offer.section) {
-                sections.append(offer.section)
-            }
-        }
+        loadedSectionTitles
     }
 
     func loadIfNeeded() {
@@ -26,12 +24,25 @@ final class TradeViewModel {
             return
         }
 
-        offers = (JSONDataLoader.load("trade", as: [TradeOfferData].self) ?? [])
+        let loadedOffers =
+            (JSONDataLoader.load(
+                "trade",
+                as: [TradeOfferData].self
+            ) ?? [])
             .sorted { $0.sortOrder < $1.sortOrder }
+        offers = loadedOffers
+        offersBySection = Dictionary(grouping: loadedOffers) { $0.section }
+        loadedSectionTitles = loadedOffers.reduce(into: []) {
+            sections,
+            offer in
+            if !sections.contains(offer.section) {
+                sections.append(offer.section)
+            }
+        }
     }
 
     func offers(in section: String) -> [TradeOfferData] {
-        offers.filter { $0.section == section }
+        offersBySection[section] ?? []
     }
 
     func showMessage(_ text: String) {

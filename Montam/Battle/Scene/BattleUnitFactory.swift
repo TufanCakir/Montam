@@ -6,7 +6,6 @@
 //
 
 import SpriteKit
-import UIKit
 
 enum BattleSpriteScale {
     static let playerMonster: CGFloat = 0.50
@@ -338,7 +337,7 @@ struct BattleUnitFactory {
         role: BattleSpriteRole,
         scaleMultiplier: Double
     ) -> SKSpriteNode {
-        let texture = Self.texture(named: imageName)
+        let texture = BattleTextureCache.texture(named: imageName)
         let node = SKSpriteNode(texture: texture)
         node.anchorPoint = CGPoint(x: 0.5, y: 0)
 
@@ -356,27 +355,6 @@ struct BattleUnitFactory {
         }
 
         return node
-    }
-
-    private static func texture(named imageName: String) -> SKTexture {
-        let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
-        if FileManager.default.fileExists(atPath: cachedURL.path()),
-            let image = UIImage(contentsOfFile: cachedURL.path())
-        {
-            return SKTexture(image: image)
-        }
-
-        return SKTexture(image: placeholderImage())
-    }
-
-    private static func placeholderImage() -> UIImage {
-        let renderer = UIGraphicsImageRenderer(
-            size: CGSize(width: 32, height: 32)
-        )
-        return renderer.image { context in
-            UIColor.clear.setFill()
-            context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
-        }
     }
 
     private func maxSpriteHeightRatio(for side: BattleSide) -> Double {

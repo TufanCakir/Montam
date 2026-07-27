@@ -6,7 +6,6 @@
 //
 
 import SpriteKit
-import UIKit
 
 enum BattleRewardHUDFactory {
     static func bossVictoryNode(
@@ -165,7 +164,7 @@ enum BattleRewardHUDFactory {
         if let imageName = resourceImageName(for: resourceId)
             ?? resourceImageName(for: id)
         {
-            let texture = texture(named: imageName)
+            let texture = BattleTextureCache.texture(named: imageName)
             let node = SKSpriteNode(texture: texture)
             node.size = CGSize(width: 24, height: 24)
             return node
@@ -209,14 +208,9 @@ enum BattleRewardHUDFactory {
     private static func resourceImageName(for resourceId: String) -> String? {
         let normalized = GameCurrency.iconId(for: resourceId)
         guard
-            let url = Bundle.main.url(
-                forResource: "gameVisual",
-                withExtension: "json"
-            ),
-            let data = try? Data(contentsOf: url),
-            let catalog = try? JSONDecoder().decode(
-                GameVisualCatalogData.self,
-                from: data
+            let catalog = JSONDataLoader.load(
+                "gameVisual",
+                as: GameVisualCatalogData.self
             )
         else {
             return nil
@@ -225,27 +219,6 @@ enum BattleRewardHUDFactory {
         return catalog.resources.first {
             $0.id == resourceId || $0.id == normalized
         }?.imageName
-    }
-
-    private static func texture(named imageName: String) -> SKTexture {
-        let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
-        if FileManager.default.fileExists(atPath: cachedURL.path()),
-            let image = UIImage(contentsOfFile: cachedURL.path())
-        {
-            return SKTexture(image: image)
-        }
-
-        return SKTexture(image: placeholderImage())
-    }
-
-    private static func placeholderImage() -> UIImage {
-        let renderer = UIGraphicsImageRenderer(
-            size: CGSize(width: 32, height: 32)
-        )
-        return renderer.image { context in
-            UIColor.clear.setFill()
-            context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
-        }
     }
 
     private static func crystalPath(radius: CGFloat) -> CGPath {

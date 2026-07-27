@@ -17,7 +17,9 @@ enum ImageEnvironmentNodes {
             return fallbackBackgroundNode(size: size)
         }
 
-        let node = SKSpriteNode(texture: texture(named: imageName))
+        let node = SKSpriteNode(
+            texture: BattleTextureCache.texture(named: imageName)
+        )
         node.name = "background"
         node.anchorPoint = .zero
         node.size = CGSize(width: size.width, height: size.height * 1.08)
@@ -31,7 +33,9 @@ enum ImageEnvironmentNodes {
             return fallbackBackgroundNode(size: size)
         }
 
-        let node = SKSpriteNode(texture: texture(named: imageName))
+        let node = SKSpriteNode(
+            texture: BattleTextureCache.texture(named: imageName)
+        )
         node.name = "background"
         node.size = size
         node.position = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -53,7 +57,9 @@ enum ImageEnvironmentNodes {
         let root = SKNode()
         root.name = "ground"
 
-        let node = SKSpriteNode(texture: texture(named: imageName))
+        let node = SKSpriteNode(
+            texture: BattleTextureCache.texture(named: imageName)
+        )
         node.name = "groundImage"
         node.anchorPoint = .zero
         node.size = CGSize(width: size.width, height: groundHeight)
@@ -73,15 +79,38 @@ enum ImageEnvironmentNodes {
         return node
     }
 
-    private static func texture(named imageName: String) -> SKTexture {
+}
+
+enum BattleTextureCache {
+    private static let textureCache = NSCache<NSString, SKTexture>()
+
+    static func invalidate() {
+        textureCache.removeAllObjects()
+    }
+
+    static func texture(named imageName: String) -> SKTexture {
         let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
+        let cacheKey = cachedURL.path() as NSString
+        if let texture = textureCache.object(forKey: cacheKey) {
+            return texture
+        }
+
         if FileManager.default.fileExists(atPath: cachedURL.path()),
             let image = UIImage(contentsOfFile: cachedURL.path())
         {
-            return SKTexture(image: image)
+            let texture = SKTexture(image: image)
+            textureCache.setObject(texture, forKey: cacheKey)
+            return texture
         }
 
-        return SKTexture(image: placeholderImage())
+        let placeholderKey = "placeholder" as NSString
+        if let texture = textureCache.object(forKey: placeholderKey) {
+            return texture
+        }
+
+        let texture = SKTexture(image: placeholderImage())
+        textureCache.setObject(texture, forKey: placeholderKey)
+        return texture
     }
 
     private static func placeholderImage() -> UIImage {

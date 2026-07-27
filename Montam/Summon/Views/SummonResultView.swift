@@ -23,14 +23,6 @@ struct SummonResultView: View {
         VStack(spacing: 18) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Beschwörungsergebnis")
-                        .font(
-                            .system(size: 28, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.72)
-
                     Text(title)
                         .font(
                             .system(size: 15, weight: .heavy, design: .rounded)
@@ -79,7 +71,7 @@ struct SummonResultView: View {
         .padding(.top, 64)
         .padding(.bottom, 26)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(SummonResultBackground())
+        .background(AppScreenBackground())
         .task {
             revealedCount = 0
 
@@ -237,38 +229,32 @@ private struct ResultCircleDecoration: View {
             .fill(accentColor.opacity(0.15))
             .overlay(Circle().stroke(accentColor.opacity(0.28), lineWidth: 10))
             .overlay {
-                VStack(spacing: 7) {
-                    ForEach(0..<6, id: \.self) { _ in
-                        HStack(spacing: 7) {
-                            ForEach(0..<6, id: \.self) { _ in
-                                Circle()
-                                    .fill(.white.opacity(0.18))
-                                    .frame(width: 7, height: 7)
-                            }
+                Canvas { context, size in
+                    let dotSize: CGFloat = 7
+                    let spacing: CGFloat = 14
+                    let gridSize = spacing * 5 + dotSize
+                    let origin = CGPoint(
+                        x: (size.width - gridSize) / 2,
+                        y: (size.height - gridSize) / 2
+                    )
+
+                    for row in 0..<6 {
+                        for column in 0..<6 {
+                            let rect = CGRect(
+                                x: origin.x + CGFloat(column) * spacing,
+                                y: origin.y + CGFloat(row) * spacing,
+                                width: dotSize,
+                                height: dotSize
+                            )
+                            context.fill(
+                                Path(ellipseIn: rect),
+                                with: .color(.white.opacity(0.18))
+                            )
                         }
                     }
                 }
             }
             .padding(12)
-    }
-}
-
-private struct ResultSparkShape: View {
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .frame(width: 12, height: 72)
-            Rectangle()
-                .frame(width: 72, height: 12)
-            Circle()
-                .frame(width: 22, height: 22)
-        }
-    }
-}
-
-private struct SummonResultBackground: View {
-    var body: some View {
-        AppScreenBackground()
     }
 }
 

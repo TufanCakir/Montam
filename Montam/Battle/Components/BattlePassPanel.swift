@@ -96,11 +96,36 @@ struct BattlePassPanel: View {
         max(nextReward?.requiredPoints ?? points, 1)
     }
 
+    private var previousRewardPoints: Int {
+        guard let nextReward,
+            let index = rewards.firstIndex(where: { $0.id == nextReward.id }),
+            index > 0
+        else {
+            return 0
+        }
+
+        return rewards[index - 1].requiredPoints
+    }
+
+    private var currentTierProgress: CGFloat {
+        guard let nextReward else {
+            return 1
+        }
+
+        let required = max(nextReward.requiredPoints - previousRewardPoints, 1)
+        let earned = min(max(points - previousRewardPoints, 0), required)
+        return CGFloat(earned) / CGFloat(required)
+    }
+
+    private var claimedCount: Int {
+        rewards.filter { claimedRewardIds.contains($0.id) }.count
+    }
+
     var body: some View {
         VStack {
             Spacer(minLength: 0)
 
-            VStack(spacing: 14) {
+            VStack(spacing: 12) {
                 header
 
                 if store.hasEventPass {
@@ -121,8 +146,8 @@ struct BattlePassPanel: View {
                 }
             }
             .padding(16)
-            .frame(maxWidth: 360)
-            .rootPassPanelSurface()
+            .frame(maxWidth: 390)
+            .battlePassPanelSurface()
             .padding(.horizontal, 18)
 
             Spacer(minLength: 0)
@@ -133,11 +158,10 @@ struct BattlePassPanel: View {
         HStack(spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(.purple.gradient)
-                    .frame(width: 58, height: 42)
-                Image(systemName: "ticket.fill")
-                    .font(.system(size: 25, weight: .black))
-                    .foregroundStyle(.white)
+                    .fill(.black.opacity(0.22))
+                    .frame(width: 62, height: 46)
+                GameResourceIcon(id: "pass", fallbackImage: nil)
+                    .frame(width: 34, height: 34)
             }
 
             VStack(alignment: .leading, spacing: 2) {
@@ -170,11 +194,23 @@ struct BattlePassPanel: View {
     }
 
     private var passProgress: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(nextReward?.title ?? "Pass abgeschlossen")
-                    .font(.system(size: 16, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(nextReward?.title ?? "Pass abgeschlossen")
+                        .font(
+                            .system(size: 17, weight: .black, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+
+                    Text("\(claimedCount)/\(rewards.count) Belohnungen")
+                        .font(
+                            .system(size: 12, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.white.opacity(0.72))
+                }
 
                 Spacer()
 
@@ -183,22 +219,22 @@ struct BattlePassPanel: View {
                     .foregroundStyle(.cyan)
             }
 
-            GeometryReader { proxy in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(.black.opacity(0.35))
-                    Capsule()
-                        .fill(.cyan)
-                        .frame(
-                            width: proxy.size.width
-                                * min(
-                                    CGFloat(points) / CGFloat(progressTarget),
-                                    1
-                                )
+            BattlePassProgressBar(progress: currentTierProgress)
+
+            if let nextReward {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Naechste Belohnung")
+                        .font(
+                            .system(size: 12, weight: .black, design: .rounded)
                         )
+                        .foregroundStyle(.cyan)
+
+                    RewardIconStrip(reward: nextReward)
                 }
+                .padding(10)
+                .background(.black.opacity(0.18))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            .frame(height: 10)
         }
         .padding(12)
         .background(.blue.opacity(0.26))
@@ -267,6 +303,8 @@ private struct BattlePassRewardRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
+            rewardStateBadge
+
             VStack(alignment: .leading, spacing: 5) {
                 Text(reward.title)
                     .font(.system(size: 16, weight: .black, design: .rounded))
@@ -276,11 +314,7 @@ private struct BattlePassRewardRow: View {
                     .font(.system(size: 12, weight: .heavy, design: .rounded))
                     .foregroundStyle(.cyan)
 
-                Text(rewardSummary)
-                    .font(.system(size: 12, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.78))
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.74)
+                RewardIconStrip(reward: reward)
             }
 
             Spacer(minLength: 0)
@@ -308,26 +342,124 @@ private struct BattlePassRewardRow: View {
         )
     }
 
-    private var rewardSummary: String {
-        var parts: [String] = []
-        if reward.coins > 0 {
-            parts.append("+\(reward.coins) Coins")
+    private var rewardStateBadge: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(
+                    isClaimed
+                        ? Color.green.opacity(0.82)
+                        : canClaim
+                            ? Color.yellow.opacity(0.95)
+                            : Color.black.opacity(0.28)
+                )
+                .frame(width: 36, height: 48)
+
+            Image(
+                systemName: isClaimed
+                    ? "checkmark"
+                    : canClaim
+                        ? "gift.fill"
+                        : "lock.fill"
+            )
+            .font(.system(size: 16, weight: .black))
+            .foregroundStyle(isClaimed || canClaim ? .black : .cyan)
         }
-        if reward.bits > 0 {
-            parts.append("+\(reward.bits) Bits")
+    }
+}
+
+private struct BattlePassProgressBar: View {
+    let progress: CGFloat
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(.black.opacity(0.35))
+
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [.yellow, .cyan],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: proxy.size.width * min(max(progress, 0), 1))
+            }
+            .overlay(alignment: .leading) {
+                HStack(spacing: 0) {
+                    ForEach(0..<6, id: \.self) { index in
+                        Circle()
+                            .fill(
+                                progress >= CGFloat(index + 1) / 6
+                                    ? .white
+                                    : .white.opacity(0.28)
+                            )
+                            .frame(width: 5, height: 5)
+
+                        if index < 5 {
+                            Spacer(minLength: 0)
+                        }
+                    }
+                }
+                .padding(.horizontal, 8)
+            }
         }
-        if reward.summonTickets > 0 {
-            parts.append("+\(reward.summonTickets) Tickets")
+        .frame(height: 13)
+    }
+}
+
+private struct RewardIconStrip: View {
+    let reward: BattlePassRewardDefinition
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(rewardItems) { item in
+                HStack(spacing: 4) {
+                    GameResourceIcon(id: item.resourceId, fallbackImage: nil)
+                        .frame(width: 18, height: 18)
+
+                    Text("+\(GameNumberFormatter.compact(item.amount))")
+                        .font(
+                            .system(size: 11, weight: .black, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                }
+                .padding(.horizontal, 6)
+                .frame(height: 28)
+                .background(.black.opacity(0.24))
+                .clipShape(RoundedRectangle(cornerRadius: 7))
+            }
         }
-        if reward.xp > 0 {
-            parts.append("+\(reward.xp) XP")
-        }
-        return parts.joined(separator: "  ")
+    }
+
+    private var rewardItems: [RewardDisplayItem] {
+        [
+            RewardDisplayItem(resourceId: "coins", amount: reward.coins),
+            RewardDisplayItem(resourceId: "bits", amount: reward.bits),
+            RewardDisplayItem(
+                resourceId: "summon_ticket",
+                amount: reward.summonTickets
+            ),
+            RewardDisplayItem(resourceId: "exp", amount: reward.xp),
+        ]
+        .filter { $0.amount > 0 }
+    }
+}
+
+private struct RewardDisplayItem: Identifiable {
+    let resourceId: String
+    let amount: Int
+
+    var id: String {
+        resourceId
     }
 }
 
 extension View {
-    fileprivate func rootPassPanelSurface() -> some View {
+    fileprivate func battlePassPanelSurface() -> some View {
         background(
             LinearGradient(
                 colors: [

@@ -113,6 +113,41 @@ struct RootQuickMenuPanel: View {
     let onSettingsTap: () -> Void
     let onClose: () -> Void
 
+    private var items: [RootQuickMenuItemData] {
+        [
+            RootQuickMenuItemData(
+                title: "Pass",
+                systemName: "ticket.fill",
+                action: onPassTap
+            ),
+            RootQuickMenuItemData(
+                title: "Daily",
+                systemName: "calendar",
+                action: onDailyTap
+            ),
+            RootQuickMenuItemData(
+                title: "Geschenke",
+                systemName: "gift.fill",
+                action: onGiftTap
+            ),
+            RootQuickMenuItemData(
+                title: "News",
+                systemName: "newspaper.fill",
+                action: onNewsTap
+            ),
+            RootQuickMenuItemData(
+                title: "Mission",
+                systemName: "list.bullet.rectangle.fill",
+                action: onMissionTap
+            ),
+            RootQuickMenuItemData(
+                title: "Optionen",
+                systemName: "gear",
+                action: onSettingsTap
+            ),
+        ]
+    }
+
     private let columns = [
         GridItem(.flexible(), spacing: 10),
         GridItem(.flexible(), spacing: 10),
@@ -137,41 +172,9 @@ struct RootQuickMenuPanel: View {
                 }
 
                 LazyVGrid(columns: columns, spacing: 10) {
-                    RootQuickMenuItem(
-                        title: "Pass",
-                        systemName: "ticket.fill",
-                        action: onPassTap
-                    )
-
-                    RootQuickMenuItem(
-                        title: "Daily",
-                        systemName: "calendar",
-                        action: onDailyTap
-                    )
-
-                    RootQuickMenuItem(
-                        title: "Geschenke",
-                        systemName: "gift.fill",
-                        action: onGiftTap
-                    )
-
-                    RootQuickMenuItem(
-                        title: "News",
-                        systemName: "newspaper.fill",
-                        action: onNewsTap
-                    )
-
-                    RootQuickMenuItem(
-                        title: "Mission",
-                        systemName: "list.bullet.rectangle.fill",
-                        action: onMissionTap
-                    )
-
-                    RootQuickMenuItem(
-                        title: "Optionen",
-                        systemName: "gear",
-                        action: onSettingsTap
-                    )
+                    ForEach(items) { item in
+                        RootQuickMenuItem(item: item)
+                    }
                 }
             }
             .padding(14)
@@ -183,20 +186,26 @@ struct RootQuickMenuPanel: View {
     }
 }
 
-private struct RootQuickMenuItem: View {
+private struct RootQuickMenuItemData: Identifiable {
     let title: String
     let systemName: String
     let action: () -> Void
 
+    var id: String { title }
+}
+
+private struct RootQuickMenuItem: View {
+    let item: RootQuickMenuItemData
+
     var body: some View {
-        Button(action: action) {
+        Button(action: item.action) {
             HStack(spacing: 9) {
-                Image(systemName: systemName)
+                Image(systemName: item.systemName)
                     .font(.system(size: 16, weight: .black))
                     .foregroundStyle(.cyan)
                     .frame(width: 26, height: 26)
 
-                Text(title)
+                Text(item.title)
                     .font(.system(size: 15, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .lineLimit(1)
@@ -224,7 +233,7 @@ struct RootGameFooter: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            RootChromeBackground()
+            RootChromeSurface.gradient
 
             HStack(alignment: .bottom, spacing: 4) {
                 ForEach(RootTab.allCases) { tab in
@@ -239,8 +248,8 @@ struct RootGameFooter: View {
     }
 }
 
-private struct RootChromeBackground: View {
-    var body: some View {
+private enum RootChromeSurface {
+    static var gradient: LinearGradient {
         LinearGradient(
             colors: [
                 Color(red: 0, green: 0.05, blue: 0.18),
@@ -361,7 +370,7 @@ extension View {
     }
 
     fileprivate func rootPanelSurface(cornerRadius: CGFloat) -> some View {
-        background(RootChromeBackground())
+        background(RootChromeSurface.gradient)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)

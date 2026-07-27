@@ -18,13 +18,7 @@ struct RootView: View {
     @Query private var ownedSupporters: [OwnedSupporterData]
     @State private var selectedTab = RootTab.game
     @State private var didShowDailyLogin = false
-    @State private var isDailyPresented = false
-    @State private var isGiftPresented = false
-    @State private var isSettingsPresented = false
-    @State private var isNewsPresented = false
-    @State private var isMissionPresented = false
-    @State private var isPassPresented = false
-    @State private var isQuickMenuPresented = false
+    @State private var presentedModal: RootModal?
 
     private let monsterCatalog =
         JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
@@ -40,13 +34,7 @@ struct RootView: View {
     }
 
     private var isModalPresented: Bool {
-        isDailyPresented
-            || isGiftPresented
-            || isSettingsPresented
-            || isNewsPresented
-            || isMissionPresented
-            || isPassPresented
-            || isQuickMenuPresented
+        presentedModal != nil
     }
 
     var body: some View {
@@ -84,67 +72,8 @@ struct RootView: View {
                     }
             }
 
-            if isQuickMenuPresented {
-                RootQuickMenuPanel(
-                    onPassTap: {
-                        presentModal(.pass)
-                    },
-                    onDailyTap: {
-                        presentModal(.daily)
-                    },
-                    onGiftTap: {
-                        presentModal(.gift)
-                    },
-                    onNewsTap: {
-                        presentModal(.news)
-                    },
-                    onMissionTap: {
-                        presentModal(.mission)
-                    },
-                    onSettingsTap: {
-                        presentModal(.settings)
-                    },
-                    onClose: closeModals
-                )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-
-            if isSettingsPresented {
-                AppSettingsPanel(
-                    onClose: {
-                        closeModals()
-                    },
-                    onDataDeleted: {
-                        closeModals()
-                        onResetToStart()
-                    }
-                )
-                .transition(.scale.combined(with: .opacity))
-            }
-
-            if isNewsPresented {
-                NewsPanel(onClose: closeModals)
-                    .transition(.scale.combined(with: .opacity))
-            }
-
-            if isMissionPresented {
-                MissionPanel(onClose: closeModals)
-                    .transition(.scale.combined(with: .opacity))
-            }
-
-            if isPassPresented {
-                BattlePassPanel(store: gameStore, onClose: closeModals)
-                    .transition(.scale.combined(with: .opacity))
-            }
-
-            if isDailyPresented {
-                DailyLoginPanel(onClose: closeModals)
-                    .transition(.scale.combined(with: .opacity))
-            }
-
-            if isGiftPresented {
-                GiftBoxPanel(onClose: closeModals)
-                    .transition(.scale.combined(with: .opacity))
+            if let presentedModal {
+                modalContent(for: presentedModal)
             }
         }
         .ignoresSafeArea()
@@ -164,36 +93,13 @@ struct RootView: View {
 
     private func closeModals() {
         withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-            isDailyPresented = false
-            isGiftPresented = false
-            isSettingsPresented = false
-            isNewsPresented = false
-            isMissionPresented = false
-            isPassPresented = false
-            isQuickMenuPresented = false
+            presentedModal = nil
         }
     }
 
     private func presentModal(_ modal: RootModal) {
         withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-            isQuickMenuPresented = false
-
-            switch modal {
-            case .daily:
-                isDailyPresented = true
-            case .gift:
-                isGiftPresented = true
-            case .news:
-                isNewsPresented = true
-            case .mission:
-                isMissionPresented = true
-            case .pass:
-                isPassPresented = true
-            case .settings:
-                isSettingsPresented = true
-            case .quickMenu:
-                isQuickMenuPresented = true
-            }
+            presentedModal = modal
         }
     }
 
@@ -208,8 +114,49 @@ struct RootView: View {
         didShowDailyLogin = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-                isDailyPresented = true
+                presentedModal = .daily
             }
+        }
+    }
+
+    @ViewBuilder
+    private func modalContent(for modal: RootModal) -> some View {
+        switch modal {
+        case .quickMenu:
+            RootQuickMenuPanel(
+                onPassTap: { presentModal(.pass) },
+                onDailyTap: { presentModal(.daily) },
+                onGiftTap: { presentModal(.gift) },
+                onNewsTap: { presentModal(.news) },
+                onMissionTap: { presentModal(.mission) },
+                onSettingsTap: { presentModal(.settings) },
+                onClose: closeModals
+            )
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        case .settings:
+            AppSettingsPanel(
+                onClose: closeModals,
+                onDataDeleted: {
+                    closeModals()
+                    onResetToStart()
+                }
+            )
+            .transition(.scale.combined(with: .opacity))
+        case .news:
+            NewsPanel(onClose: closeModals)
+                .transition(.scale.combined(with: .opacity))
+        case .mission:
+            MissionPanel(onClose: closeModals)
+                .transition(.scale.combined(with: .opacity))
+        case .pass:
+            BattlePassPanel(store: gameStore, onClose: closeModals)
+                .transition(.scale.combined(with: .opacity))
+        case .daily:
+            DailyLoginPanel(onClose: closeModals)
+                .transition(.scale.combined(with: .opacity))
+        case .gift:
+            GiftBoxPanel(onClose: closeModals)
+                .transition(.scale.combined(with: .opacity))
         }
     }
 

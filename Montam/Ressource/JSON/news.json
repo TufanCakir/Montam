@@ -2,37 +2,104 @@
     {
         "id": "welcome",
         "title": "Willkommen bei Montam",
-        "message": "News, Events und Hinweise erscheinen künftig hier.",
+        "message": "News, Events und Hinweise erscheinen kuenftig hier.",
         "date": "2026-07-22",
         "category": "Info"
     },
     {
         "id": "event_update",
-        "title": "Event-Ansicht überarbeitet",
-        "message": "Es gibt jetzt mehr Events..",
+        "title": "Event-Ansicht ueberarbeitet",
+        "message":
+            "Events laden stabiler und die Ansicht ist uebersichtlicher aufgebaut.",
         "date": "2026-07-22",
         "category": "Update"
     },
     {
         "id": "summon_update",
-        "title": "Summon-Ansicht überarbeitet",
+        "title": "Summon-Ansicht ueberarbeitet",
         "message":
-            "Banner und Beschwörungsaktionen sind jetzt kompakter und besser scrollbar.",
+            "Banner, Pools und Beschwoerungsaktionen sind kompakter, schneller und besser scrollbar.",
         "date": "2026-07-22",
         "category": "Update"
     },
     {
         "id": "shop_update",
-        "title": "Shop-Ansicht überarbeitet",
-        "message": "Shop Karten sind jetzt kompakter und besser scrollbar.",
+        "title": "Shop-Ansicht ueberarbeitet",
+        "message":
+            "Shop-Karten, Wallet-Anzeige und Produktaktionen sind kompakter und reagieren direkter.",
         "date": "2026-07-22",
         "category": "Update"
     },
     {
         "id": "layout_update",
-        "title": "Game Layout-Ansicht überarbeitet",
-        "message": "Das gesamte Game Layout ist jetzt verbesssert worden.",
+        "title": "Game Layout ueberarbeitet",
+        "message":
+            "Start, Root, Panels, Statusbar und mehrere Menues wurden vereinfacht und lesbarer gemacht.",
         "date": "2026-07-22",
         "category": "Update"
+    },
+    {
+        "id": "remote_loading_update",
+        "title": "Remote Loading verbessert",
+        "message":
+            "Remote-Inhalte laden jetzt paralleler, nutzen bessere Caches und aktualisieren Bilder, JSON und Battle-Texturen sauberer.",
+        "date": "2026-07-27",
+        "category": "Performance"
+    },
+    {
+        "id": "battle_performance_update",
+        "title": "Kampf laeuft fluessiger",
+        "message":
+            "Battle-Szene, Healthbars, Texturen, Belohnungsanzeige und Musik-Lifecycle wurden optimiert.",
+        "date": "2026-07-27",
+        "category": "Performance"
+    },
+    {
+        "id": "panel_cleanup_update",
+        "title": "Panels aufgeraeumt",
+        "message":
+            "Giftbox, Daily Login, Missionen, News und Battle Pass nutzen jetzt gemeinsame Komponenten und weniger doppeltes Layout.",
+        "date": "2026-07-27",
+        "category": "Update"
+    },
+    {
+        "id": "inventory_save_update",
+        "title": "Save und Inventar stabiler",
+        "message":
+            "Waehrungen, Rewards, Battle-Pass-Belohnungen, Shop-Kaeufe und Trades nutzen jetzt zentrale Save-Logik.",
+        "date": "2026-07-27",
+        "category": "Update"
+    },
+    {
+        "id": "json_content_update",
+        "title": "JSON-Daten geprueft",
+        "message":
+            "JSON-Dateien wurden validiert, Remote-Assets erweitert und ungueltige oder doppelte Eintraege bereinigt.",
+        "date": "2026-07-27",
+        "category": "Content"
+    },
+    {
+        "id": "team_summon_trade_update",
+        "title": "Team, Summon und Trade schneller",
+        "message":
+            "Lookups, Gruppierungen und ViewModels wurden vereinfacht, damit Listen und Auswahlen schneller reagieren.",
+        "date": "2026-07-27",
+        "category": "Performance"
+    },
+    {
+        "id": "app_cleanup_update",
+        "title": "App-Start und Einstellungen verbessert",
+        "message":
+            "App-Flow, Social Links, Versionsanzeige, Migration und Einstellungen wurden robuster und sauberer gemacht.",
+        "date": "2026-07-27",
+        "category": "Update"
+    },
+    {
+        "id": "new_bg_update",
+        "title": "Neue Hintergrundbilder hinzugefuegt",
+        "message":
+            "Vier neue Hintergrundbilder wurden fuer mehr Abwechslung im Spiel hinzugefuegt.",
+        "date": "2026-07-27",
+        "category": "Content"
     }
 ]

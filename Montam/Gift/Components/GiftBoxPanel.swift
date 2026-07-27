@@ -24,8 +24,10 @@ struct GiftBoxPanel: View {
             } else {
                 VStack(spacing: 12) {
                     HStack(spacing: 10) {
-                        GiftActionButton(title: "Alles abholen", color: .yellow)
-                        {
+                        GamePanelActionButton(
+                            title: "Alles abholen",
+                            color: .yellow
+                        ) {
                             GiftBoxService.claimAll(
                                 gifts: gifts,
                                 saves: saves,
@@ -34,7 +36,7 @@ struct GiftBoxPanel: View {
                             reloadGifts()
                         }
 
-                        GiftActionButton(title: "Leeren", color: .red) {
+                        GamePanelActionButton(title: "Leeren", color: .red) {
                             GiftBoxService.clearGiftBox(
                                 saves: saves,
                                 modelContext: modelContext
@@ -60,17 +62,10 @@ struct GiftBoxPanel: View {
                     .frame(maxHeight: 430)
                 }
                 .padding(16)
-                .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+                .gamePanelBodyBackground()
             }
         }
-        .frame(width: 352)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16).stroke(
-                .cyan.opacity(0.9),
-                lineWidth: 3
-            )
-        )
+        .gamePanelFrame()
         .onAppear {
             reloadGifts()
         }
@@ -81,41 +76,11 @@ struct GiftBoxPanel: View {
     }
 
     private var panelHeader: some View {
-        HStack {
-            Text("Geschenke")
-                .font(.system(size: 27, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-
-            Spacer()
-
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
-                    .background(Color.black.opacity(0.24))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 20)
-        .frame(height: 60)
-        .background(
-            LinearGradient(
-                colors: [.blue, .cyan.opacity(0.78)],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
+        GamePanelHeader(title: "Geschenke", onClose: onClose)
     }
 
     private var emptyState: some View {
-        Text("Keine Geschenke vorhanden.")
-            .font(.system(size: 18, weight: .heavy, design: .rounded))
-            .foregroundStyle(.cyan)
-            .padding(20)
-            .frame(maxWidth: .infinity)
-            .background(Color(red: 0.04, green: 0.16, blue: 0.34))
+        GamePanelEmptyState(title: "Keine Geschenke vorhanden.")
     }
 }
 
@@ -137,11 +102,15 @@ private struct GiftCard: View {
 
             HStack(spacing: 8) {
                 ForEach(gift.rewards.filter { $0.amount > 0 }) { reward in
-                    GiftReward(reward: reward)
+                    GameRewardPill(reward: reward)
                 }
             }
 
-            GiftActionButton(title: "Abholen", color: .cyan, action: onClaim)
+            GamePanelActionButton(
+                title: "Abholen",
+                color: .cyan,
+                action: onClaim
+            )
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -156,7 +125,7 @@ private struct GiftCard: View {
     }
 }
 
-private struct GiftReward: View {
+struct GameRewardPill: View {
     let reward: RewardData
 
     var body: some View {
@@ -178,7 +147,7 @@ private struct GiftReward: View {
     }
 }
 
-private struct GiftActionButton: View {
+struct GamePanelActionButton: View {
     let title: String
     let color: Color
     let action: () -> Void
@@ -202,5 +171,85 @@ private struct GiftActionButton: View {
                 )
         }
         .buttonStyle(.plain)
+    }
+}
+
+struct GamePanelHeader<Trailing: View>: View {
+    let title: String
+    let onClose: () -> Void
+    @ViewBuilder let trailing: () -> Trailing
+
+    init(
+        title: String,
+        onClose: @escaping () -> Void,
+        @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }
+    ) {
+        self.title = title
+        self.onClose = onClose
+        self.trailing = trailing
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(title)
+                .font(.system(size: 27, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            Spacer()
+
+            trailing()
+
+            Button(action: onClose) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 15, weight: .black))
+                    .foregroundStyle(.white)
+                    .frame(width: 34, height: 34)
+                    .background(Color.black.opacity(0.24))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 20)
+        .frame(height: 60)
+        .background(
+            LinearGradient(
+                colors: [.blue, .cyan.opacity(0.78)],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
+    }
+}
+
+struct GamePanelEmptyState: View {
+    let title: String
+
+    var body: some View {
+        Text(title)
+            .font(.system(size: 17, weight: .heavy, design: .rounded))
+            .foregroundStyle(.cyan)
+            .multilineTextAlignment(.center)
+            .padding(22)
+            .frame(maxWidth: .infinity)
+            .gamePanelBodyBackground()
+    }
+}
+
+extension View {
+    func gamePanelBodyBackground() -> some View {
+        background(Color(red: 0.04, green: 0.16, blue: 0.34))
+    }
+
+    func gamePanelFrame(width: CGFloat = 352) -> some View {
+        frame(width: width)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16).stroke(
+                    .cyan.opacity(0.9),
+                    lineWidth: 3
+                )
+            )
     }
 }

@@ -10,7 +10,7 @@ import SwiftData
 @MainActor
 enum TradeInventoryService {
     static func canTrade(_ offer: TradeOfferData, save: GameSaveData?) -> Bool {
-        amount(for: offer.costCurrency, save: save) >= offer.costAmount
+        save?.canSpend(offer.costCurrency, amount: offer.costAmount) ?? false
     }
 
     static func performTrade(
@@ -38,21 +38,6 @@ enum TradeInventoryService {
         return "Tausch abgeschlossen."
     }
 
-    private static func amount(for currency: String, save: GameSaveData?) -> Int
-    {
-        guard let save else {
-            return 0
-        }
-
-        return switch GameCurrency.normalized(currency) {
-        case "coins": save.coins
-        case "crystals": save.crystals
-        case "summon_ticket": save.summonTickets
-        case "bits": save.bits
-        default: 0
-        }
-    }
-
     private static func change(
         _ currency: String,
         by amount: Int,
@@ -60,14 +45,7 @@ enum TradeInventoryService {
         modelContext: ModelContext
     ) {
         let save = ensureSave(saves: saves, modelContext: modelContext)
-
-        switch GameCurrency.normalized(currency) {
-        case "coins": save.coins += amount
-        case "crystals": save.crystals += amount
-        case "summon_ticket": save.summonTickets += amount
-        case "bits": save.bits += amount
-        default: break
-        }
+        save.changeCurrency(currency, by: amount)
     }
 
     private static func ensureSave(
