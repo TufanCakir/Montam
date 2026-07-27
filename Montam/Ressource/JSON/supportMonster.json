@@ -9,7 +9,19 @@
         "scaleMultiplier": 0.80,
         "attackBonus": 0.08,
         "defenseBonus": 0.04,
-        "healthBonus": 0.08
+        "healthBonus": 0.08,
+        "hpRegenBonus": 0.01,
+        "speedBonus": 0.03,
+        "xpBonus": 0.05,
+        "coinBonus": 0.06,
+        "crystalBonus": 0.02,
+        "bitBonus": 0.06,
+        "ticketBonus": 0.02,
+        "allCurrencyBonus": 0.00,
+        "coinDropChanceBonus": 0.04,
+        "crystalDropChanceBonus": 0.01,
+        "bitDropChanceBonus": 0.03,
+        "ticketDropChanceBonus": 0.01
     },
     {
         "bannerId": "support_mon_embon_banner",
@@ -21,6 +33,18 @@
         "scaleMultiplier": 0.80,
         "attackBonus": 0.08,
         "defenseBonus": 0.04,
-        "healthBonus": 0.08
+        "healthBonus": 0.08,
+        "hpRegenBonus": 0.01,
+        "speedBonus": 0.03,
+        "xpBonus": 0.05,
+        "coinBonus": 0.06,
+        "crystalBonus": 0.02,
+        "bitBonus": 0.06,
+        "ticketBonus": 0.02,
+        "allCurrencyBonus": 0.00,
+        "coinDropChanceBonus": 0.04,
+        "crystalDropChanceBonus": 0.01,
+        "bitDropChanceBonus": 0.03,
+        "ticketDropChanceBonus": 0.01
     }
 ]

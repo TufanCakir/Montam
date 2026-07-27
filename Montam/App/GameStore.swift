@@ -180,7 +180,19 @@ struct GameStore {
                 scaleMultiplier: supportEntry?.scaleMultiplier,
                 attackBonus: supportEntry?.attackBonus,
                 defenseBonus: supportEntry?.defenseBonus,
-                healthBonus: supportEntry?.healthBonus
+                healthBonus: supportEntry?.healthBonus,
+                hpRegenBonus: supportEntry?.hpRegenBonus,
+                speedBonus: supportEntry?.speedBonus,
+                xpBonus: supportEntry?.xpBonus,
+                coinBonus: supportEntry?.coinBonus,
+                crystalBonus: supportEntry?.crystalBonus,
+                bitBonus: supportEntry?.bitBonus,
+                ticketBonus: supportEntry?.ticketBonus,
+                allCurrencyBonus: supportEntry?.allCurrencyBonus,
+                coinDropChanceBonus: supportEntry?.coinDropChanceBonus,
+                crystalDropChanceBonus: supportEntry?.crystalDropChanceBonus,
+                bitDropChanceBonus: supportEntry?.bitDropChanceBonus,
+                ticketDropChanceBonus: supportEntry?.ticketDropChanceBonus
             )
         }
     }
@@ -218,16 +230,57 @@ struct GameStore {
         progression: GameProgressionData
     ) {
         let save = ensureSave()
+        let supportBonuses = SupporterBonusSummary.from(
+            runtimeSelectedSupporters()
+        )
+        let boostedXP = boostedAmount(reward.xp, by: supportBonuses.xpBonus)
+        let boostedCoins = boostedAmount(
+            reward.coins,
+            by: supportBonuses.coinBonus + supportBonuses.allCurrencyBonus
+        )
+        let boostedCrystals = boostedAmount(
+            reward.crystals,
+            by: supportBonuses.crystalBonus + supportBonuses.allCurrencyBonus
+        )
+        let boostedBits = boostedAmount(
+            reward.bits,
+            by: supportBonuses.bitBonus + supportBonuses.allCurrencyBonus
+        )
+        let boostedTickets = boostedAmount(
+            reward.summonTickets,
+            by: supportBonuses.ticketBonus + supportBonuses.allCurrencyBonus
+        )
 
         for monster in ownedMonsters where monster.isSelected {
-            monster.xp += reward.xp
+            monster.xp += boostedXP
             levelUpIfNeeded(monster, progression: progression)
         }
 
-        save.coins += reward.coins
-        save.crystals += reward.crystals
-        save.bits += reward.bits
-        save.montamPassPoints += reward.xp
+        save.coins += boostedCoins
+            + bonusDropAmount(
+                baseAmount: reward.coins,
+                fallbackAmount: 1,
+                chance: supportBonuses.coinDropChanceBonus
+            )
+        save.crystals += boostedCrystals
+            + bonusDropAmount(
+                baseAmount: reward.crystals,
+                fallbackAmount: 1,
+                chance: supportBonuses.crystalDropChanceBonus
+            )
+        save.bits += boostedBits
+            + bonusDropAmount(
+                baseAmount: reward.bits,
+                fallbackAmount: 1,
+                chance: supportBonuses.bitDropChanceBonus
+            )
+        save.summonTickets += boostedTickets
+            + bonusDropAmount(
+                baseAmount: reward.summonTickets,
+                fallbackAmount: 1,
+                chance: supportBonuses.ticketDropChanceBonus
+            )
+        save.montamPassPoints += boostedXP
         refreshPlayerStats(
             save: save,
             monsterCatalog: monsterCatalog,
@@ -235,6 +288,23 @@ struct GameStore {
         )
 
         try? modelContext.save()
+    }
+
+    private func boostedAmount(_ amount: Int, by bonus: Double) -> Int {
+        guard amount > 0, bonus > 0 else { return amount }
+        return max(amount, Int((Double(amount) * (1 + bonus)).rounded()))
+    }
+
+    private func bonusDropAmount(
+        baseAmount: Int,
+        fallbackAmount: Int,
+        chance: Double
+    ) -> Int {
+        guard chance > 0, Double.random(in: 0...1) < min(chance, 1) else {
+            return 0
+        }
+
+        return max(baseAmount, fallbackAmount)
     }
 
     func claimBattlePassReward(_ reward: BattlePassRewardDefinition) -> Bool {

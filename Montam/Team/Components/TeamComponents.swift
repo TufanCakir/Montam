@@ -100,6 +100,7 @@ struct SupportTeamContent: View {
     let onSelect: (String) -> Void
 
     @State private var selectedCategory = SupporterCategory.montam
+    @State private var isBonusInfoPresented = false
 
     private var filteredRows: [TeamSupporterRow] {
         rows.filter { $0.category == selectedCategory }
@@ -112,71 +113,101 @@ struct SupportTeamContent: View {
                 message: "Supporter werden aus deinen Besitzdaten angezeigt."
             )
         } else {
-            VStack(spacing: 10) {
-                SupporterCategoryTabs(selectedCategory: $selectedCategory)
-
-                if filteredRows.isEmpty {
-                    CompactTeamInfo(
-                        title: "Kein \(selectedCategory.title) Support",
-                        message: "Diese Supporter bekommst du ueber Beschwoerung."
-                    )
-                } else {
-                    ForEach(filteredRows) { row in
-                    Button {
-                        onSelect(row.id)
-                    } label: {
-                        HStack(spacing: 10) {
-                            RemoteAssetImage(imageName: row.imageName)
-                                .scaledToFit()
-                                .frame(width: 58, height: 58)
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(row.name)
-                                    .font(
-                                        .system(
-                                            size: 18,
-                                            weight: .heavy,
-                                            design: .rounded
-                                        )
-                                    )
-                                    .foregroundStyle(.white)
-                                Text(
-                                    row.isMonster
-                                        ? "Monster Support • Lv. \(row.level)"
-                                        : "Tamer Support • Lv. \(row.level)"
-                                )
-                                .font(
-                                    .system(
-                                        size: 12,
-                                        weight: .bold,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(.cyan)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.65)
-                            }
-
-                            Spacer()
-
-                            Image(
-                                systemName: row.isSelected
-                                    ? "checkmark.circle.fill" : "circle"
-                            )
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundStyle(
-                                row.isSelected ? .yellow : .cyan.opacity(0.55)
-                            )
-                        }
-                        .padding(.horizontal, 10)
-                        .frame(height: 72)
-                        .background(
-                            Color.black.opacity(row.isSelected ? 0.36 : 0.2)
+            ZStack {
+                VStack(spacing: 10) {
+                    HStack(spacing: 8) {
+                        SupporterCategoryTabs(
+                            selectedCategory: $selectedCategory
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: 7))
+
+                        Button {
+                            isBonusInfoPresented = true
+                        } label: {
+                            Image(systemName: "info.circle.fill")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 40, height: 34)
+                                .background(Color.black.opacity(0.3))
+                                .clipShape(RoundedRectangle(cornerRadius: 7))
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
+
+                    if filteredRows.isEmpty {
+                        CompactTeamInfo(
+                            title: "Kein \(selectedCategory.title) Support",
+                            message:
+                                "Diese Supporter bekommst du ueber Beschwoerung."
+                        )
+                    } else {
+                        ForEach(filteredRows) { row in
+                            Button {
+                                onSelect(row.id)
+                            } label: {
+                                HStack(spacing: 10) {
+                                    RemoteAssetImage(imageName: row.imageName)
+                                        .scaledToFit()
+                                        .frame(width: 58, height: 58)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(row.name)
+                                            .font(
+                                                .system(
+                                                    size: 18,
+                                                    weight: .heavy,
+                                                    design: .rounded
+                                                )
+                                            )
+                                            .foregroundStyle(.white)
+                                        Text(
+                                            row.isMonster
+                                                ? "Monster Support • Lv. \(row.level)"
+                                                : "Tamer Support • Lv. \(row.level)"
+                                        )
+                                        .font(
+                                            .system(
+                                                size: 12,
+                                                weight: .bold,
+                                                design: .rounded
+                                            )
+                                        )
+                                        .foregroundStyle(.cyan)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.65)
+                                    }
+
+                                    Spacer()
+
+                                    Image(
+                                        systemName: row.isSelected
+                                            ? "checkmark.circle.fill" : "circle"
+                                    )
+                                    .font(.system(size: 22, weight: .bold))
+                                    .foregroundStyle(
+                                        row.isSelected
+                                            ? .yellow : .cyan.opacity(0.55)
+                                    )
+                                }
+                                .padding(.horizontal, 10)
+                                .frame(height: 72)
+                                .background(
+                                    Color.black.opacity(
+                                        row.isSelected ? 0.36 : 0.2
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: 7))
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
+                }
+
+                if isBonusInfoPresented {
+                    SupporterBonusInfoPopup(
+                        rows: rows.filter(\.isSelected),
+                        onClose: { isBonusInfoPresented = false }
+                    )
+                    .transition(.scale.combined(with: .opacity))
                 }
             }
             .onAppear(perform: selectAvailableCategoryIfNeeded)
@@ -194,6 +225,102 @@ struct SupportTeamContent: View {
         }
 
         selectedCategory = firstCategory
+    }
+}
+
+private struct SupporterBonusInfoPopup: View {
+    let rows: [TeamSupporterRow]
+    let onClose: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55)
+                .ignoresSafeArea()
+                .onTapGesture(perform: onClose)
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Support-Boni")
+                        .font(
+                            .system(size: 22, weight: .heavy, design: .rounded)
+                        )
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    Button(action: onClose) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(.cyan)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if rows.isEmpty {
+                    Text("Keine aktiven Supporter.")
+                        .font(
+                            .system(size: 15, weight: .bold, design: .rounded)
+                        )
+                        .foregroundStyle(.cyan)
+                } else {
+                    ForEach(rows) { row in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 8) {
+                                RemoteAssetImage(imageName: row.imageName)
+                                    .scaledToFit()
+                                    .frame(width: 38, height: 38)
+                                Text(row.name)
+                                    .font(
+                                        .system(
+                                            size: 17,
+                                            weight: .heavy,
+                                            design: .rounded
+                                        )
+                                    )
+                                    .foregroundStyle(.white)
+                            }
+
+                            if row.bonusLines.isEmpty {
+                                Text("Noch keine Boni in JSON eingetragen.")
+                                    .font(
+                                        .system(
+                                            size: 13,
+                                            weight: .bold,
+                                            design: .rounded
+                                        )
+                                    )
+                                    .foregroundStyle(.gray)
+                            } else {
+                                ForEach(row.bonusLines, id: \.self) { line in
+                                    Text(line)
+                                        .font(
+                                            .system(
+                                                size: 13,
+                                                weight: .bold,
+                                                design: .rounded
+                                            )
+                                        )
+                                        .foregroundStyle(.cyan)
+                                }
+                            }
+                        }
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.black.opacity(0.28))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: 360)
+            .background(Color.blue.opacity(0.88))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(.cyan.opacity(0.8), lineWidth: 2)
+            )
+            .padding(18)
+        }
     }
 }
 

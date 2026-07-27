@@ -73,7 +73,9 @@ struct BattleUnitFactory {
                 defenseBonus: supporter.defenseBonus
                     ?? min(Double(monster.defense ?? 0) / 4_000, 0.14),
                 healthBonus: supporter.healthBonus
-                    ?? min(Double(monster.hp ?? 0) / 20_000, 0.16)
+                    ?? min(Double(monster.hp ?? 0) / 20_000, 0.16),
+                hpRegenBonus: supporter.hpRegenBonus ?? 0,
+                speedBonus: supporter.speedBonus ?? 0
             )
         }
 
@@ -118,7 +120,9 @@ struct BattleUnitFactory {
                     ?? 0,
                 healthBonus: supporter.healthBonus
                     ?? tamer.supportHealthBonus
-                    ?? 0
+                    ?? 0,
+                hpRegenBonus: supporter.hpRegenBonus ?? 0,
+                speedBonus: supporter.speedBonus ?? 0
             )
         }
 
@@ -152,7 +156,9 @@ struct BattleUnitFactory {
             ),
             attackBonus: supporter.attackBonus ?? 0.10,
             defenseBonus: supporter.defenseBonus ?? 0.08,
-            healthBonus: supporter.healthBonus ?? 0.10
+            healthBonus: supporter.healthBonus ?? 0.10,
+            hpRegenBonus: supporter.hpRegenBonus ?? 0,
+            speedBonus: supporter.speedBonus ?? 0
         )
     }
 

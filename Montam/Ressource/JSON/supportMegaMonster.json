@@ -9,6 +9,18 @@
         "scaleMultiplier": 1,
         "attackBonus": 0.16,
         "defenseBonus": 0.10,
-        "healthBonus": 0.12
+        "healthBonus": 0.12,
+        "hpRegenBonus": 0.015,
+        "speedBonus": 0.05,
+        "xpBonus": 0.10,
+        "coinBonus": 0.10,
+        "crystalBonus": 0.04,
+        "bitBonus": 0.10,
+        "ticketBonus": 0.05,
+        "allCurrencyBonus": 0.03,
+        "coinDropChanceBonus": 0.06,
+        "crystalDropChanceBonus": 0.02,
+        "bitDropChanceBonus": 0.05,
+        "ticketDropChanceBonus": 0.02
     }
 ]

@@ -80,6 +80,7 @@ struct TeamSupporterRow: Identifiable {
     let level: Int
     let isMonster: Bool
     let isSelected: Bool
+    let bonusLines: [String]
 }
 
 @Observable
@@ -95,6 +96,7 @@ final class TeamViewModel {
         ) ?? []
     private let summons =
         JSONDataLoader.load("summon", as: [SummonData].self) ?? []
+    private let supporterData = SupporterData.loadAll()
     private let progression =
         JSONDataLoader.load("battleConfig", as: GameProgressionData.self)
         ?? GameProgressionData()
@@ -116,7 +118,8 @@ final class TeamViewModel {
                     category: category(for: owned),
                     level: owned.level,
                     isMonster: true,
-                    isSelected: owned.isSelected
+                    isSelected: owned.isSelected,
+                    bonusLines: bonusLines(for: owned)
                 )
             }
 
@@ -131,7 +134,8 @@ final class TeamViewModel {
                     category: category(for: owned),
                     level: owned.level,
                     isMonster: true,
-                    isSelected: owned.isSelected
+                    isSelected: owned.isSelected,
+                    bonusLines: bonusLines(for: owned)
                 )
             }
 
@@ -145,12 +149,53 @@ final class TeamViewModel {
                     category: category(for: owned),
                     level: owned.level,
                     isMonster: false,
-                    isSelected: owned.isSelected
+                    isSelected: owned.isSelected,
+                    bonusLines: bonusLines(for: owned)
                 )
             }
 
             return nil
         }
+    }
+
+    private func bonusLines(for owned: OwnedSupporterData) -> [String] {
+        let entry = matchingSupporterEntry(for: owned)
+        let runtime = RuntimeOwnedSupporter(
+            characterId: owned.characterId,
+            imageName: owned.imageName,
+            level: owned.level,
+            isMonster: owned.isMonster,
+            xOffset: entry?.xOffset,
+            yOffset: entry?.yOffset,
+            zOffset: entry?.zOffset,
+            scaleMultiplier: entry?.scaleMultiplier,
+            attackBonus: entry?.attackBonus,
+            defenseBonus: entry?.defenseBonus,
+            healthBonus: entry?.healthBonus,
+            hpRegenBonus: entry?.hpRegenBonus,
+            speedBonus: entry?.speedBonus,
+            xpBonus: entry?.xpBonus,
+            coinBonus: entry?.coinBonus,
+            crystalBonus: entry?.crystalBonus,
+            bitBonus: entry?.bitBonus,
+            ticketBonus: entry?.ticketBonus,
+            allCurrencyBonus: entry?.allCurrencyBonus,
+            coinDropChanceBonus: entry?.coinDropChanceBonus,
+            crystalDropChanceBonus: entry?.crystalDropChanceBonus,
+            bitDropChanceBonus: entry?.bitDropChanceBonus,
+            ticketDropChanceBonus: entry?.ticketDropChanceBonus
+        )
+
+        return SupporterBonusSummary.from([runtime]).displayLines
+    }
+
+    private func matchingSupporterEntry(
+        for owned: OwnedSupporterData
+    ) -> SupporterData? {
+        supporterData.first {
+            $0.bannerId == owned.bannerId && $0.characterId == owned.characterId
+        }
+        ?? supporterData.first { $0.characterId == owned.characterId }
     }
 
     private func category(for owned: OwnedSupporterData) -> SupporterCategory {

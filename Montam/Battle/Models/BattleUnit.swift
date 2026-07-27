@@ -24,6 +24,8 @@ final class BattleUnit {
     let attackBonus: Double
     let defenseBonus: Double
     let healthBonus: Double
+    let hpRegenBonus: Double
+    let speedBonus: Double
 
     var isAlive: Bool {
         currentHP > 0
@@ -45,7 +47,9 @@ final class BattleUnit {
         zOffset: Int = 0,
         attackBonus: Double = 0,
         defenseBonus: Double = 0,
-        healthBonus: Double = 0
+        healthBonus: Double = 0,
+        hpRegenBonus: Double = 0,
+        speedBonus: Double = 0
     ) {
         self.node = node
         self.side = side
@@ -63,5 +67,7 @@ final class BattleUnit {
         self.attackBonus = attackBonus
         self.defenseBonus = defenseBonus
         self.healthBonus = healthBonus
+        self.hpRegenBonus = hpRegenBonus
+        self.speedBonus = speedBonus
     }
 }

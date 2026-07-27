@@ -59,4 +59,5 @@ struct BattleWaveReward {
     let coins: Int
     let crystals: Int
     let bits: Int
+    let summonTickets: Int
 }

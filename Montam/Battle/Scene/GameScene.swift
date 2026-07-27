@@ -728,14 +728,40 @@ final class GameScene: SKScene {
 
         playerAttack()
         enemyAttack()
+        regeneratePlayerUnits()
         refreshHealthBars()
 
         run(
             .sequence([
-                .wait(forDuration: config.attackInterval),
+                .wait(forDuration: adjustedAttackInterval(config)),
                 .run { [weak self] in self?.runCombatLoop() },
             ])
         )
+    }
+
+    private func adjustedAttackInterval(_ config: BattleConfigData)
+        -> TimeInterval
+    {
+        let speedBonus = supportUnits.reduce(0) { $0 + $1.speedBonus }
+            + supporterUnits.reduce(0) { $0 + $1.speedBonus }
+        guard speedBonus > 0 else {
+            return config.attackInterval
+        }
+
+        return max(0.18, config.attackInterval / (1 + speedBonus))
+    }
+
+    private func regeneratePlayerUnits() {
+        let hpRegenBonus = supportUnits.reduce(0) { $0 + $1.hpRegenBonus }
+            + supporterUnits.reduce(0) { $0 + $1.hpRegenBonus }
+        guard hpRegenBonus > 0 else {
+            return
+        }
+
+        for unit in playerUnits where unit.isAlive {
+            let heal = max(1, Int((Double(unit.maxHP) * hpRegenBonus).rounded()))
+            unit.currentHP = min(unit.maxHP, unit.currentHP + heal)
+        }
     }
 
     private func playerAttack() {
@@ -854,7 +880,8 @@ final class GameScene: SKScene {
             xp: wave.xpReward ?? 0,
             coins: roll(chance: coinChance) ? rewards.coins : 0,
             crystals: roll(chance: crystalChance) ? rewards.crystals : 0,
-            bits: roll(chance: bitChance) ? rewards.bits ?? 0 : 0
+            bits: roll(chance: bitChance) ? rewards.bits ?? 0 : 0,
+            summonTickets: 0
         )
     }
 

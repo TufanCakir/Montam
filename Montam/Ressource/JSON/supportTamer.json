@@ -9,7 +9,19 @@
         "scaleMultiplier": 0.80,
         "attackBonus": 0.18,
         "defenseBonus": 0.08,
-        "healthBonus": 0.15
+        "healthBonus": 0.15,
+        "hpRegenBonus": 0.02,
+        "speedBonus": 0.04,
+        "xpBonus": 0.12,
+        "coinBonus": 0.08,
+        "crystalBonus": 0.03,
+        "bitBonus": 0.08,
+        "ticketBonus": 0.04,
+        "allCurrencyBonus": 0.02,
+        "coinDropChanceBonus": 0.05,
+        "crystalDropChanceBonus": 0.015,
+        "bitDropChanceBonus": 0.04,
+        "ticketDropChanceBonus": 0.015
     },
     {
         "bannerId": "support_tamer_rick_banner",
@@ -21,6 +33,18 @@
         "scaleMultiplier": 0.80,
         "attackBonus": 0.18,
         "defenseBonus": 0.08,
-        "healthBonus": 0.15
+        "healthBonus": 0.15,
+        "hpRegenBonus": 0.02,
+        "speedBonus": 0.04,
+        "xpBonus": 0.12,
+        "coinBonus": 0.08,
+        "crystalBonus": 0.03,
+        "bitBonus": 0.08,
+        "ticketBonus": 0.04,
+        "allCurrencyBonus": 0.02,
+        "coinDropChanceBonus": 0.05,
+        "crystalDropChanceBonus": 0.015,
+        "bitDropChanceBonus": 0.04,
+        "ticketDropChanceBonus": 0.015
     }
 ]
