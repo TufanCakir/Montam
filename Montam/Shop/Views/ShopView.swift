@@ -19,7 +19,8 @@ struct ShopView: View {
         VStack(spacing: 0) {
             ScrollView(.vertical, showsIndicators: false) {
                 shopContent
-                    .padding(.horizontal)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
             }
 
             ShopSectionTabs(selectedSection: $viewModel.selectedSection)

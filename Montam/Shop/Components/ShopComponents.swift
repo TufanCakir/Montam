@@ -17,6 +17,12 @@ private enum ShopCardStyle {
     static let cardHeight: CGFloat = 180
     static let strokeWidth: CGFloat = 2
     static let strongStrokeWidth: CGFloat = 3
+    static let gridSpacing: CGFloat = 12
+
+    static let twoColumnGrid = [
+        GridItem(.flexible(), spacing: gridSpacing),
+        GridItem(.flexible(), spacing: gridSpacing),
+    ]
 }
 
 struct ShopProductGridContent: View {
@@ -30,10 +36,8 @@ struct ShopProductGridContent: View {
             ShopEmptyContent(title: emptyTitle)
         } else {
             LazyVGrid(
-                columns: [
-                    GridItem(.adaptive(minimum: 112, maximum: 160), spacing: 18)
-                ],
-                spacing: 18
+                columns: ShopCardStyle.twoColumnGrid,
+                spacing: ShopCardStyle.gridSpacing
             ) {
                 ForEach(products) { product in
                     ShopProductCard(
@@ -57,17 +61,14 @@ struct ItemShopContent: View {
             ShopEmptyContent(title: emptyTitle)
         } else {
             LazyVGrid(
-                columns: [
-                    GridItem(.adaptive(minimum: 132, maximum: 190), spacing: 12)
-                ],
-                spacing: 13
+                columns: ShopCardStyle.twoColumnGrid,
+                spacing: ShopCardStyle.gridSpacing
             ) {
                 ForEach(products) { product in
                     ItemShopProductCard(
                         state: cardState(product),
                         onBuy: onBuy
                     )
-                    .frame(maxWidth: 190)
                 }
             }
         }
