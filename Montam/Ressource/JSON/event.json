@@ -36,7 +36,7 @@
     {
         "id": "event_exp_hunt_01",
         "category": "hunt",
-        "eventBackground": "bg_heavenly_grasslands",
+        "eventBackground": "bg_lava_world_with_volcanoes",
         "title": "EXP Jagd",
         "description": "Kurzer Kampf zum Leveln deiner aktiven Montams.",
         "titleKey": "event.expHunt.title",
@@ -62,7 +62,7 @@
     {
         "id": "event_ticket_hunt_01",
         "category": "hunt",
-        "eventBackground": "bg_floating_islands",
+        "eventBackground": "bg_snow_covered_mountai_valley",
         "title": "Ticket Jagd",
         "description": "Sammle Summon Tickets für Support-Banner.",
         "titleKey": "event.ticketHunt.title",
@@ -88,7 +88,7 @@
     {
         "id": "event_crystal_hunt_01",
         "category": "hunt",
-        "eventBackground": "bg_crystal_cave_entrance",
+        "eventBackground": "bg_desert_canyon",
         "title": "Kristall Jagd",
         "description": "Seltene Kristalle mit Bonus EXP.",
         "titleKey": "event.crystalHunt.title",
@@ -114,7 +114,7 @@
     {
         "id": "event_bit_hunt_01",
         "category": "hunt",
-        "eventBackground": "bg_snowy_mountain_valley",
+        "eventBackground": "bg_ancient_ruins",
         "title": "Bit Jagd",
         "description": "Sammle Bits für Upgrades.",
         "titleKey": "event.bitHunt.title",
@@ -140,7 +140,7 @@
     {
         "id": "event_coin_hunt_01",
         "category": "hunt",
-        "eventBackground": "bg_desert_canyon",
+        "eventBackground": "bg_autumn_forest",
         "title": "Coin Jagd",
         "description": "Viele Coins und normale Kampf EXP.",
         "titleKey": "event.coinHunt.title",

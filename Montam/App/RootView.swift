@@ -166,12 +166,13 @@ struct RootView: View {
 
     @ViewBuilder
     private var layeredRootContent: some View {
-        if selectedTab == .game {
-            rootContent
+        ZStack {
+            GameView(isPaused: false, store: gameStore)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
-        } else {
-            ZStack {
+                .allowsHitTesting(selectedTab == .game && !isModalPresented)
+
+            if selectedTab != .game {
                 AppScreenBackground()
                     .ignoresSafeArea()
 
@@ -180,8 +181,8 @@ struct RootView: View {
                     .padding(.top, RootLayoutMetrics.headerHeight)
                     .padding(.bottom, RootLayoutMetrics.footerHeight)
             }
-            .ignoresSafeArea()
         }
+        .ignoresSafeArea()
     }
 
     @ViewBuilder
@@ -194,7 +195,7 @@ struct RootView: View {
         case .dungeon:
             EventView()
         case .game:
-            GameView(isPaused: isModalPresented, store: gameStore)
+            EmptyView()
         case .summon:
             SummonView(store: gameStore)
         case .shop:
