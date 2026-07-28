@@ -11,21 +11,25 @@
             {
                 "rarity": "common",
                 "title": "Common",
+                "titleKey": "summon.rarity.common",
                 "weight": 7000
             },
             {
                 "rarity": "rare",
                 "title": "Rare",
+                "titleKey": "summon.rarity.rare",
                 "weight": 2200
             },
             {
                 "rarity": "epic",
                 "title": "Epic",
+                "titleKey": "summon.rarity.epic",
                 "weight": 750
             },
             {
                 "rarity": "legendary",
                 "title": "Legendär",
+                "titleKey": "summon.rarity.legendary",
                 "weight": 50
             }
         ]
@@ -42,21 +46,25 @@
             {
                 "rarity": "common",
                 "title": "Common",
+                "titleKey": "summon.rarity.common",
                 "weight": 7000
             },
             {
                 "rarity": "rare",
                 "title": "Rare",
+                "titleKey": "summon.rarity.rare",
                 "weight": 2200
             },
             {
                 "rarity": "epic",
                 "title": "Epic",
+                "titleKey": "summon.rarity.epic",
                 "weight": 750
             },
             {
                 "rarity": "legendary",
                 "title": "Legendär",
+                "titleKey": "summon.rarity.legendary",
                 "weight": 50
             }
         ]
@@ -73,21 +81,25 @@
             {
                 "rarity": "common",
                 "title": "Common",
+                "titleKey": "summon.rarity.common",
                 "weight": 7000
             },
             {
                 "rarity": "rare",
                 "title": "Rare",
+                "titleKey": "summon.rarity.rare",
                 "weight": 2200
             },
             {
                 "rarity": "epic",
                 "title": "Epic",
+                "titleKey": "summon.rarity.epic",
                 "weight": 750
             },
             {
                 "rarity": "legendary",
                 "title": "Legendär",
+                "titleKey": "summon.rarity.legendary",
                 "weight": 50
             }
         ]
@@ -104,21 +116,25 @@
             {
                 "rarity": "common",
                 "title": "Common",
+                "titleKey": "summon.rarity.common",
                 "weight": 7000
             },
             {
                 "rarity": "rare",
                 "title": "Rare",
+                "titleKey": "summon.rarity.rare",
                 "weight": 2200
             },
             {
                 "rarity": "epic",
                 "title": "Epic",
+                "titleKey": "summon.rarity.epic",
                 "weight": 750
             },
             {
                 "rarity": "legendary",
                 "title": "Legendär",
+                "titleKey": "summon.rarity.legendary",
                 "weight": 50
             }
         ]
@@ -135,21 +151,25 @@
             {
                 "rarity": "common",
                 "title": "Common",
+                "titleKey": "summon.rarity.common",
                 "weight": 7000
             },
             {
                 "rarity": "rare",
                 "title": "Rare",
+                "titleKey": "summon.rarity.rare",
                 "weight": 2200
             },
             {
                 "rarity": "epic",
                 "title": "Epic",
+                "titleKey": "summon.rarity.epic",
                 "weight": 750
             },
             {
                 "rarity": "legendary",
                 "title": "Legendär",
+                "titleKey": "summon.rarity.legendary",
                 "weight": 50
             }
         ]

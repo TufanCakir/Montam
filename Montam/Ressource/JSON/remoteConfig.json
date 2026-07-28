@@ -1,5 +1,5 @@
 {
-    "contentVersion": 10,
+    "contentVersion": 18,
     "minimumAppVersion": "1.0",
     "notes": "Basis Remote-Inhalte",
     "jsonFiles": [
@@ -13,6 +13,8 @@
         "gameVisual",
         "gift",
         "itemShop",
+        "localization_de",
+        "localization_en",
         "monster",
         "monsterAppearance",
         "mission",
@@ -41,6 +43,7 @@
         "farImageName",
         "midImageName",
         "groundImageName",
+        "eventBackground",
         "monsterName",
         "tamerName",
         "bannerImage"

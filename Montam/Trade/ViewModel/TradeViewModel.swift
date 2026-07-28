@@ -45,6 +45,10 @@ final class TradeViewModel {
         offersBySection[section] ?? []
     }
 
+    func sectionTitle(for section: String) -> String {
+        offersBySection[section]?.first?.localizedSection ?? section
+    }
+
     func showMessage(_ text: String) {
         message = text
         Task {

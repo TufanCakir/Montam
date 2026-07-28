@@ -28,15 +28,19 @@ struct BattleStageOverlay: View {
         VStack(spacing: 4) {
             waveDots
 
-            Text("Stage \(state.stageNumber)")
+            Text(AppLocalizationService.text("battle.stage", state.stageNumber))
                 .font(.system(size: 18, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(1)
 
-            Text(state.isBossWave ? "Boss" : "Welle")
-                .font(.system(size: 12, weight: .black, design: .rounded))
-                .foregroundStyle(.blue)
-                .lineLimit(1)
+            Text(
+                state.isBossWave
+                    ? AppLocalizationService.text("battle.boss")
+                    : AppLocalizationService.text("battle.wave")
+            )
+            .font(.system(size: 12, weight: .black, design: .rounded))
+            .foregroundStyle(.blue)
+            .lineLimit(1)
         }
         .padding(.horizontal, 22)
         .padding(.vertical, 8)

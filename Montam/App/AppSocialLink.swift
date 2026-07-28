@@ -12,6 +12,21 @@ struct AppSocialLink: Identifiable {
     let title: String
     let url: URL
 
+    var systemIcon: String {
+        switch id {
+        case "youtube": "play.rectangle.fill"
+        case "instagram": "camera.fill"
+        case "x": "xmark"
+        case "facebook": "f.circle.fill"
+        case "tiktok": "music.note"
+        case "threads": "at"
+        case "github": "chevron.left.forwardslash.chevron.right"
+        case "discord": "bubble.left.and.bubble.right.fill"
+        case "linkedin": "person.crop.square.fill"
+        default: "link"
+        }
+    }
+
     static let all: [AppSocialLink] = definitions.compactMap {
         AppSocialLink(id: $0.id, title: $0.title, urlString: $0.urlString)
     }

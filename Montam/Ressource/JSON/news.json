@@ -2,104 +2,198 @@
     {
         "id": "welcome",
         "title": "Willkommen bei Montam",
-        "message": "News, Events und Hinweise erscheinen kuenftig hier.",
+        "message": "News, Events und Hinweise erscheinen künftig hier.",
+        "titleKey": "news.welcome.title",
+        "messageKey": "news.welcome.message",
         "date": "2026-07-22",
-        "category": "Info"
+        "category": "Info",
+        "categoryKey": "news.category.info"
     },
     {
         "id": "event_update",
-        "title": "Event-Ansicht ueberarbeitet",
+        "title": "Event-Ansicht überarbeitet",
         "message":
-            "Events laden stabiler und die Ansicht ist uebersichtlicher aufgebaut.",
+            "Events laden stabiler und die Ansicht ist übersichtlicher aufgebaut.",
+        "titleKey": "news.eventUpdate.title",
+        "messageKey": "news.eventUpdate.message",
         "date": "2026-07-22",
-        "category": "Update"
+        "category": "Update",
+        "categoryKey": "news.category.update"
     },
     {
         "id": "summon_update",
-        "title": "Summon-Ansicht ueberarbeitet",
+        "title": "Summon-Ansicht überarbeitet",
         "message":
-            "Banner, Pools und Beschwoerungsaktionen sind kompakter, schneller und besser scrollbar.",
+            "Banner, Pools und Beschwörungsaktionen sind kompakter, schneller und besser scrollbar.",
+        "titleKey": "news.summonUpdate.title",
+        "messageKey": "news.summonUpdate.message",
         "date": "2026-07-22",
-        "category": "Update"
+        "category": "Update",
+        "categoryKey": "news.category.update"
     },
     {
         "id": "shop_update",
-        "title": "Shop-Ansicht ueberarbeitet",
+        "title": "Shop-Ansicht überarbeitet",
         "message":
             "Shop-Karten, Wallet-Anzeige und Produktaktionen sind kompakter und reagieren direkter.",
+        "titleKey": "news.shopUpdate.title",
+        "messageKey": "news.shopUpdate.message",
         "date": "2026-07-22",
-        "category": "Update"
+        "category": "Update",
+        "categoryKey": "news.category.update"
     },
     {
         "id": "layout_update",
-        "title": "Game Layout ueberarbeitet",
+        "title": "Game Layout überarbeitet",
         "message":
-            "Start, Root, Panels, Statusbar und mehrere Menues wurden vereinfacht und lesbarer gemacht.",
+            "Start, Root, Panels, Statusbar und mehrere Menüs wurden vereinfacht und lesbarer gemacht.",
+        "titleKey": "news.layoutUpdate.title",
+        "messageKey": "news.layoutUpdate.message",
         "date": "2026-07-22",
-        "category": "Update"
+        "category": "Update",
+        "categoryKey": "news.category.update"
     },
     {
         "id": "remote_loading_update",
         "title": "Remote Loading verbessert",
         "message":
             "Remote-Inhalte laden jetzt paralleler, nutzen bessere Caches und aktualisieren Bilder, JSON und Battle-Texturen sauberer.",
+        "titleKey": "news.remoteLoadingUpdate.title",
+        "messageKey": "news.remoteLoadingUpdate.message",
         "date": "2026-07-27",
-        "category": "Performance"
+        "category": "Performance",
+        "categoryKey": "news.category.performance"
     },
     {
         "id": "battle_performance_update",
-        "title": "Kampf laeuft fluessiger",
+        "title": "Kampf läuft fluessiger",
         "message":
             "Battle-Szene, Healthbars, Texturen, Belohnungsanzeige und Musik-Lifecycle wurden optimiert.",
+        "titleKey": "news.battlePerformanceUpdate.title",
+        "messageKey": "news.battlePerformanceUpdate.message",
         "date": "2026-07-27",
-        "category": "Performance"
+        "category": "Performance",
+        "categoryKey": "news.category.performance"
     },
     {
         "id": "panel_cleanup_update",
-        "title": "Panels aufgeraeumt",
+        "title": "Panels aufgeräumt",
         "message":
             "Giftbox, Daily Login, Missionen, News und Battle Pass nutzen jetzt gemeinsame Komponenten und weniger doppeltes Layout.",
+        "titleKey": "news.panelCleanupUpdate.title",
+        "messageKey": "news.panelCleanupUpdate.message",
         "date": "2026-07-27",
-        "category": "Update"
+        "category": "Update",
+        "categoryKey": "news.category.update"
     },
     {
         "id": "inventory_save_update",
         "title": "Save und Inventar stabiler",
         "message":
-            "Waehrungen, Rewards, Battle-Pass-Belohnungen, Shop-Kaeufe und Trades nutzen jetzt zentrale Save-Logik.",
+            "Waehrungen, Rewards, Battle-Pass-Belohnungen, Shop-Käufe und Trades nutzen jetzt zentrale Save-Logik.",
+        "titleKey": "news.inventorySaveUpdate.title",
+        "messageKey": "news.inventorySaveUpdate.message",
         "date": "2026-07-27",
-        "category": "Update"
+        "category": "Update",
+        "categoryKey": "news.category.update"
     },
     {
         "id": "json_content_update",
-        "title": "JSON-Daten geprueft",
+        "title": "JSON-Daten geprüft",
         "message":
-            "JSON-Dateien wurden validiert, Remote-Assets erweitert und ungueltige oder doppelte Eintraege bereinigt.",
+            "JSON-Dateien wurden validiert, Remote-Assets erweitert und ungültige oder doppelte Einträge bereinigt.",
+        "titleKey": "news.contentUpdate.title",
+        "messageKey": "news.contentUpdate.message",
         "date": "2026-07-27",
-        "category": "Content"
+        "category": "Content",
+        "categoryKey": "news.category.content"
     },
     {
         "id": "team_summon_trade_update",
         "title": "Team, Summon und Trade schneller",
         "message":
             "Lookups, Gruppierungen und ViewModels wurden vereinfacht, damit Listen und Auswahlen schneller reagieren.",
+        "titleKey": "news.teamSummonTradeUpdate.title",
+        "messageKey": "news.teamSummonTradeUpdate.message",
         "date": "2026-07-27",
-        "category": "Performance"
+        "category": "Performance",
+        "categoryKey": "news.category.performance"
     },
     {
         "id": "app_cleanup_update",
         "title": "App-Start und Einstellungen verbessert",
         "message":
             "App-Flow, Social Links, Versionsanzeige, Migration und Einstellungen wurden robuster und sauberer gemacht.",
+        "titleKey": "news.appCleanupUpdate.title",
+        "messageKey": "news.appCleanupUpdate.message",
         "date": "2026-07-27",
-        "category": "Update"
+        "category": "Update",
+        "categoryKey": "news.category.update"
     },
     {
         "id": "new_bg_update",
         "title": "Neue Hintergrundbilder hinzugefuegt",
         "message":
-            "Vier neue Hintergrundbilder wurden fuer mehr Abwechslung im Spiel hinzugefuegt.",
+            "Vier neue Hintergrundbilder wurden für mehr Abwechslung im Spiel hinzugefügt.",
+        "titleKey": "news.newBackgroundUpdate.title",
+        "messageKey": "news.newBackgroundUpdate.message",
         "date": "2026-07-27",
-        "category": "Content"
+        "category": "Content",
+        "categoryKey": "news.category.content"
+    },
+    {
+        "id": "app_store_ready_update",
+        "title": "App-Store-Vorbereitung abgeschlossen",
+        "message":
+            "Shop, Pass, Summon, Team, Trade, Missionen, News, Geschenke, Login-Belohnungen und Event-Ansicht wurden für den Release weiter poliert.",
+        "titleKey": "news.appStoreReadyUpdate.title",
+        "messageKey": "news.appStoreReadyUpdate.message",
+        "date": "2026-07-28",
+        "category": "Release",
+        "categoryKey": "news.category.release"
+    },
+    {
+        "id": "language_update",
+        "title": "Deutsch und Englisch hinzugefügt",
+        "message":
+            "Die wichtigsten Menues, Meldungen, Panels und Shop-Aktionen sind jetzt auf Deutsch und Englisch verfügbar.",
+        "titleKey": "news.languageUpdate.title",
+        "messageKey": "news.languageUpdate.message",
+        "date": "2026-07-28",
+        "category": "Update",
+        "categoryKey": "news.category.update"
+    },
+    {
+        "id": "legal_links_update",
+        "title": "Datenschutz und Rechtliches im Menü",
+        "message":
+            "Im Start-Menü gibt es jetzt einen eigenen Bereich für Datenschutz, EULA, Terms, Support und offizielle Links.",
+        "titleKey": "news.legalLinksUpdate.title",
+        "messageKey": "news.legalLinksUpdate.message",
+        "date": "2026-07-28",
+        "category": "Info",
+        "categoryKey": "news.category.info"
+    },
+    {
+        "id": "shop_pass_balance_update",
+        "title": "Shop und Montam Pass verbessert",
+        "message":
+            "Preise, Belohnungen, Kaufmeldungen, Restore-Funktion und Pass-Fortschritt wurden klarer und nutzerfreundlicher gestaltet.",
+        "titleKey": "news.shopPassBalanceUpdate.title",
+        "messageKey": "news.shopPassBalanceUpdate.message",
+        "date": "2026-07-28",
+        "category": "Update",
+        "categoryKey": "news.category.update"
+    },
+    {
+        "id": "summon_safety_update",
+        "title": "Summon-Bestätigung hinzugefügt",
+        "message":
+            "Beschwörungen fragen jetzt vor dem Einsatz von Tickets oder Kristallen nach und zeigen klare Hinweise bei fehlender Währung.",
+        "titleKey": "news.summonSafetyUpdate.title",
+        "messageKey": "news.summonSafetyUpdate.message",
+        "date": "2026-07-28",
+        "category": "Update",
+        "categoryKey": "news.category.update"
     }
 ]

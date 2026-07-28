@@ -7,119 +7,22 @@
 
 import SwiftUI
 
-enum ShopSection: CaseIterable, Identifiable {
-    case pass
-    case premiumCurrency
-    case item
-
-    var id: Self { self }
-
-    var title: String {
-        switch self {
-        case .pass: "Pass"
-        case .premiumCurrency: "Premium-Währung"
-        case .item: "Item"
-        }
-    }
-
-    var tabTitle: String {
-        switch self {
-        case .pass: "Pass"
-        case .premiumCurrency: "Premium\nWährung"
-        case .item: "Item"
-        }
-    }
-
-    var jsonKey: String {
-        switch self {
-        case .pass: "pass"
-        case .premiumCurrency: "premiumCurrency"
-        case .item: "item"
-        }
-    }
-}
-
-private enum ShopProductVisual {
-    case diamonds
-    case bits
-    case emeralds
-    case tickets
-    case farm
-    case resource(String)
-}
-
-struct ShopWalletState {
-    let coins: Int
-    let crystals: Int
-    let bits: Int
-}
-
-struct ShopWalletFilterBar: View {
-    let wallet: ShopWalletState
-    @Binding var selectedSection: ShopSection
-
-    var body: some View {
-        HStack(spacing: 14) {
-            Menu {
-                ForEach(ShopSection.allCases) { section in
-                    Button(section.title) {
-                        selectedSection = section
-                    }
-                }
-            } label: {
-                HStack(spacing: 14) {
-                    Text(selectedSection.title)
-                        .font(
-                            .system(size: 20, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.68)
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 17, weight: .heavy))
-                        .foregroundStyle(.white)
-                        .frame(width: 31, height: 31)
-                        .background(.blue)
-                        .clipShape(Circle())
-                }
-                .padding(.horizontal, 16)
-                .frame(height: 42)
-                .background(Color.black.opacity(0.58))
-                .clipShape(RoundedRectangle(cornerRadius: 7))
-            }
-
-            Spacer(minLength: 10)
-
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 12) {
-                    ShopWalletValue(image: "icon_coin", value: wallet.coins)
-                    ShopWalletValue(
-                        image: "icon_crystal",
-                        value: wallet.crystals
-                    )
-                    ShopWalletValue(image: "icon_bit", value: wallet.bits)
-                }
-
-                HStack(spacing: 10) {
-                    ShopWalletValue(
-                        image: "icon_crystal",
-                        value: wallet.crystals
-                    )
-                    ShopWalletValue(image: "icon_bit", value: wallet.bits)
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .frame(height: 54)
-        .background(Color.blue.opacity(0.45))
-    }
+private enum ShopCardStyle {
+    static let cornerRadius: CGFloat = 8
+    static let compactCornerRadius: CGFloat = 6
+    static let productImageHeight: CGFloat = 142
+    static let itemImageHeight: CGFloat = 132
+    static let passImageHeight: CGFloat = 150
+    static let priceHeight: CGFloat = 38
+    static let cardHeight: CGFloat = 180
+    static let strokeWidth: CGFloat = 2
+    static let strongStrokeWidth: CGFloat = 3
 }
 
 struct ShopProductGridContent: View {
     let products: [ShopProductData]
     let emptyTitle: String
-    @ObservedObject var store: StoreKitShopManager
-    let priceTitle: (ShopProductData) -> String
+    let cardState: (ShopProductData) -> ShopStoreProductCardState
     let onBuy: (ShopProductData) -> Void
 
     var body: some View {
@@ -128,20 +31,15 @@ struct ShopProductGridContent: View {
         } else {
             LazyVGrid(
                 columns: [
-                    GridItem(.adaptive(minimum: 112, maximum: 164), spacing: 12)
+                    GridItem(.adaptive(minimum: 112, maximum: 160), spacing: 18)
                 ],
-                spacing: 14
+                spacing: 18
             ) {
                 ForEach(products) { product in
                     ShopProductCard(
-                        product: product,
-                        price: priceTitle(product),
-                        soldOut: store.isPurchased(product),
-                        storeUnavailable: store.isStoreKitUnavailable(product),
-                        storeLoading: store.isLoadingProducts,
+                        state: cardState(product),
                         onBuy: onBuy
                     )
-                    .frame(maxWidth: 164)
                 }
             }
         }
@@ -150,21 +48,26 @@ struct ShopProductGridContent: View {
 
 struct ItemShopContent: View {
     let products: [ItemShopProductData]
+    let emptyTitle: String
+    let cardState: (ItemShopProductData) -> ShopItemProductCardState
     let onBuy: (ItemShopProductData) -> Void
 
     var body: some View {
         if products.isEmpty {
-            ShopEmptyContent(title: "Neue Items erscheinen bald.")
+            ShopEmptyContent(title: emptyTitle)
         } else {
             LazyVGrid(
                 columns: [
                     GridItem(.adaptive(minimum: 132, maximum: 190), spacing: 12)
                 ],
-                spacing: 14
+                spacing: 13
             ) {
                 ForEach(products) { product in
-                    ItemShopProductCard(product: product, onBuy: onBuy)
-                        .frame(maxWidth: 190)
+                    ItemShopProductCard(
+                        state: cardState(product),
+                        onBuy: onBuy
+                    )
+                    .frame(maxWidth: 190)
                 }
             }
         }
@@ -173,31 +76,27 @@ struct ItemShopContent: View {
 
 struct ShopPassContent: View {
     let products: [ShopProductData]
-    @ObservedObject var store: StoreKitShopManager
+    let cardState: (ShopProductData) -> ShopStoreProductCardState
     let onBuy: (ShopProductData) -> Void
-    let isPurchased: (ShopProductData) -> Bool
-    let priceTitle: (ShopProductData) -> String
     let onRestore: () -> Void
 
     var body: some View {
         VStack(spacing: 22) {
             if products.isEmpty {
-                ShopEmptyContent(title: "Keine Pass-Produkte")
+                ShopEmptyContent(
+                    title: AppLocalizationService.text("shop.empty.pass")
+                )
             } else {
                 ForEach(products) { product in
                     ShopPassCard(
-                        product: product,
-                        price: priceTitle(product),
-                        purchased: isPurchased(product),
-                        storeUnavailable: store.isStoreKitUnavailable(product),
-                        storeLoading: store.isLoadingProducts,
+                        state: cardState(product),
                         onBuy: onBuy
                     )
                 }
             }
 
             Button(action: onRestore) {
-                Text("Käufe wiederherstellen")
+                Text(AppLocalizationService.text("shop.restorePurchases"))
                     .font(.system(size: 18, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -217,34 +116,24 @@ struct ShopPassContent: View {
 }
 
 private struct ItemShopProductCard: View {
-    let product: ItemShopProductData
+    let state: ShopItemProductCardState
     let onBuy: (ItemShopProductData) -> Void
 
     var body: some View {
         Button {
-            onBuy(product)
+            onBuy(state.product)
         } label: {
             VStack(spacing: 0) {
                 ZStack(alignment: .topTrailing) {
-                    LinearGradient(
-                        colors: [.blue.opacity(0.7), .cyan.opacity(0.68)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .overlay(ShopCardPattern().opacity(0.14))
+                    ShopCardImageBackground()
 
-                    ShopProductIcon(visual: productVisual(from: product.visual))
+                    ShopProductIcon(visual: state.visual)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                    if let badge = product.badge {
-                        ShopBadge(title: badge, style: .light)
-                            .padding(8)
-                    }
                 }
-                .frame(height: 132)
+                .frame(height: ShopCardStyle.itemImageHeight)
 
                 VStack(alignment: .leading, spacing: 7) {
-                    Text(product.title)
+                    Text(state.title)
                         .font(
                             .system(size: 18, weight: .heavy, design: .rounded)
                         )
@@ -252,7 +141,7 @@ private struct ItemShopProductCard: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
 
-                    Text(product.subtitle ?? rewardTitle)
+                    Text(state.subtitle)
                         .font(
                             .system(size: 13, weight: .heavy, design: .rounded)
                         )
@@ -262,13 +151,13 @@ private struct ItemShopProductCard: View {
 
                     HStack(spacing: 7) {
                         GameResourceIcon(
-                            id: GameCurrency.iconId(for: product.priceCurrency),
+                            id: GameCurrency.iconId(for: state.priceCurrency),
                             fallbackImage:
-                                "icon_\(GameCurrency.iconId(for: product.priceCurrency))"
+                                "icon_\(GameCurrency.iconId(for: state.priceCurrency))"
                         )
                         .frame(width: 24, height: 24)
 
-                        Text("\(product.priceAmount)")
+                        Text("\(state.priceAmount)")
                             .font(
                                 .system(
                                     size: 18,
@@ -281,79 +170,52 @@ private struct ItemShopProductCard: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 34)
                     .background(Color.black.opacity(0.34))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .clipShape(
+                        RoundedRectangle(
+                            cornerRadius: ShopCardStyle.compactCornerRadius
+                        )
+                    )
                 }
                 .padding(10)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.indigo.opacity(0.4))
             }
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(
+                RoundedRectangle(cornerRadius: ShopCardStyle.cornerRadius)
+            )
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(.cyan.opacity(0.82), lineWidth: 2)
+                RoundedRectangle(cornerRadius: ShopCardStyle.cornerRadius)
+                    .stroke(
+                        .cyan.opacity(0.82),
+                        lineWidth: ShopCardStyle.strokeWidth
+                    )
             )
         }
         .buttonStyle(.plain)
     }
-
-    private var rewardTitle: String {
-        if let tickets = product.rewards.summonTickets {
-            return "+\(tickets) Tickets"
-        }
-
-        if let crystals = product.rewards.crystals {
-            return "+\(crystals) Kristalle"
-        }
-
-        if let coins = product.rewards.coins {
-            return "+\(coins) Coins"
-        }
-
-        if let bits = product.rewards.bits {
-            return "+\(bits) Bits"
-        }
-
-        return "Item"
-    }
 }
 
 private struct ShopProductCard: View {
-    let product: ShopProductData
-    let price: String
-    let soldOut: Bool
-    let storeUnavailable: Bool
-    let storeLoading: Bool
+    let state: ShopStoreProductCardState
     let onBuy: (ShopProductData) -> Void
 
     var body: some View {
         Button {
-            guard !soldOut && !storeUnavailable && !storeLoading else {
+            guard !isDisabled else {
                 return
             }
 
-            onBuy(product)
+            onBuy(state.product)
         } label: {
             ZStack {
                 VStack(spacing: 0) {
                     ZStack(alignment: .topTrailing) {
-                        LinearGradient(
-                            colors: [.blue.opacity(0.72), .cyan.opacity(0.72)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .overlay(ShopCardPattern().opacity(0.14))
+                        ShopCardImageBackground()
 
-                        ShopProductIcon(
-                            visual: productVisual(from: product.visual)
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        ShopProductIcon(visual: state.visual)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                        if let badge = product.badge {
-                            ShopBadge(title: badge, style: .light)
-                                .offset(x: 5, y: -8)
-                        }
-
-                        Text(product.subtitle ?? product.title)
+                        Text(state.subtitle)
                             .font(
                                 .system(
                                     size: 18,
@@ -374,10 +236,10 @@ private struct ShopProductCard: View {
                             .padding(.horizontal, 4)
                             .padding(.bottom, 8)
                     }
-                    .frame(height: 142)
+                    .frame(height: ShopCardStyle.productImageHeight)
 
                     HStack(spacing: 8) {
-                        Text(price)
+                        Text(state.price)
                             .font(
                                 .system(
                                     size: 18,
@@ -390,20 +252,30 @@ private struct ShopProductCard: View {
                             .foregroundStyle(.black.opacity(0.78))
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: 38)
+                    .frame(height: ShopCardStyle.priceHeight)
                     .background(.white.opacity(0.95))
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .clipShape(
+                    RoundedRectangle(
+                        cornerRadius: ShopCardStyle.compactCornerRadius
+                    )
+                )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 6).stroke(
+                    RoundedRectangle(
+                        cornerRadius: ShopCardStyle.compactCornerRadius
+                    ).stroke(
                         .cyan.opacity(0.8),
-                        lineWidth: 3
+                        lineWidth: ShopCardStyle.strongStrokeWidth
                     )
                 )
 
-                if soldOut || storeUnavailable || storeLoading {
+                if isDisabled {
                     Color.black.opacity(0.58)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: ShopCardStyle.compactCornerRadius
+                            )
+                        )
                     Text(cardOverlayTitle)
                         .font(
                             .system(size: 25, weight: .heavy, design: .rounded)
@@ -417,41 +289,26 @@ private struct ShopProductCard: View {
                         .rotationEffect(.degrees(-16))
                 }
             }
-            .frame(height: 180)
+            .frame(height: ShopCardStyle.cardHeight)
         }
         .buttonStyle(.plain)
-        .disabled(soldOut || storeUnavailable || storeLoading)
+        .disabled(isDisabled)
+    }
+
+    private var isDisabled: Bool {
+        state.soldOut || state.storeUnavailable || state.storeLoading
     }
 
     private var cardOverlayTitle: String {
-        if soldOut {
-            return "GEKAUFT"
+        if state.soldOut {
+            return AppLocalizationService.text("shop.purchased")
         }
 
-        if storeLoading {
-            return "LÄDT"
+        if state.storeLoading {
+            return AppLocalizationService.text("shop.loadingShort")
         }
 
-        return "BALD"
-    }
-}
-
-private func productVisual(from visual: String) -> ShopProductVisual {
-    switch visual {
-    case "crystals":
-        .diamonds
-    case "bits", "bit", "icon_bit":
-        .bits
-    case "coins":
-        .emeralds
-    case "tickets", "summon_ticket", "icon_summon_ticket":
-        .tickets
-    case "farm":
-        .farm
-    case "pass":
-        .resource("pass")
-    default:
-        .resource(visual)
+        return AppLocalizationService.text("shop.soon")
     }
 }
 
@@ -521,41 +378,28 @@ private struct ShopProductIcon: View {
 }
 
 private struct ShopPassCard: View {
-    let product: ShopProductData
-    let price: String
-    let purchased: Bool
-    let storeUnavailable: Bool
-    let storeLoading: Bool
+    let state: ShopStoreProductCardState
     let onBuy: (ShopProductData) -> Void
 
     private var color: Color {
-        product.visual == "pass" ? .purple : .cyan
+        if case .resource("pass") = state.visual {
+            return .purple
+        }
+
+        return .cyan
     }
 
     var body: some View {
         Button {
-            guard !purchased && !storeUnavailable && !storeLoading else {
+            guard !isDisabled else {
                 return
             }
 
-            onBuy(product)
+            onBuy(state.product)
         } label: {
             VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 9) {
-                    HStack(spacing: 8) {
-                        if let badge = product.badge {
-                            ShopBadge(title: badge, style: .accent(.purple))
-                        }
-
-                        ShopBadge(
-                            title:
-                                product.purchaseType == .nonConsumable
-                                ? "EINMALIG" : "KAUFBAR",
-                            style: .accent(.cyan)
-                        )
-                    }
-
-                    Text(product.title)
+                    Text(state.title)
                         .font(
                             .system(size: 22, weight: .heavy, design: .rounded)
                         )
@@ -564,7 +408,7 @@ private struct ShopPassCard: View {
                         .minimumScaleFactor(0.72)
                         .shadow(color: .black, radius: 1, x: 1, y: 1)
 
-                    Text("✦ \(product.subtitle ?? product.title)")
+                    Text("✦ \(state.subtitle)")
                         .font(
                             .system(size: 13, weight: .heavy, design: .rounded)
                         )
@@ -589,72 +433,78 @@ private struct ShopPassCard: View {
 
                 HStack(spacing: 0) {
                     ZStack {
-                        LinearGradient(
-                            colors: [.blue, .cyan],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        ShopProductIcon(
-                            visual: productVisual(from: product.visual)
-                        )
+                        ShopCardImageBackground()
+                        ShopProductIcon(visual: state.visual)
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: 150)
+                    .frame(height: ShopCardStyle.passImageHeight)
 
                     Text(passPriceTitle)
                         .font(
                             .system(size: 22, weight: .heavy, design: .rounded)
                         )
                         .foregroundStyle(
-                            purchased
-                                ? .green : storeUnavailable ? .gray : .black
+                            state.soldOut
+                                ? .green
+                                : state.storeUnavailable ? .gray : .black
                         )
                         .frame(width: 112)
                         .frame(maxHeight: .infinity)
                         .background(.white)
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(
+                    RoundedRectangle(cornerRadius: ShopCardStyle.cornerRadius)
+                )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8).stroke(
-                        .cyan.opacity(0.85),
-                        lineWidth: 3
-                    )
+                    RoundedRectangle(cornerRadius: ShopCardStyle.cornerRadius)
+                        .stroke(
+                            .cyan.opacity(0.85),
+                            lineWidth: ShopCardStyle.strongStrokeWidth
+                        )
                 )
             }
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
-        .disabled(purchased || storeUnavailable || storeLoading)
+        .disabled(isDisabled)
+    }
+
+    private var isDisabled: Bool {
+        state.soldOut || state.storeUnavailable || state.storeLoading
     }
 
     private var passPriceTitle: String {
-        if purchased {
-            return "GEKAUFT"
+        if state.soldOut {
+            return AppLocalizationService.text("shop.purchased")
         }
 
-        if storeLoading {
-            return "Lädt"
+        if state.storeLoading {
+            return AppLocalizationService.text("shop.loadingShort")
         }
 
-        return price
+        return state.price
     }
 
     private var rewardLines: [String] {
         var lines: [String] = []
 
-        if product.rewards.unlockEventPass == true {
-            lines.append(purchased ? "Freigeschaltet" : "Event-Zugang")
+        if state.product.rewards.unlockEventPass == true {
+            lines.append(
+                state.soldOut
+                    ? AppLocalizationService.text("shop.unlocked")
+                    : AppLocalizationService.text("shop.montamPass")
+            )
         }
 
-        if let crystals = product.rewards.crystals {
-            lines.append("+\(crystals) Kristalle")
+        if let crystals = state.product.rewards.crystals {
+            lines.append("+\(crystals) \(GameCurrency.title(for: "crystals"))")
         }
 
-        if let coins = product.rewards.coins {
-            lines.append("+\(coins) Coins")
+        if let coins = state.product.rewards.coins {
+            lines.append("+\(coins) \(GameCurrency.title(for: "coins"))")
         }
 
-        return lines.isEmpty ? [product.subtitle ?? product.title] : lines
+        return lines.isEmpty ? [state.subtitle] : lines
     }
 }
 
@@ -669,6 +519,20 @@ private struct ShopEmptyContent: View {
             .frame(height: 180)
             .background(Color.blue.opacity(0.16))
             .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct ShopCardImageBackground: View {
+    var body: some View {
+        LinearGradient(
+            colors: [
+                Color(red: 0.0, green: 0.42, blue: 0.86),
+                Color(red: 0.0, green: 0.72, blue: 0.82),
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .overlay(ShopCardPattern().opacity(0.14))
     }
 }
 
@@ -739,84 +603,12 @@ struct ShopSectionTabs: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 20)
         .background(
             Color(red: 0.02, green: 0.12, blue: 0.27)
                 .overlay(alignment: .top) {
                     Rectangle().fill(.cyan.opacity(0.75)).frame(height: 2)
                 }
         )
-    }
-}
-
-private struct ShopWalletValue: View {
-    let image: String
-    let value: Int
-
-    var body: some View {
-        HStack(spacing: 7) {
-            GameResourceIcon(id: visualId, fallbackImage: image)
-                .frame(width: 25, height: 25)
-            Text(GameNumberFormatter.compact(value))
-                .font(.system(size: 17, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-        }
-        .lineLimit(1)
-        .minimumScaleFactor(0.72)
-    }
-
-    private var visualId: String {
-        switch image {
-        case "icon_coin": "coin"
-        case "icon_crystal": "crystal"
-        case "icon_bit": "bit"
-        case "icon_exp": "exp"
-        default: "crystal"
-        }
-    }
-}
-
-private struct ShopBadge: View {
-    enum Style {
-        case light
-        case accent(Color)
-    }
-
-    let title: String
-    let style: Style
-
-    var body: some View {
-        Text(title)
-            .font(.system(size: 12, weight: .heavy, design: .rounded))
-            .foregroundStyle(foregroundColor)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .background(backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-            .overlay {
-                if case .light = style {
-                    RoundedRectangle(cornerRadius: 4).stroke(
-                        .blue.opacity(0.85),
-                        lineWidth: 1
-                    )
-                }
-            }
-    }
-
-    private var foregroundColor: Color {
-        switch style {
-        case .light: .blue
-        case .accent: .white
-        }
-    }
-
-    private var backgroundColor: Color {
-        switch style {
-        case .light: .white.opacity(0.94)
-        case .accent(let color): color
-        }
     }
 }
 

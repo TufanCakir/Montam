@@ -17,12 +17,12 @@ struct TradeWalletPanel: View {
         ) {
             TradeWalletTile(
                 iconId: "coin",
-                title: "Coins",
+                title: GameCurrency.title(for: "coins"),
                 amount: save?.coins ?? 0
             )
             TradeWalletTile(
                 iconId: "crystal",
-                title: "Kristalle",
+                title: GameCurrency.title(for: "crystals"),
                 amount: save?.crystals ?? 0
             )
             TradeWalletTile(
@@ -85,10 +85,10 @@ struct TradeEmptyState: View {
             Image(systemName: "clock.fill")
                 .font(.system(size: 30, weight: .bold))
                 .foregroundStyle(.cyan)
-            Text("Vorbereitung läuft")
+            Text(AppLocalizationService.text("trade.preparing"))
                 .font(.system(size: 21, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
-            Text("Neue Tauschangebote erscheinen bald.")
+            Text(AppLocalizationService.text("trade.emptyOffers"))
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(.cyan)
         }
@@ -113,13 +113,13 @@ private struct TradeOfferRow: View {
                 )
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(offer.title)
+                    Text(offer.localizedTitle)
                         .font(
                             .system(size: 17, weight: .heavy, design: .rounded)
                         )
                         .foregroundStyle(.white)
                         .lineLimit(1)
-                    if let subtitle = offer.subtitle {
+                    if let subtitle = offer.localizedSubtitle {
                         Text(subtitle)
                             .font(
                                 .system(

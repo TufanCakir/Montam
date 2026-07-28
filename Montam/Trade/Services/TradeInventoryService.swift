@@ -19,7 +19,10 @@ enum TradeInventoryService {
         modelContext: ModelContext
     ) -> String {
         guard canTrade(offer, save: saves.first) else {
-            return "Nicht genug \(GameCurrency.title(for: offer.costCurrency))."
+            return AppLocalizationService.text(
+                "trade.notEnoughCurrency",
+                GameCurrency.title(for: offer.costCurrency)
+            )
         }
 
         change(
@@ -35,7 +38,7 @@ enum TradeInventoryService {
             modelContext: modelContext
         )
         try? modelContext.save()
-        return "Tausch abgeschlossen."
+        return AppLocalizationService.text("trade.completed")
     }
 
     private static func change(

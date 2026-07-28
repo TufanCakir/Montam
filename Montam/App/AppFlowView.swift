@@ -10,12 +10,14 @@ import SwiftUI
 struct AppFlowView: View {
 
     @State private var remoteContent = RemoteContentService.shared
+    @State private var didAcknowledgePurchaseNotice = false
     @State private var didTapStart = false
     @State private var didFinishOnboarding = false
 
     var body: some View {
         ZStack {
             AppFlowPersistenceView(
+                didAcknowledgePurchaseNotice: $didAcknowledgePurchaseNotice,
                 didTapStart: $didTapStart,
                 didFinishOnboarding: $didFinishOnboarding,
                 onResetToStart: resetToStart
@@ -38,6 +40,7 @@ struct AppFlowView: View {
     }
 
     private func resetToStart() {
+        didAcknowledgePurchaseNotice = false
         didTapStart = false
         didFinishOnboarding = false
     }

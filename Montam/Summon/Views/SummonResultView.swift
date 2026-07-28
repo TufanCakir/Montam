@@ -33,7 +33,7 @@ struct SummonResultView: View {
 
                 Spacer()
 
-                Button("OK") {
+                Button(AppLocalizationService.text("common.ok")) {
                     onClose()
                 }
                 .font(.system(size: 18, weight: .heavy, design: .rounded))

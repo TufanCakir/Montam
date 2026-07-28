@@ -129,6 +129,7 @@ struct RootView: View {
                 onGiftTap: { presentModal(.gift) },
                 onNewsTap: { presentModal(.news) },
                 onMissionTap: { presentModal(.mission) },
+                onLegalTap: { presentModal(.legal) },
                 onSettingsTap: { presentModal(.settings) },
                 onClose: closeModals
             )
@@ -142,6 +143,9 @@ struct RootView: View {
                 }
             )
             .transition(.scale.combined(with: .opacity))
+        case .legal:
+            AppLegalPanel(onClose: closeModals)
+                .transition(.scale.combined(with: .opacity))
         case .news:
             NewsPanel(onClose: closeModals)
                 .transition(.scale.combined(with: .opacity))
@@ -209,6 +213,7 @@ private enum RootModal {
     case pass
     case settings
     case quickMenu
+    case legal
 }
 
 #Preview {

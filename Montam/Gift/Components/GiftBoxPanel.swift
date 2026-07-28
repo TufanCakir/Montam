@@ -25,7 +25,7 @@ struct GiftBoxPanel: View {
                 VStack(spacing: 12) {
                     HStack(spacing: 10) {
                         GamePanelActionButton(
-                            title: "Alles abholen",
+                            title: AppLocalizationService.text("gift.claimAll"),
                             color: .yellow
                         ) {
                             GiftBoxService.claimAll(
@@ -36,7 +36,10 @@ struct GiftBoxPanel: View {
                             reloadGifts()
                         }
 
-                        GamePanelActionButton(title: "Leeren", color: .red) {
+                        GamePanelActionButton(
+                            title: AppLocalizationService.text("gift.clear"),
+                            color: .red
+                        ) {
                             GiftBoxService.clearGiftBox(
                                 saves: saves,
                                 modelContext: modelContext
@@ -76,11 +79,14 @@ struct GiftBoxPanel: View {
     }
 
     private var panelHeader: some View {
-        GamePanelHeader(title: "Geschenke", onClose: onClose)
+        GamePanelHeader(
+            title: AppLocalizationService.text("gift.title"),
+            onClose: onClose
+        )
     }
 
     private var emptyState: some View {
-        GamePanelEmptyState(title: "Keine Geschenke vorhanden.")
+        GamePanelEmptyState(title: AppLocalizationService.text("gift.empty"))
     }
 }
 
@@ -90,11 +96,11 @@ private struct GiftCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(gift.title)
+            Text(gift.localizedTitle)
                 .font(.system(size: 19, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
 
-            if let message = gift.message {
+            if let message = gift.localizedMessage {
                 Text(message)
                     .font(.system(size: 13, weight: .bold, design: .rounded))
                     .foregroundStyle(.cyan)
@@ -107,7 +113,7 @@ private struct GiftCard: View {
             }
 
             GamePanelActionButton(
-                title: "Abholen",
+                title: AppLocalizationService.text("gift.claim"),
                 color: .cyan,
                 action: onClaim
             )

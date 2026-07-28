@@ -9,19 +9,22 @@ import Foundation
 
 enum GameCurrency {
     private struct CurrencyInfo {
-        let title: String
+        let titleKey: String
         let iconId: String
     }
 
     private static let infoByCurrency: [String: CurrencyInfo] = [
-        "coins": CurrencyInfo(title: "Coins", iconId: "coin"),
-        "crystals": CurrencyInfo(title: "Kristalle", iconId: "crystal"),
+        "coins": CurrencyInfo(titleKey: "currency.coins", iconId: "coin"),
+        "crystals": CurrencyInfo(
+            titleKey: "currency.crystals",
+            iconId: "crystal"
+        ),
         "summon_ticket": CurrencyInfo(
-            title: "Tickets",
+            titleKey: "currency.tickets",
             iconId: "summon_ticket"
         ),
-        "bits": CurrencyInfo(title: "Bits", iconId: "bit"),
-        "exp": CurrencyInfo(title: "EXP", iconId: "exp"),
+        "bits": CurrencyInfo(titleKey: "currency.bits", iconId: "bit"),
+        "exp": CurrencyInfo(titleKey: "currency.exp", iconId: "exp"),
     ]
 
     private static let aliases: [String: String] = [
@@ -45,7 +48,11 @@ enum GameCurrency {
     }
 
     static func title(for currency: String) -> String {
-        infoByCurrency[normalized(currency)]?.title ?? currency
+        guard let info = infoByCurrency[normalized(currency)] else {
+            return currency
+        }
+
+        return AppLocalizationService.text(info.titleKey)
     }
 
     static func iconId(for currency: String) -> String {

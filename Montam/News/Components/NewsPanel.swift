@@ -39,7 +39,7 @@ struct NewsPanel: View {
     }
 
     private var emptyState: some View {
-        GamePanelEmptyState(title: "Aktuell gibt es keine Neuigkeiten.")
+        GamePanelEmptyState(title: AppLocalizationService.text("news.empty"))
     }
 }
 
@@ -49,7 +49,7 @@ private struct NewsCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                if let category = item.category {
+                if let category = item.localizedCategory {
                     Text(category.uppercased())
                         .font(
                             .system(size: 11, weight: .black, design: .rounded)
@@ -70,13 +70,13 @@ private struct NewsCard: View {
                 }
             }
 
-            Text(item.title)
+            Text(item.localizedTitle)
                 .font(.system(size: 19, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(2)
                 .minimumScaleFactor(0.76)
 
-            Text(item.message)
+            Text(item.localizedMessage)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(.cyan.opacity(0.88))
                 .fixedSize(horizontal: false, vertical: true)

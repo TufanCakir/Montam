@@ -15,8 +15,8 @@ enum TeamSection: CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .partner: "Partner"
-        case .support: "Support"
+        case .partner: AppLocalizationService.text("team.partner")
+        case .support: AppLocalizationService.text("team.support")
         }
     }
 }
@@ -40,8 +40,8 @@ struct PartnerTeamContent: View {
     var body: some View {
         if rows.isEmpty {
             CompactTeamInfo(
-                title: "Kein Partner",
-                message: "Partner werden aus deinen Spieldaten geladen."
+                title: AppLocalizationService.text("team.noPartner"),
+                message: AppLocalizationService.text("team.noPartnerMessage")
             )
         } else {
             ZStack {
@@ -109,8 +109,8 @@ struct SupportTeamContent: View {
     var body: some View {
         if rows.isEmpty {
             CompactTeamInfo(
-                title: "Kein Support",
-                message: "Supporter werden aus deinen Besitzdaten angezeigt."
+                title: AppLocalizationService.text("team.noSupport"),
+                message: AppLocalizationService.text("team.noSupportMessage")
             )
         } else {
             ZStack {
@@ -240,7 +240,7 @@ private struct SupporterBonusInfoPopup: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text("Support-Boni")
+                    Text(AppLocalizationService.text("team.supportBonuses"))
                         .font(
                             .system(size: 22, weight: .heavy, design: .rounded)
                         )
@@ -257,7 +257,7 @@ private struct SupporterBonusInfoPopup: View {
                 }
 
                 if rows.isEmpty {
-                    Text("Keine aktiven Supporter.")
+                    Text(AppLocalizationService.text("team.noActiveSupporters"))
                         .font(
                             .system(size: 15, weight: .bold, design: .rounded)
                         )
@@ -281,15 +281,19 @@ private struct SupporterBonusInfoPopup: View {
                             }
 
                             if row.bonusLines.isEmpty {
-                                Text("Noch keine Boni in JSON eingetragen.")
-                                    .font(
-                                        .system(
-                                            size: 13,
-                                            weight: .bold,
-                                            design: .rounded
-                                        )
+                                Text(
+                                    AppLocalizationService.text(
+                                        "team.noBonusLines"
                                     )
-                                    .foregroundStyle(.gray)
+                                )
+                                .font(
+                                    .system(
+                                        size: 13,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(.gray)
                             } else {
                                 ForEach(row.bonusLines, id: \.self) { line in
                                     Text(line)
@@ -445,12 +449,15 @@ private struct ActiveMonsterPanel: View {
 
                 VStack(alignment: .leading, spacing: 7) {
                     TeamInfoBlock(
-                        title: "Digitationsstufe",
+                        title: AppLocalizationService.text("team.digitation"),
                         value: row.rarity.uppercased()
                     )
-                    TeamInfoBlock(title: "Name", value: row.displayName)
                     TeamInfoBlock(
-                        title: "Kampf-Typ",
+                        title: AppLocalizationService.text("team.name"),
+                        value: row.displayName
+                    )
+                    TeamInfoBlock(
+                        title: AppLocalizationService.text("team.battleType"),
                         value: "Power \(GameNumberFormatter.compact(row.power))"
                     )
                 }
@@ -482,7 +489,7 @@ private struct ActiveMonsterPanel: View {
                 }
             } label: {
                 TeamLargeActionLabel(
-                    title: "Aussehen ändern",
+                    title: AppLocalizationService.text("team.changeAppearance"),
                     systemName: "paintpalette.fill",
                     color: .cyan,
                     foreground: .white
@@ -496,8 +503,11 @@ private struct ActiveMonsterPanel: View {
                 } label: {
                     TeamLargeActionLabel(
                         title: evolution.canEvolve
-                            ? "Transformieren"
-                            : "Transformieren ab Lv. \(evolution.targetAppearance.requiredLevel)",
+                            ? AppLocalizationService.text("team.transform")
+                            : AppLocalizationService.text(
+                                "team.transformLevel",
+                                evolution.targetAppearance.requiredLevel
+                            ),
                         systemName: evolution.canEvolve
                             ? "sparkles" : "lock.fill",
                         color: evolution.canEvolve
@@ -509,7 +519,7 @@ private struct ActiveMonsterPanel: View {
                 .buttonStyle(.plain)
                 .disabled(!evolution.canEvolve)
             } else {
-                Text("Keine weitere Transformation")
+                Text(AppLocalizationService.text("team.noTransformation"))
                     .font(.system(size: 13, weight: .heavy, design: .rounded))
                     .foregroundStyle(.cyan.opacity(0.78))
                     .frame(maxWidth: .infinity)
@@ -688,7 +698,10 @@ private struct TeamMonsterSelectionPopup: View {
                 Button(action: onConfirm) {
                     TeamLargeActionLabel(
                         title: row.isSelected
-                            ? "Leveln beginnen" : "Auswählen und leveln",
+                            ? AppLocalizationService.text("team.startLeveling")
+                            : AppLocalizationService.text(
+                                "team.selectAndLevel"
+                            ),
                         systemName: "play.fill",
                         color: .yellow,
                         foreground: .black
@@ -697,7 +710,7 @@ private struct TeamMonsterSelectionPopup: View {
                 .buttonStyle(.plain)
 
                 Button(action: onCancel) {
-                    Text("Schließen")
+                    Text(AppLocalizationService.text("common.close"))
                         .font(
                             .system(size: 15, weight: .heavy, design: .rounded)
                         )
@@ -730,7 +743,7 @@ struct TeamEvolutionPreviewOverlay: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                Text("Transformation")
+                Text(AppLocalizationService.text("team.transformation"))
                     .font(.system(size: 22, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
 

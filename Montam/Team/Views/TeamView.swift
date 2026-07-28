@@ -27,7 +27,6 @@ struct TeamView: View {
 
             TeamSectionTabs(selectedSection: $selectedSection)
         }
-        .background(AppScreenBackground())
         .overlay {
             if let evolutionPreview {
                 TeamEvolutionPreviewOverlay(preview: evolutionPreview)

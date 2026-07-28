@@ -113,7 +113,7 @@ private struct DailyDayCell: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            Text("Tag \(reward.day)")
+            Text(AppLocalizationService.text("daily.day", reward.day))
                 .font(.system(size: 12, weight: .heavy, design: .rounded))
                 .foregroundStyle(titleColor)
                 .lineLimit(1)
@@ -177,7 +177,7 @@ private struct DailyRewardCard: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            Text("Tag \(reward.day)")
+            Text(AppLocalizationService.text("daily.day", reward.day))
                 .font(.system(size: 24, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
 
@@ -185,7 +185,7 @@ private struct DailyRewardCard: View {
                 DailyRewardRow(reward: item)
             }
 
-            Text("Zum Abholen tippen")
+            Text(AppLocalizationService.text("daily.tapToClaim"))
                 .font(.system(size: 14, weight: .heavy, design: .rounded))
                 .foregroundStyle(.cyan)
         }

@@ -17,6 +17,9 @@ struct StartView: View {
     @State private var isLogoOpen = false
     @State private var backgroundImageName = "bg_tropical_beach"
     @State private var remoteContent = RemoteContentService.shared
+    @AppStorage(AppLocalizationService.languageKey) private
+        var languageRawValue =
+        AppLocalizationService.fallbackLanguage.rawValue
 
     var body: some View {
         ZStack {
@@ -41,7 +44,14 @@ struct StartView: View {
                     },
                     onCacheClear: {
                         AppSettingsService.clearCache()
-                        showMenuMessage("Cache geleert.")
+                        showMenuMessage(localized("settings.cacheCleared"))
+                    },
+                    onLegal: {
+                        withAnimation(
+                            .spring(response: 0.28, dampingFraction: 0.86)
+                        ) {
+                            presentedOverlay = .legal
+                        }
                     },
                     onClose: closeOverlays
                 )
@@ -55,6 +65,19 @@ struct StartView: View {
                     onDataDeleted: {
                         closeOverlays()
                         onDataDeleted()
+                    }
+                )
+                .transition(.scale.combined(with: .opacity))
+            }
+
+            if presentedOverlay == .legal {
+                AppLegalPanel(
+                    onClose: {
+                        withAnimation(
+                            .spring(response: 0.28, dampingFraction: 0.86)
+                        ) {
+                            presentedOverlay = .menu
+                        }
                     }
                 )
                 .transition(.scale.combined(with: .opacity))
@@ -108,10 +131,10 @@ struct StartView: View {
     private var startPrompt: some View {
         Text(
             remoteContent.isUpdating
-                ? "Downloading..."
-                : "Touch To Start"
+                ? localized("start.downloading")
+                : localized("start.touchToStart")
         )
-        .font(.system(size: 25, weight: .heavy, design: .rounded))
+        .font(.system(size: 17, weight: .heavy, design: .rounded))
         .foregroundStyle(.white)
         .padding()
         .background(
@@ -138,7 +161,7 @@ struct StartView: View {
                     .background(.black)
                     .clipShape(Capsule())
 
-                Text("© 2026 Tufan Cakir. All rights reserved.")
+                Text(localized("start.copyright"))
                     .font(.system(size: 10, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: .black, radius: 2, x: 1, y: 2)
@@ -151,7 +174,7 @@ struct StartView: View {
                     presentedOverlay = .menu
                 }
             } label: {
-                Text("Menü")
+                Text(localized("start.menu"))
                     .font(.system(size: 20, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(width: 96, height: 48)
@@ -196,11 +219,16 @@ struct StartView: View {
             JSONDataLoader.load("background", as: [BackgroundData].self) ?? []
         return backgrounds.compactMap(\.resolvedBackgroundImageName).first
     }
+
+    private func localized(_ key: String) -> String {
+        AppLocalizationService.text(key)
+    }
 }
 
 private enum StartOverlay {
     case menu
     case settings
+    case legal
 }
 
 private struct StartBackgroundImage: View {
@@ -246,8 +274,12 @@ private struct StartBackgroundImage: View {
 private struct StartMenuPanel: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.menuMessage) private var message
+    @AppStorage(AppLocalizationService.languageKey) private
+        var languageRawValue =
+        AppLocalizationService.fallbackLanguage.rawValue
     var onSettings: () -> Void = {}
     var onCacheClear: () -> Void = {}
+    var onLegal: () -> Void = {}
     var onClose: () -> Void = {}
 
     var body: some View {
@@ -256,15 +288,22 @@ private struct StartMenuPanel: View {
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 12) {
+                    languagePicker
+
                     StartMenuButton(
-                        title: "Einstellungen",
+                        title: localized("settings.title"),
                         icon: "gear",
                         action: onSettings
                     )
                     StartMenuButton(
-                        title: "Cache leeren",
+                        title: localized("settings.clearCache"),
                         icon: "trash.fill",
                         action: onCacheClear
+                    )
+                    StartMenuButton(
+                        title: localized("start.legal"),
+                        icon: "doc.text.fill",
+                        action: onLegal
                     )
 
                     if let message {
@@ -279,7 +318,7 @@ private struct StartMenuPanel: View {
                             .foregroundStyle(.cyan)
                     }
 
-                    Text("Social")
+                    Text(localized("start.social"))
                         .font(
                             .system(size: 17, weight: .heavy, design: .rounded)
                         )
@@ -296,7 +335,7 @@ private struct StartMenuPanel: View {
                         ForEach(AppSocialLink.all) { link in
                             StartMenuButton(
                                 title: link.title,
-                                icon: icon(for: link.id)
+                                icon: link.systemIcon
                             ) {
                                 openURL(link.url)
                             }
@@ -312,23 +351,22 @@ private struct StartMenuPanel: View {
     }
 
     private var menuHeader: some View {
-        GamePanelHeader(title: "Menü", onClose: onClose)
+        GamePanelHeader(title: localized("start.menu"), onClose: onClose)
             .overlay(StartSquarePattern().opacity(0.22))
     }
 
-    private func icon(for id: String) -> String {
-        switch id {
-        case "youtube": "play.rectangle.fill"
-        case "instagram": "camera.fill"
-        case "x": "xmark"
-        case "facebook": "f.circle.fill"
-        case "tiktok": "music.note"
-        case "threads": "at"
-        case "github": "chevron.left.forwardslash.chevron.right"
-        case "discord": "bubble.left.and.bubble.right.fill"
-        case "linkedin": "person.crop.square.fill"
-        default: "link"
+    private var languagePicker: some View {
+        Picker(localized("settings.language"), selection: $languageRawValue) {
+            ForEach(AppLanguage.allCases) { language in
+                Text(localized(language.titleKey))
+                    .tag(language.rawValue)
+            }
         }
+        .pickerStyle(.segmented)
+    }
+
+    private func localized(_ key: String) -> String {
+        AppLocalizationService.text(key)
     }
 }
 
@@ -348,7 +386,7 @@ private struct StartMenuButton: View {
                 .frame(height: 48)
                 .background(
                     LinearGradient(
-                        colors: [.cyan, .blue],
+                        colors: [.blue, .blue],
                         startPoint: .top,
                         endPoint: .bottom
                     )

@@ -9,6 +9,7 @@ import SwiftData
 import SwiftUI
 
 struct AppFlowPersistenceView: View {
+    @Binding var didAcknowledgePurchaseNotice: Bool
     @Binding var didTapStart: Bool
     @Binding var didFinishOnboarding: Bool
     let onResetToStart: () -> Void
@@ -16,7 +17,11 @@ struct AppFlowPersistenceView: View {
     @Query private var saves: [GameSaveData]
 
     var body: some View {
-        if !didTapStart {
+        if !didAcknowledgePurchaseNotice {
+            PurchaseNoticeView {
+                didAcknowledgePurchaseNotice = true
+            }
+        } else if !didTapStart {
             StartView {
                 didTapStart = true
             } onDataDeleted: {

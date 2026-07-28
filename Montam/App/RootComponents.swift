@@ -38,13 +38,13 @@ enum RootTab: CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .tamer: "Tamer"
-        case .montam: "Montam"
-        case .dungeon: "Dungeon"
+        case .tamer: AppLocalizationService.text("root.tab.tamer")
+        case .montam: AppLocalizationService.text("root.tab.montam")
+        case .dungeon: AppLocalizationService.text("root.tab.dungeon")
         case .game: ""
-        case .summon: "Summon"
-        case .shop: "Shop"
-        case .trade: "Trade"
+        case .summon: AppLocalizationService.text("root.tab.summon")
+        case .shop: AppLocalizationService.text("root.tab.shop")
+        case .trade: AppLocalizationService.text("root.tab.trade")
         }
     }
 
@@ -110,38 +110,47 @@ struct RootQuickMenuPanel: View {
     let onGiftTap: () -> Void
     let onNewsTap: () -> Void
     let onMissionTap: () -> Void
+    let onLegalTap: () -> Void
     let onSettingsTap: () -> Void
     let onClose: () -> Void
+    @AppStorage(AppLocalizationService.languageKey) private
+        var languageRawValue =
+        AppLocalizationService.fallbackLanguage.rawValue
 
     private var items: [RootQuickMenuItemData] {
         [
             RootQuickMenuItemData(
-                title: "Pass",
+                title: localized("root.quick.pass"),
                 systemName: "ticket.fill",
                 action: onPassTap
             ),
             RootQuickMenuItemData(
-                title: "Daily",
+                title: localized("root.quick.daily"),
                 systemName: "calendar",
                 action: onDailyTap
             ),
             RootQuickMenuItemData(
-                title: "Geschenke",
+                title: localized("root.quick.gifts"),
                 systemName: "gift.fill",
                 action: onGiftTap
             ),
             RootQuickMenuItemData(
-                title: "News",
+                title: localized("root.quick.news"),
                 systemName: "newspaper.fill",
                 action: onNewsTap
             ),
             RootQuickMenuItemData(
-                title: "Mission",
+                title: localized("root.quick.mission"),
                 systemName: "list.bullet.rectangle.fill",
                 action: onMissionTap
             ),
             RootQuickMenuItemData(
-                title: "Optionen",
+                title: localized("start.legal"),
+                systemName: "doc.text.fill",
+                action: onLegalTap
+            ),
+            RootQuickMenuItemData(
+                title: localized("root.quick.settings"),
                 systemName: "gear",
                 action: onSettingsTap
             ),
@@ -183,6 +192,10 @@ struct RootQuickMenuPanel: View {
             .padding(.horizontal, RootLayoutMetrics.screenInset)
             .padding(.bottom, RootLayoutMetrics.quickMenuBottomPadding)
         }
+    }
+
+    private func localized(_ key: String) -> String {
+        AppLocalizationService.text(key)
     }
 }
 
@@ -230,6 +243,9 @@ private struct RootQuickMenuItem: View {
 
 struct RootGameFooter: View {
     @Binding var selectedTab: RootTab
+    @AppStorage(AppLocalizationService.languageKey) private
+        var languageRawValue =
+        AppLocalizationService.fallbackLanguage.rawValue
 
     var body: some View {
         ZStack(alignment: .bottom) {

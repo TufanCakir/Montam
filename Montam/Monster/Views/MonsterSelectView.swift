@@ -32,12 +32,12 @@ struct MonsterSelectView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                Text("Monster wechseln")
+                Text(AppLocalizationService.text("monsterSelect.title"))
                     .font(.system(size: 30, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
 
                 Text(
-                    "Auswahl gilt für den nächsten Kampf. Im laufenden Kampf wird nicht gewechselt."
+                    AppLocalizationService.text("monsterSelect.subtitle")
                 )
                 .font(.system(size: 15, weight: .bold, design: .rounded))
                 .foregroundStyle(.cyan)
@@ -53,7 +53,6 @@ struct MonsterSelectView: View {
             .padding(.bottom, 60)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(AppScreenBackground())
         .padding(.top, 30)
     }
 
@@ -66,8 +65,16 @@ struct MonsterSelectView: View {
             SelectionRow(
                 imageName: monster.monsterName,
                 title: monster.name,
-                subtitle: owned.map { "Lv. \($0.level) · XP \($0.xp)" }
-                    ?? "Lv. 1 · immer verfügbar",
+                subtitle: owned.map {
+                    AppLocalizationService.text(
+                        "monsterSelect.monsterLevelXP",
+                        $0.level,
+                        $0.xp
+                    )
+                }
+                    ?? AppLocalizationService.text(
+                        "monsterSelect.alwaysAvailable"
+                    ),
                 isSelected: owned?.isSelected == true
                     || (!hasSelectedMonster
                         && monster.id == monsters.first?.id),
@@ -85,7 +92,7 @@ struct MonsterSelectView: View {
     private func tamerRows(
         ownedTamersById: [String: OwnedTamerData]
     ) -> some View {
-        Text("Tamer Support")
+        Text(AppLocalizationService.text("monsterSelect.tamerSupport"))
             .font(.system(size: 24, weight: .heavy, design: .rounded))
             .foregroundStyle(.white)
             .padding(.top, 18)
@@ -96,8 +103,11 @@ struct MonsterSelectView: View {
                 imageName: tamer.tamerName,
                 title: tamer.name,
                 subtitle: owned.map {
-                    "Lv. \($0.level) · Support aktiv"
-                } ?? "Noch nicht besitzt",
+                    AppLocalizationService.text(
+                        "monsterSelect.supportActive",
+                        $0.level
+                    )
+                } ?? AppLocalizationService.text("monsterSelect.notOwned"),
                 isSelected: owned?.isSelected == true,
                 isEnabled: owned != nil
             ) {

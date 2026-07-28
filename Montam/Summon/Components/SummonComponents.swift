@@ -87,7 +87,7 @@ struct SummonCategoryPicker: View {
                         selectedCategoryId = category.id
                     } label: {
                         SummonCategoryTile(
-                            title: category.title,
+                            title: category.localizedTitle,
                             summon: previewSummon(for: category),
                             isSelected: selectedCategoryId == category.id
                         )
@@ -252,7 +252,7 @@ struct SummonRateInfoSheet: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.75)
 
-            Text("Summon Rates")
+            Text(AppLocalizationService.text("summon.ratesTitle"))
                 .font(.system(size: 15, weight: .heavy, design: .rounded))
                 .foregroundStyle(.cyan)
 
@@ -263,7 +263,7 @@ struct SummonRateInfoSheet: View {
             }
 
             Text(
-                "10x garantiert mindestens Rare. Legendär bleibt absichtlich sehr selten."
+                AppLocalizationService.text("summon.rateHint")
             )
             .font(.system(size: 12, weight: .bold, design: .rounded))
             .foregroundStyle(.white.opacity(0.72))
@@ -293,7 +293,7 @@ private struct SummonRateRow: View {
                 .fill(color)
                 .frame(width: 12, height: 12)
 
-            Text(rate.title)
+            Text(rate.localizedTitle)
                 .font(.system(size: 15, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
 
@@ -392,11 +392,16 @@ struct SummonActionButton: View {
                         )
                 }
 
-                Text(count == 1 ? "1x beschwören" : "10x beschwören")
-                    .font(.system(size: 15, weight: .heavy, design: .rounded))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
+                Text(
+                    AppLocalizationService.text(
+                        "summon.action.count",
+                        count
+                    )
+                )
+                .font(.system(size: 15, weight: .heavy, design: .rounded))
+                .multilineTextAlignment(.center)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
             }
             .foregroundStyle(foregroundColor)
             .frame(maxWidth: .infinity)
@@ -424,7 +429,7 @@ struct SummonActionButton: View {
 
 struct SummonEmptyState: View {
     var body: some View {
-        Text("Keine Beschwörung in dieser Kategorie")
+        Text(AppLocalizationService.text("summon.empty"))
             .font(.system(size: 20, weight: .heavy, design: .rounded))
             .foregroundStyle(.blue)
             .multilineTextAlignment(.center)

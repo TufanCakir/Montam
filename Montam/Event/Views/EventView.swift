@@ -29,17 +29,15 @@ struct EventView: View {
                         .disabled(event.locked)
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 14)
+                .padding()
             }
         }
-        .background(AppScreenBackground())
         .fullScreenCover(item: $selectedEvent) { event in
             EventBattleView(event: event) {
                 selectedEvent = nil
             }
         }
-        .padding(.top, 18)
+        .padding(.top, 50)
     }
 }
 
@@ -70,20 +68,6 @@ private struct EventBattleView: View {
         ZStack(alignment: .topLeading) {
             SpriteView(scene: scene)
                 .ignoresSafeArea()
-
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(
-                        .system(size: 8, weight: .heavy, design: .rounded)
-                    )
-                    .foregroundStyle(.white)
-                    .frame(width: 38, height: 38)
-                    .background(Color.black.opacity(0.55))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .buttonStyle(.plain)
-            .padding(.top, 48)
-            .padding(.leading, 14)
 
             if let rewardOverlay {
                 EventRewardOverlay(data: rewardOverlay)
@@ -120,7 +104,7 @@ private struct EventBattleView: View {
         scene.onBossBattleWon = {
             applyRewards()
             rewardOverlay = EventRewardOverlayData(
-                title: event.title,
+                title: event.localizedTitle,
                 rewards: event.rewards
             )
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.9) {
@@ -144,122 +128,132 @@ private struct DungeonEventCard: View {
     let item: DungeonEventItem
 
     var body: some View {
-        HStack(spacing: 6) {
-            rewardBadge
+        ZStack(alignment: .trailing) {
+            RemoteAssetImage(imageName: item.backgroundAsset)
+                .scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
 
-            ZStack(alignment: .trailing) {
-                LinearGradient(
-                    colors: [
-                        item.accent.opacity(0.65), .blue.opacity(0.62),
-                        .black.opacity(0.5),
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .overlay(EventCardPattern().opacity(0.17))
-
-                RemoteAssetImage(imageName: item.enemyAsset)
-                    .scaledToFit()
-                    .frame(width: item.category == "boss" ? 94 : 76)
-                    .offset(x: item.category == "boss" ? 16 : 12)
-                    .opacity(0.92)
-
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(item.title)
+            RemoteAssetImage(imageName: item.enemyAsset)
+                .scaledToFit()
+                .frame(width: item.category == "boss" ? 104 : 92)
+                .padding(.trailing, 10)
+        }
+        .frame(height: item.category == "boss" ? 132 : 120)
+        .clipShape(EventSlantedCardShape())
+        .overlay(alignment: .leading) {
+            cardContent
+        }
+        .overlay {
+            if item.locked {
+                ZStack {
+                    Color.black.opacity(0.55)
+                    Text(AppLocalizationService.text("shop.unavailable"))
                         .font(
                             .system(
-                                size: item.title.contains("\n") ? 18 : 21,
+                                size: 13,
                                 weight: .heavy,
                                 design: .rounded
                             )
                         )
-                        .italic()
                         .foregroundStyle(.white)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.50)
-                        .shadow(color: .black.opacity(0.55), radius: 1, y: 1)
+                        .shadow(color: .black, radius: 2)
+                }
+                .clipShape(EventSlantedCardShape())
+            }
+        }
+        .background(
+            EventSlantedCardShape()
+                .fill(Color.black.opacity(0.46))
+                .offset(x: 10, y: 10)
+        )
+        .overlay(
+            EventSlantedCardShape()
+                .stroke(
+                    item.accent.opacity(item.locked ? 0.28 : 0.72),
+                    lineWidth: 2
+                )
+        )
+        .shadow(color: .black.opacity(0.42), radius: 8, x: 8, y: 10)
+    }
 
-                    Text(item.subtitle)
+    private var cardContent: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(item.title)
+                .font(
+                    .system(
+                        size: item.title.contains("\n") ? 20 : 24,
+                        weight: .heavy,
+                        design: .rounded
+                    )
+                )
+                .foregroundStyle(.white)
+                .lineLimit(2)
+                .minimumScaleFactor(0.58)
+                .shadow(color: .black.opacity(0.75), radius: 2, y: 1)
+
+            Spacer(minLength: 0)
+
+            HStack(spacing: 6) {
+                if let playLimitText = item.playLimitText {
+                    Text(playLimitText)
                         .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
+                            .system(
+                                size: 10,
+                                weight: .heavy,
+                                design: .rounded
+                            )
                         )
-                        .italic()
-                        .foregroundStyle(.cyan)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.50)
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .padding(.horizontal, 8)
+                        .frame(height: 24)
+                        .background(Color.black.opacity(0.36))
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                }
 
-                    Spacer()
+                ForEach(item.rewards.prefix(3)) { reward in
+                    HStack(spacing: 4) {
+                        GameResourceIcon(
+                            id: reward.currency,
+                            fallbackImage: nil
+                        )
+                        .frame(width: 15, height: 15)
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.dateText)
+                        Text(GameNumberFormatter.compact(reward.amount))
                             .font(
                                 .system(
-                                    size: 9,
+                                    size: 10,
                                     weight: .heavy,
                                     design: .rounded
                                 )
                             )
-                            .foregroundStyle(.green)
+                            .foregroundStyle(.white)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                            .shadow(color: .black, radius: 1)
-
-                        HStack(spacing: 6) {
-                            EventLimitPill(text: item.playLimitText)
-                            EventRewardPills(rewards: item.rewards)
-
-                            if let adProgress = item.adProgress {
-                                EventCounter(
-                                    iconId: "summon_ticket",
-                                    text: adProgress
-                                )
-                            }
-                        }
                     }
+                    .padding(.horizontal, 5)
+                    .frame(height: 24)
+                    .background(Color.black.opacity(0.28))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
                 }
-                .padding(.vertical, 12)
-                .padding(.leading, 14)
-                .padding(.trailing, 74)
-                .frame(maxWidth: .infinity, alignment: .leading)
 
-                if item.locked {
-                    Color.black.opacity(0.55)
-                    Text("Bald verfügbar")
-                        .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .shadow(color: .black, radius: 2)
-                }
-            }
-            .clipShape(EventSlantedCardShape())
-            .overlay(
-                EventSlantedCardShape().stroke(
-                    .cyan.opacity(0.45),
-                    lineWidth: 1.5
-                )
-            )
-        }
-        .frame(height: item.category == "boss" ? 108 : 98)
-    }
-
-    private var rewardBadge: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(.blue.opacity(0.55))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(.cyan.opacity(0.45), lineWidth: 1)
-                )
-
-            VStack(spacing: 7) {
-                ForEach(item.rewards.prefix(3)) { reward in
-                    GameResourceIcon(id: reward.currency, fallbackImage: nil)
-                        .frame(width: 23, height: 23)
+                if let adProgress = item.adProgress {
+                    EventCounter(
+                        iconId: "summon_ticket",
+                        text: adProgress
+                    )
                 }
             }
         }
-        .frame(width: 42)
+        .padding(14)
+        .padding(.trailing, 82)
+        .frame(
+            minWidth: 0,
+            maxWidth: .infinity,
+            maxHeight: .infinity,
+            alignment: .leading
+        )
     }
 }
 
@@ -294,7 +288,7 @@ private struct EventRewardOverlay: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("Belohnung")
+            Text(AppLocalizationService.text("event.reward"))
                 .font(
                     .system(size: 8, weight: .heavy, design: .rounded)
                 )
@@ -347,64 +341,6 @@ private struct EventRewardOverlay: View {
     }
 }
 
-private struct EventLimitPill: View {
-    let text: String
-
-    var body: some View {
-        Text(text)
-            .font(
-                .system(size: 10, weight: .heavy, design: .rounded)
-            )
-            .foregroundStyle(.white)
-            .lineLimit(1)
-            .minimumScaleFactor(0.50)
-            .padding(.horizontal, 8)
-            .frame(height: 24)
-            .background(Color.black.opacity(0.24))
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-    }
-}
-
-private struct EventRewardPills: View {
-    let rewards: [EventRewardItem]
-
-    var body: some View {
-        HStack(spacing: 5) {
-            ForEach(rewards.prefix(3)) { reward in
-                HStack(spacing: 4) {
-                    GameResourceIcon(id: reward.currency, fallbackImage: nil)
-                        .frame(width: 15, height: 15)
-                    Text(GameNumberFormatter.compact(reward.amount))
-                        .font(
-                            .system(size: 10, weight: .heavy, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                }
-                .padding(.horizontal, 5)
-                .frame(height: 24)
-                .background(Color.white.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 4))
-            }
-        }
-    }
-}
-
-private struct EventCardPattern: View {
-    var body: some View {
-        HStack(spacing: 12) {
-            ForEach(0..<28, id: \.self) { index in
-                Rectangle()
-                    .fill(
-                        index.isMultiple(of: 2)
-                            ? .white.opacity(0.35) : .black.opacity(0.24)
-                    )
-                    .frame(width: 9, height: 130)
-                    .rotationEffect(.degrees(18))
-            }
-        }
-    }
-}
-
 private struct EventSlantedCardShape: Shape {
     func path(in rect: CGRect) -> Path {
         Path { path in
@@ -431,15 +367,12 @@ private struct DungeonEventItem: Identifiable {
     let source: EventData
     let category: String
     let title: String
-    let subtitle: String
     let rewards: [EventRewardItem]
-    let dateText: String
-    let playLimitText: String
+    let playLimitText: String?
+    let backgroundAsset: String
     let enemyAsset: String
     let accent: Color
-    let progress: String
     let adProgress: String?
-    let timer: String?
     let locked: Bool
 }
 
@@ -455,68 +388,34 @@ private enum EventViewDataSource {
                 id: event.id,
                 source: event,
                 category: event.category,
-                title: event.title,
-                subtitle: event.description,
+                title: event.localizedTitle,
                 rewards: event.rewards,
-                dateText: dateText(for: event),
                 playLimitText: playLimitText(for: event),
+                backgroundAsset: event.eventBackground,
                 enemyAsset: enemy?.enemyName ?? event.enemyName,
                 accent: accent(for: event.category),
-                progress: event.progress ?? "0/\(event.maxPlays ?? 0)",
                 adProgress: event.adProgress,
-                timer: event.timer,
                 locked: event.locked ?? false
             )
         }
     }
 
-    private static func playLimitText(for event: EventData) -> String {
+    private static func playLimitText(for event: EventData) -> String? {
         if let maxPlays = event.maxPlays {
-            return "\(event.progress ?? "0/\(maxPlays)") Versuche"
+            return event.progress ?? "0/\(maxPlays)"
         }
 
-        return "Mehrfach"
-    }
-
-    private static func dateText(for event: EventData) -> String {
-        if let startDate = event.startDate, let endDate = event.endDate {
-            return
-                "\(formatGermanDate(startDate)) - \(formatGermanDate(endDate))"
-        }
-
-        return "\(event.durationDays) Tage"
-    }
-
-    private static func formatGermanDate(_ value: String) -> String {
-        guard let date = inputDateFormatter.date(from: value) else {
-            return value
-        }
-
-        return outputDateFormatter.string(from: date)
+        return nil
     }
 
     private static func accent(for category: String) -> Color {
         switch category {
-        case "boss": .red
-        case "hunt": .pink
-        case "daily": .cyan
+        case "boss": .blue
+        case "hunt": .blue
+        case "daily": .blue
         default: .blue
         }
     }
-
-    private static let inputDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter
-    }()
-
-    private static let outputDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
-        formatter.dateFormat = "dd.MM.yyyy"
-        return formatter
-    }()
 }
 
 #Preview {

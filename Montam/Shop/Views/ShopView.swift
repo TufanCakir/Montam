@@ -12,26 +12,18 @@ struct ShopView: View {
 
     @StateObject private var paymentStore = StoreKitShopManager()
     @State private var viewModel = ShopViewModel()
+    @AppStorage(AppLocalizationService.languageKey)
+    private var languageRawValue = AppLanguage.german.rawValue
 
     var body: some View {
         VStack(spacing: 0) {
-
-            ShopWalletFilterBar(
-                wallet: gameStore.shopWallet,
-                selectedSection: $viewModel.selectedSection
-            )
-
             ScrollView(.vertical, showsIndicators: false) {
                 shopContent
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 18)
-                    .padding(.top, 22)
-                    .padding(.bottom, 24)
+                    .padding(.horizontal)
             }
 
             ShopSectionTabs(selectedSection: $viewModel.selectedSection)
         }
-        .background(AppScreenBackground())
         .overlay {
             if let message = viewModel.purchaseMessage {
                 ShopToast(message: message)
@@ -49,109 +41,63 @@ struct ShopView: View {
         case .pass:
             ShopPassContent(
                 products: viewModel.selectedProducts,
-                store: paymentStore,
-                onBuy: buy,
-                isPurchased: isPurchased,
-                priceTitle: priceTitle,
+                cardState: productCardState,
+                onBuy: buyProduct,
                 onRestore: restorePurchases
             )
         case .premiumCurrency:
             ShopProductGridContent(
                 products: viewModel.selectedProducts,
-                emptyTitle: "Keine Premium-Produkte",
-                store: paymentStore,
-                priceTitle: priceTitle,
-                onBuy: buy
+                emptyTitle: viewModel.selectedEmptyTitle,
+                cardState: productCardState,
+                onBuy: buyProduct
             )
         case .item:
             ItemShopContent(
                 products: viewModel.itemProducts,
-                onBuy: buyItem
+                emptyTitle: viewModel.selectedEmptyTitle,
+                cardState: itemCardState,
+                onBuy: buyItemProduct
             )
         }
     }
 
-    private func buyItem(_ product: ItemShopProductData) {
-        let didBuy = gameStore.purchaseItem(product)
-        showPurchaseMessage(didBuy ? "Item gekauft." : "Nicht genug Währung.")
+    private func buyItemProduct(_ product: ItemShopProductData) {
+        viewModel.buyItem(product, gameStore: gameStore)
     }
 
-    private func buy(_ product: ShopProductData) {
-        if product.purchaseType == .softCurrency {
-            let didBuy = gameStore.purchaseSoftCurrencyProduct(product)
-            showPurchaseMessage(
-                didBuy ? "Item gekauft." : "Nicht genug Währung."
-            )
-            return
-        }
-
+    private func buyProduct(_ product: ShopProductData) {
         Task {
-            let result = await paymentStore.purchase(product)
-
-            switch result {
-            case .purchased(let product, let shouldApplyRewards):
-                if shouldApplyRewards {
-                    gameStore.applyShopRewards(from: product)
-                } else {
-                    gameStore.syncShopEntitlements(
-                        productIds: paymentStore.purchasedProductIds
-                    )
-                }
-                showPurchaseMessage("Kauf abgeschlossen.")
-            case .pending:
-                showPurchaseMessage("Kauf wartet auf Bestätigung.")
-            case .cancelled:
-                viewModel.purchaseMessage = nil
-            case .failed(let message):
-                handlePurchaseFailure(message)
-            }
+            await viewModel.buy(
+                product,
+                gameStore: gameStore,
+                store: paymentStore
+            )
         }
     }
 
     private func restorePurchases() {
         Task {
-            await paymentStore.restorePurchases()
-            gameStore.syncShopEntitlements(
-                productIds: paymentStore.purchasedProductIds
+            await viewModel.restorePurchases(
+                gameStore: gameStore,
+                store: paymentStore
             )
-            showPurchaseMessage("Käufe wurden wiederhergestellt.")
         }
     }
 
-    private func handlePurchaseFailure(_ message: String) {
-        guard !message.contains("StoreKit findet") else {
-            viewModel.purchaseMessage = nil
-            return
-        }
-
-        showPurchaseMessage(message)
+    private func productCardState(
+        _ product: ShopProductData
+    ) -> ShopStoreProductCardState {
+        viewModel.cardState(
+            for: product,
+            gameStore: gameStore,
+            store: paymentStore
+        )
     }
 
-    private func showPurchaseMessage(_ message: String) {
-        viewModel.purchaseMessage = message
-        Task {
-            try? await Task.sleep(for: .seconds(2.2))
-            if viewModel.purchaseMessage == message {
-                viewModel.purchaseMessage = nil
-            }
-        }
+    private func itemCardState(
+        _ product: ItemShopProductData
+    ) -> ShopItemProductCardState {
+        viewModel.itemCardState(for: product)
     }
-
-    private func priceTitle(_ product: ShopProductData) -> String {
-        viewModel.priceTitle(for: product, store: paymentStore)
-    }
-
-    private func isPurchased(_ product: ShopProductData) -> Bool {
-        if product.purchaseType == .nonConsumable,
-            product.rewards.unlockEventPass == true
-        {
-            return gameStore.hasEventPass
-        }
-
-        return paymentStore.isPurchased(product)
-    }
-}
-
-#Preview {
-    RootView()
 }

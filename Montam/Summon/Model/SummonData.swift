@@ -21,7 +21,16 @@ struct SummonData: Codable {
 struct SummonRateData: Codable, Identifiable {
     let rarity: String
     let title: String
+    let titleKey: String?
     let weight: Int
 
     var id: String { rarity }
+
+    var localizedTitle: String {
+        if let titleKey {
+            return AppLocalizationService.text(titleKey)
+        }
+
+        return title
+    }
 }

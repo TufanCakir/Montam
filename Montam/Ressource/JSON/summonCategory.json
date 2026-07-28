@@ -1,14 +1,17 @@
 [
     {
         "id": "montam",
-        "title": "Montam"
+        "title": "Montam",
+        "titleKey": "summon.category.montam"
     },
     {
         "id": "tamer",
-        "title": "Tamer"
+        "title": "Tamer",
+        "titleKey": "summon.category.tamer"
     },
     {
         "id": "mega_supporter",
-        "title": "Mega Supporter"
+        "title": "Mega Supporter",
+        "titleKey": "summon.category.megaSupporter"
     }
 ]

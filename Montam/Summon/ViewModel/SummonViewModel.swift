@@ -25,7 +25,7 @@ final class SummonViewModel {
     private let appearancesByLookupId: [String: MonsterAppearanceData]
 
     var selectedCategoryId: String
-    var summonResultTitle = "Beschwörung"
+    var summonResultTitle = AppLocalizationService.text("summon.defaultTitle")
     var summonResults: [SummonResultItem] = []
     var isShowingSummonResult = false
     var summonMessage: String?
@@ -201,7 +201,9 @@ final class SummonViewModel {
 
             return SummonResultItem(
                 title: monster.name,
-                subtitle: isSupporter ? "Montam Support" : "Monster",
+                subtitle: isSupporter
+                    ? AppLocalizationService.text("summon.support.montam")
+                    : AppLocalizationService.text("summon.support.monster"),
                 rarity: rarity,
                 kind: isSupporter ? .supportCard : .monster,
                 imageName: monster.monsterName,
@@ -217,7 +219,8 @@ final class SummonViewModel {
             return SummonResultItem(
                 title: appearance.title,
                 subtitle: summon.category == "mega_supporter"
-                    ? "Mega Support" : "Montam Support",
+                    ? AppLocalizationService.text("summon.support.mega")
+                    : AppLocalizationService.text("summon.support.montam"),
                 rarity: rarity,
                 kind: .supportCard,
                 imageName: appearance.imageName,
@@ -232,7 +235,7 @@ final class SummonViewModel {
 
             return SummonResultItem(
                 title: tamer.name,
-                subtitle: "Tamer Support",
+                subtitle: AppLocalizationService.text("summon.support.tamer"),
                 rarity: rarity,
                 kind: isSupporter ? .supportCard : .tamer,
                 imageName: tamer.tamerName,
@@ -250,7 +253,7 @@ final class SummonViewModel {
     ) -> SummonResultItem {
         SummonResultItem(
             title: summon.title,
-            subtitle: "Banner nicht konfiguriert",
+            subtitle: AppLocalizationService.text("summon.bannerNotConfigured"),
             rarity: rarity,
             kind: .supportCard,
             imageName: summon.bannerImage,
@@ -489,22 +492,7 @@ final class SummonViewModel {
     // MARK: - UI helpers
 
     func currencyName(_ currency: String) -> String {
-        switch currency.lowercased() {
-        case "crystal", "crystals":
-            return "Kristalle"
-
-        case "summon_ticket", "summon_tickets", "ticket", "tickets":
-            return "Tickets"
-
-        case "bit", "bits":
-            return "Bits"
-
-        case "coin", "coins":
-            return "Coins"
-
-        default:
-            return currency
-        }
+        GameCurrency.title(for: currency)
     }
 
     func showMessage(_ message: String) {
@@ -547,28 +535,34 @@ final class SummonViewModel {
 
     // MARK: - Rarity helpers
 
-    private static let defaultRates = [
-        SummonRateData(
-            rarity: "common",
-            title: "Common",
-            weight: 7000
-        ),
-        SummonRateData(
-            rarity: "rare",
-            title: "Rare",
-            weight: 2200
-        ),
-        SummonRateData(
-            rarity: "epic",
-            title: "Epic",
-            weight: 750
-        ),
-        SummonRateData(
-            rarity: "legendary",
-            title: "Legendär",
-            weight: 50
-        ),
-    ]
+    private static var defaultRates: [SummonRateData] {
+        [
+            SummonRateData(
+                rarity: "common",
+                title: "Common",
+                titleKey: nil,
+                weight: 7000
+            ),
+            SummonRateData(
+                rarity: "rare",
+                title: "Rare",
+                titleKey: nil,
+                weight: 2200
+            ),
+            SummonRateData(
+                rarity: "epic",
+                title: "Epic",
+                titleKey: nil,
+                weight: 750
+            ),
+            SummonRateData(
+                rarity: "legendary",
+                title: AppLocalizationService.text("summon.rarity.legendary"),
+                titleKey: "summon.rarity.legendary",
+                weight: 50
+            ),
+        ]
+    }
 
     private static let supporterCategoryIds: Set<String> = [
         "montam",

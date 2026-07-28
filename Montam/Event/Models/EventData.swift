@@ -13,18 +13,32 @@ struct EventData: Decodable, Identifiable {
     let eventBackground: String
     let title: String
     let description: String
+    let titleKey: String?
+    let descriptionKey: String?
     let enemyName: String
-    let durationDays: Int
-    let startDate: String?
-    let endDate: String?
     let maxPlays: Int?
     let resetIntervalHours: Int?
     let battleXPReward: Int?
     let rewards: [EventRewardItem]
     let progress: String?
     let adProgress: String?
-    let timer: String?
     let locked: Bool?
+
+    var localizedTitle: String {
+        if let titleKey {
+            return AppLocalizationService.text(titleKey)
+        }
+
+        return title
+    }
+
+    var localizedDescription: String {
+        if let descriptionKey {
+            return AppLocalizationService.text(descriptionKey)
+        }
+
+        return description
+    }
 
     private enum CodingKeys: String, CodingKey {
         case id
@@ -32,19 +46,17 @@ struct EventData: Decodable, Identifiable {
         case eventBackground
         case title
         case description
+        case titleKey
+        case descriptionKey
         case enemyName
         case rewardCurrency
         case rewardAmount
-        case durationDays
-        case startDate
-        case endDate
         case maxPlays
         case resetIntervalHours
         case battleXPReward
         case rewards
         case progress
         case adProgress
-        case timer
         case locked
     }
 
@@ -58,14 +70,12 @@ struct EventData: Decodable, Identifiable {
         )
         title = try container.decode(String.self, forKey: .title)
         description = try container.decode(String.self, forKey: .description)
-        enemyName = try container.decode(String.self, forKey: .enemyName)
-        durationDays =
-            try container.decodeIfPresent(Int.self, forKey: .durationDays) ?? 7
-        startDate = try container.decodeIfPresent(
+        titleKey = try container.decodeIfPresent(String.self, forKey: .titleKey)
+        descriptionKey = try container.decodeIfPresent(
             String.self,
-            forKey: .startDate
+            forKey: .descriptionKey
         )
-        endDate = try container.decodeIfPresent(String.self, forKey: .endDate)
+        enemyName = try container.decode(String.self, forKey: .enemyName)
         maxPlays = try container.decodeIfPresent(Int.self, forKey: .maxPlays)
         resetIntervalHours = try container.decodeIfPresent(
             Int.self,
@@ -80,7 +90,6 @@ struct EventData: Decodable, Identifiable {
             String.self,
             forKey: .adProgress
         )
-        timer = try container.decodeIfPresent(String.self, forKey: .timer)
         locked = try container.decodeIfPresent(Bool.self, forKey: .locked)
 
         if let rewards = try container.decodeIfPresent(

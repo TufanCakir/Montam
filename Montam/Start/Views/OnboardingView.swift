@@ -26,13 +26,13 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack(spacing: 22) {
-            Text("Wähle dein erstes Monster")
+            Text(AppLocalizationService.text("onboarding.title"))
                 .font(.system(size: 30, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
                 .shadow(color: .black, radius: 2, x: 1, y: 2)
 
             Text(
-                "Du startest mit Level 1. Tamer sind Supporter und geben deinem Monster Boni."
+                AppLocalizationService.text("onboarding.subtitle")
             )
             .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.cyan)
@@ -108,7 +108,7 @@ struct OnboardingView: View {
             try modelContext.save()
             onComplete()
         } catch {
-            message = "Spielstand konnte nicht gespeichert werden."
+            message = AppLocalizationService.text("onboarding.saveFailed")
         }
     }
 

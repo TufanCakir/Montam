@@ -15,6 +15,9 @@ struct AppSettingsPanel: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage(AppSettingsService.musicEnabledKey) private var isMusicEnabled =
         true
+    @AppStorage(AppLocalizationService.languageKey) private
+        var languageRawValue =
+        AppLocalizationService.fallbackLanguage.rawValue
     @State private var isConfirmingDelete = false
     @State private var message: String?
 
@@ -25,7 +28,7 @@ struct AppSettingsPanel: View {
             VStack(spacing: 16) {
                 Toggle(isOn: $isMusicEnabled) {
                     Label(
-                        "Musik",
+                        localized("settings.music"),
                         systemImage: isMusicEnabled
                             ? "speaker.wave.2.fill" : "speaker.slash.fill"
                     )
@@ -38,13 +41,18 @@ struct AppSettingsPanel: View {
                 .background(Color.black.opacity(0.22))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                settingsButton(title: "Cache leeren", icon: "trash.fill") {
+                languagePicker
+
+                settingsButton(
+                    title: localized("settings.clearCache"),
+                    icon: "trash.fill"
+                ) {
                     AppSettingsService.clearCache()
-                    showMessage("Cache geleert.")
+                    showMessage(localized("settings.cacheCleared"))
                 }
 
                 settingsButton(
-                    title: "Benutzerdaten löschen",
+                    title: localized("settings.deleteData"),
                     icon: "exclamationmark.triangle.fill",
                     role: .destructive
                 ) {
@@ -72,26 +80,27 @@ struct AppSettingsPanel: View {
             )
         )
         .confirmationDialog(
-            "Alle Spieldaten löschen?",
+            localized("settings.deleteConfirmTitle"),
             isPresented: $isConfirmingDelete,
             titleVisibility: .visible
         ) {
-            Button("Alles löschen", role: .destructive) {
+            Button(
+                localized("settings.deleteConfirmAction"),
+                role: .destructive
+            ) {
                 AppSettingsService.deleteUserData(modelContext: modelContext)
                 onDataDeleted()
             }
 
-            Button("Abbrechen", role: .cancel) {}
+            Button(localized("settings.cancel"), role: .cancel) {}
         } message: {
-            Text(
-                "Dein Spielstand, Monster und Tamer werden vollständig entfernt."
-            )
+            Text(localized("settings.deleteConfirmMessage"))
         }
     }
 
     private var header: some View {
         HStack {
-            Text("Einstellungen")
+            Text(localized("settings.title"))
                 .font(.system(size: 28, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
 
@@ -116,6 +125,27 @@ struct AppSettingsPanel: View {
                 endPoint: .trailing
             )
         )
+    }
+
+    private var languagePicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(localized("settings.language"), systemImage: "globe")
+                .font(.system(size: 17, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+
+            Picker(localized("settings.language"), selection: $languageRawValue)
+            {
+                ForEach(AppLanguage.allCases) { language in
+                    Text(localized(language.titleKey))
+                        .tag(language.rawValue)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+        .background(Color.black.opacity(0.22))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private func settingsButton(
@@ -156,6 +186,10 @@ struct AppSettingsPanel: View {
                 message = nil
             }
         }
+    }
+
+    private func localized(_ key: String) -> String {
+        AppLocalizationService.text(key)
     }
 }
 

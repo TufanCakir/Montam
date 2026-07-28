@@ -14,7 +14,9 @@ struct MontamApp: App {
 
     init() {
         UserDefaults.standard.register(defaults: [
-            AppSettingsService.musicEnabledKey: true
+            AppSettingsService.musicEnabledKey: true,
+            AppLocalizationService.languageKey:
+                AppLocalizationService.fallbackLanguage.rawValue,
         ])
 
         modelContainer = Self.makeModelContainer()

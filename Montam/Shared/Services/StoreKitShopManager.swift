@@ -61,12 +61,12 @@ final class StoreKitShopManager: ObservableObject {
             )
             errorMessage =
                 unavailableProductIds.isEmpty
-                ? nil : "Einige Store-Produkte sind nicht verfügbar."
+                ? nil : AppLocalizationService.text("store.someUnavailable")
 
             await refreshEntitlements()
         } catch {
             productsById = [:]
-            errorMessage = "Store konnte nicht geladen werden."
+            errorMessage = AppLocalizationService.text("store.loadFailed")
             unavailableProductIds = Set(uniqueIds)
         }
     }
@@ -77,7 +77,7 @@ final class StoreKitShopManager: ObservableObject {
         )
 
         guard let product = productsById[productId] else {
-            return .failed("StoreKit findet \(productId) nicht.")
+            return .failed("")
         }
 
         do {
@@ -108,10 +108,12 @@ final class StoreKitShopManager: ObservableObject {
                 return .cancelled
 
             @unknown default:
-                return .failed("Unbekannter StoreKit-Status.")
+                return .failed(
+                    AppLocalizationService.text("store.unknownStatus")
+                )
             }
         } catch {
-            return .failed("Kauf konnte nicht abgeschlossen werden.")
+            return .failed(AppLocalizationService.text("store.purchaseFailed"))
         }
     }
 
@@ -120,7 +122,7 @@ final class StoreKitShopManager: ObservableObject {
             try await AppStore.sync()
             await refreshEntitlements()
         } catch {
-            errorMessage = "Käufe konnten nicht wiederhergestellt werden."
+            errorMessage = AppLocalizationService.text("store.restoreFailed")
         }
     }
 
@@ -174,7 +176,9 @@ final class StoreKitShopManager: ObservableObject {
                     }
                     await transaction.finish()
                 } catch {
-                    self.errorMessage = "Kauf konnte nicht verifiziert werden."
+                    self.errorMessage = AppLocalizationService.text(
+                        "store.verificationFailed"
+                    )
                 }
             }
         }

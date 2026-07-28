@@ -11,11 +11,29 @@ struct MissionData: Decodable, Identifiable {
     let id: String
     let title: String
     let description: String
+    let titleKey: String?
+    let descriptionKey: String?
     let kind: MissionKind
     let target: Int
     let repeatStep: Int?
     let maxClaims: Int?
     let rewards: [RewardData]
+
+    var localizedTitle: String {
+        if let titleKey {
+            return AppLocalizationService.text(titleKey)
+        }
+
+        return title
+    }
+
+    var localizedDescription: String {
+        if let descriptionKey {
+            return AppLocalizationService.text(descriptionKey)
+        }
+
+        return description
+    }
 }
 
 enum MissionKind: String, Decodable {

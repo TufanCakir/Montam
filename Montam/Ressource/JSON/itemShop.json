@@ -2,12 +2,14 @@
     "products": [
         {
             "id": "item_summon_ticket_single",
-            "title": "Beschwörungsticket",
+            "title": "Beschwoerungsticket",
             "subtitle": "+1 Summon Ticket",
+            "titleKey": "itemShop.summonTicketSingle.title",
+            "subtitleKey": "itemShop.summonTicketSingle.subtitle",
             "visual": "tickets",
-            "badge": "SUPPORT",
+            "badge": null,
             "priceCurrency": "bits",
-            "priceAmount": 20,
+            "priceAmount": 120,
             "sortOrder": 10,
             "rewards": {
                 "bits": null,
@@ -18,35 +20,153 @@
             }
         },
         {
-            "id": "item_coin_pack",
-            "title": "Coin-Paket",
-            "subtitle": "+500 Coins",
-            "visual": "coins",
-            "badge": "ITEM",
-            "priceCurrency": "bits",
-            "priceAmount": 15,
+            "id": "item_summon_ticket_bundle",
+            "title": "Ticket-Buendel",
+            "subtitle": "+5 Summon Tickets",
+            "titleKey": "itemShop.summonTicketBundle.title",
+            "subtitleKey": "itemShop.summonTicketBundle.subtitle",
+            "visual": "tickets",
+            "badge": null,
+            "priceCurrency": "crystals",
+            "priceAmount": 45,
             "sortOrder": 20,
             "rewards": {
                 "bits": null,
-                "summonTickets": null,
+                "summonTickets": 5,
                 "crystals": null,
-                "coins": 500,
+                "coins": null,
                 "unlockEventPass": null
             }
         },
         {
-            "id": "item_crystal_pack",
-            "title": "Kristall-Paket",
-            "subtitle": "+10 Kristalle",
-            "visual": "crystals",
-            "badge": "ITEM",
+            "id": "item_coin_pack_bits",
+            "title": "Coin-Paket",
+            "subtitle": "+2500 Coins",
+            "titleKey": "itemShop.coinPackBits.title",
+            "subtitleKey": "itemShop.coinPackBits.subtitle",
+            "visual": "coins",
+            "badge": null,
             "priceCurrency": "bits",
-            "priceAmount": 50,
+            "priceAmount": 90,
             "sortOrder": 30,
             "rewards": {
                 "bits": null,
                 "summonTickets": null,
+                "crystals": null,
+                "coins": 2500,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_coin_pack_crystals",
+            "title": "Grosses Coin-Paket",
+            "subtitle": "+12000 Coins",
+            "titleKey": "itemShop.coinPackCrystals.title",
+            "subtitleKey": "itemShop.coinPackCrystals.subtitle",
+            "visual": "coins",
+            "badge": null,
+            "priceCurrency": "crystals",
+            "priceAmount": 35,
+            "sortOrder": 40,
+            "rewards": {
+                "bits": null,
+                "summonTickets": null,
+                "crystals": null,
+                "coins": 12000,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_crystal_pack_bits",
+            "title": "Kristall-Paket",
+            "subtitle": "+10 Kristalle",
+            "titleKey": "itemShop.crystalPackBits.title",
+            "subtitleKey": "itemShop.crystalPackBits.subtitle",
+            "visual": "crystals",
+            "badge": null,
+            "priceCurrency": "bits",
+            "priceAmount": 180,
+            "sortOrder": 50,
+            "rewards": {
+                "bits": null,
+                "summonTickets": null,
                 "crystals": 10,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_crystal_pack_tickets",
+            "title": "Kristall-Tausch",
+            "subtitle": "+25 Kristalle",
+            "titleKey": "itemShop.crystalPackTickets.title",
+            "subtitleKey": "itemShop.crystalPackTickets.subtitle",
+            "visual": "crystals",
+            "badge": null,
+            "priceCurrency": "summon_ticket",
+            "priceAmount": 8,
+            "sortOrder": 60,
+            "rewards": {
+                "bits": null,
+                "summonTickets": null,
+                "crystals": 25,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_bits_pack_coins",
+            "title": "Bit-Paket",
+            "subtitle": "+75 Bits",
+            "titleKey": "itemShop.bitsPackCoins.title",
+            "subtitleKey": "itemShop.bitsPackCoins.subtitle",
+            "visual": "bit",
+            "badge": null,
+            "priceCurrency": "coins",
+            "priceAmount": 25000,
+            "sortOrder": 70,
+            "rewards": {
+                "bits": 75,
+                "summonTickets": null,
+                "crystals": null,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_bits_pack_crystals",
+            "title": "Grosses Bit-Paket",
+            "subtitle": "+220 Bits",
+            "titleKey": "itemShop.bitsPackCrystals.title",
+            "subtitleKey": "itemShop.bitsPackCrystals.subtitle",
+            "visual": "bit",
+            "badge": null,
+            "priceCurrency": "crystals",
+            "priceAmount": 65,
+            "sortOrder": 80,
+            "rewards": {
+                "bits": 220,
+                "summonTickets": null,
+                "crystals": null,
+                "coins": null,
+                "unlockEventPass": null
+            }
+        },
+        {
+            "id": "item_ticket_coin_exchange",
+            "title": "Ticket-Tausch",
+            "subtitle": "+3 Summon Tickets",
+            "titleKey": "itemShop.ticketCoinExchange.title",
+            "subtitleKey": "itemShop.ticketCoinExchange.subtitle",
+            "visual": "tickets",
+            "badge": null,
+            "priceCurrency": "coins",
+            "priceAmount": 60000,
+            "sortOrder": 90,
+            "rewards": {
+                "bits": null,
+                "summonTickets": 3,
+                "crystals": null,
                 "coins": null,
                 "unlockEventPass": null
             }

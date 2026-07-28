@@ -50,8 +50,11 @@ struct MissionPanel: View {
     }
 
     private var header: some View {
-        GamePanelHeader(title: "Missionen", onClose: onClose) {
-            Button("Alle") {
+        GamePanelHeader(
+            title: AppLocalizationService.text("mission.title"),
+            onClose: onClose
+        ) {
+            Button(AppLocalizationService.text("mission.claimAll")) {
                 MissionService.claimAll(
                     progressItems: progressItems,
                     saves: saves,
@@ -72,7 +75,7 @@ struct MissionPanel: View {
     }
 
     private var emptyState: some View {
-        GamePanelEmptyState(title: "Missionen werden vorbereitet.")
+        GamePanelEmptyState(title: AppLocalizationService.text("mission.empty"))
     }
 
     private func reload() {
@@ -88,7 +91,7 @@ private struct MissionCard: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 10) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.mission.title)
+                    Text(item.mission.localizedTitle)
                         .font(
                             .system(size: 19, weight: .heavy, design: .rounded)
                         )
@@ -96,7 +99,7 @@ private struct MissionCard: View {
                         .lineLimit(2)
                         .minimumScaleFactor(0.75)
 
-                    Text(item.mission.description)
+                    Text(item.mission.localizedDescription)
                         .font(
                             .system(size: 13, weight: .bold, design: .rounded)
                         )
@@ -107,17 +110,21 @@ private struct MissionCard: View {
                 Spacer(minLength: 0)
 
                 Button(action: onClaim) {
-                    Text(item.isClaimed ? "OK" : "Holen")
-                        .font(
-                            .system(size: 13, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(item.canClaim ? .black : .white)
-                        .frame(width: 58, height: 32)
-                        .background(
-                            item.canClaim
-                                ? Color.yellow : Color.black.opacity(0.28)
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    Text(
+                        item.isClaimed
+                            ? AppLocalizationService.text("common.ok")
+                            : AppLocalizationService.text("mission.claim")
+                    )
+                    .font(
+                        .system(size: 13, weight: .black, design: .rounded)
+                    )
+                    .foregroundStyle(item.canClaim ? .black : .white)
+                    .frame(width: 58, height: 32)
+                    .background(
+                        item.canClaim
+                            ? Color.yellow : Color.black.opacity(0.28)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
                 .buttonStyle(.plain)
                 .disabled(!item.canClaim)

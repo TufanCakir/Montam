@@ -3,6 +3,8 @@
         "id": "starter_gift",
         "title": "Starter-Geschenk",
         "message": "Danke fürs Spielen.",
+        "titleKey": "gift.starter.title",
+        "messageKey": "gift.starter.message",
         "rewards": [
             {
                 "id": "starter_coin",

@@ -51,20 +51,16 @@ struct GameStore {
         )
     }
 
-    var shopWallet: ShopWalletState {
-        ShopWalletState(
-            coins: save?.coins ?? 0,
-            crystals: save?.crystals ?? 0,
-            bits: save?.bits ?? 0
-        )
-    }
-
     var summonTickets: Int {
         save?.summonTickets ?? 0
     }
 
     var crystals: Int {
         save?.crystals ?? 0
+    }
+
+    func canSpend(currency: String, amount: Int) -> Bool {
+        save?.canSpend(currency, amount: amount) ?? false
     }
 
     var currentStage: Int {

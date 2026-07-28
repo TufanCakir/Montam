@@ -27,7 +27,6 @@ struct TradeView: View {
                 tradeList
             }
         }
-        .background(AppScreenBackground())
         .overlay(alignment: .center) {
             if let message = viewModel.message {
                 TradeToast(message: message)
@@ -46,7 +45,7 @@ struct TradeView: View {
 
                 ForEach(viewModel.sectionTitles, id: \.self) { section in
                     TradeSection(
-                        title: section,
+                        title: viewModel.sectionTitle(for: section),
                         offers: viewModel.offers(in: section),
                         canTrade: canTrade,
                         onTrade: performTrade

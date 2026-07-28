@@ -25,7 +25,7 @@ enum AppBundleInfo {
         case (_, let build?) where !build.isEmpty:
             return "Build \(build)"
         default:
-            return "Version unbekannt"
+            return AppLocalizationService.text("app.versionUnknown")
         }
     }
 

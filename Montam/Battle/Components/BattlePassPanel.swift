@@ -15,6 +15,7 @@ struct BattlePassRewardDefinition: Codable, Identifiable {
     let id: String
     let requiredPoints: Int
     let title: String
+    let titleKey: String?
     let coins: Int
     let bits: Int
     let summonTickets: Int
@@ -36,6 +37,7 @@ enum BattlePassCatalog {
             id: "pass_001",
             requiredPoints: 12,
             title: "Start-Bonus",
+            titleKey: nil,
             coins: 500,
             bits: 10,
             summonTickets: 1,
@@ -45,6 +47,7 @@ enum BattlePassCatalog {
             id: "pass_002",
             requiredPoints: 30,
             title: "Tamer-Vorrat",
+            titleKey: nil,
             coins: 1_250,
             bits: 20,
             summonTickets: 2,
@@ -54,6 +57,7 @@ enum BattlePassCatalog {
             id: "pass_003",
             requiredPoints: 50,
             title: "Beschwörer-Paket",
+            titleKey: nil,
             coins: 2_000,
             bits: 35,
             summonTickets: 4,
@@ -63,6 +67,7 @@ enum BattlePassCatalog {
             id: "pass_004",
             requiredPoints: 90,
             title: "Champion-Bonus",
+            titleKey: nil,
             coins: 4_000,
             bits: 60,
             summonTickets: 7,
@@ -165,7 +170,7 @@ struct BattlePassPanel: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Montam Pass")
+                Text(AppLocalizationService.text("shop.montamPass"))
                     .font(.system(size: 25, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .lineLimit(1)
@@ -173,7 +178,8 @@ struct BattlePassPanel: View {
 
                 Text(
                     store.hasEventPass
-                        ? "\(points) Montam Points" : "Im Shop freischalten"
+                        ? AppLocalizationService.text("pass.points", points)
+                        : AppLocalizationService.text("pass.unlockInShop")
                 )
                 .font(.system(size: 14, weight: .heavy, design: .rounded))
                 .foregroundStyle(.cyan)
@@ -197,19 +203,28 @@ struct BattlePassPanel: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(nextReward?.title ?? "Pass abgeschlossen")
-                        .font(
-                            .system(size: 17, weight: .black, design: .rounded)
-                        )
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.72)
+                    Text(
+                        nextReward.map(rewardTitle)
+                            ?? AppLocalizationService.text("pass.completed")
+                    )
+                    .font(
+                        .system(size: 17, weight: .black, design: .rounded)
+                    )
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
 
-                    Text("\(claimedCount)/\(rewards.count) Belohnungen")
-                        .font(
-                            .system(size: 12, weight: .heavy, design: .rounded)
+                    Text(
+                        AppLocalizationService.text(
+                            "pass.rewardCount",
+                            claimedCount,
+                            rewards.count
                         )
-                        .foregroundStyle(.white.opacity(0.72))
+                    )
+                    .font(
+                        .system(size: 12, weight: .heavy, design: .rounded)
+                    )
+                    .foregroundStyle(.white.opacity(0.72))
                 }
 
                 Spacer()
@@ -223,7 +238,7 @@ struct BattlePassPanel: View {
 
             if let nextReward {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Naechste Belohnung")
+                    Text(AppLocalizationService.text("pass.nextReward"))
                         .font(
                             .system(size: 12, weight: .black, design: .rounded)
                         )
@@ -265,12 +280,12 @@ struct BattlePassPanel: View {
                 .font(.system(size: 42, weight: .black))
                 .foregroundStyle(.yellow)
 
-            Text("Pass nicht gekauft")
+            Text(AppLocalizationService.text("pass.notPurchased"))
                 .font(.system(size: 22, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
 
             Text(
-                "Kaufe den Event-Pass im Shop. Montam-Points sammelst du weiter im Kampf."
+                AppLocalizationService.text("pass.lockedMessage")
             )
             .font(.system(size: 15, weight: .heavy, design: .rounded))
             .foregroundStyle(.cyan)
@@ -284,10 +299,18 @@ struct BattlePassPanel: View {
 
     private func claim(_ reward: BattlePassRewardDefinition) {
         if store.claimBattlePassReward(reward) {
-            message = "Belohnung abgeholt."
+            message = AppLocalizationService.text("pass.claimed")
         } else {
-            message = "Noch nicht bereit."
+            message = AppLocalizationService.text("pass.notReady")
         }
+    }
+
+    private func rewardTitle(_ reward: BattlePassRewardDefinition) -> String {
+        if let titleKey = reward.titleKey {
+            return AppLocalizationService.text(titleKey)
+        }
+
+        return reward.title
     }
 }
 
@@ -306,13 +329,18 @@ private struct BattlePassRewardRow: View {
             rewardStateBadge
 
             VStack(alignment: .leading, spacing: 5) {
-                Text(reward.title)
+                Text(rewardTitle)
                     .font(.system(size: 16, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
 
-                Text("\(reward.requiredPoints) Montam Points")
-                    .font(.system(size: 12, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.cyan)
+                Text(
+                    AppLocalizationService.text(
+                        "pass.points",
+                        reward.requiredPoints
+                    )
+                )
+                .font(.system(size: 12, weight: .heavy, design: .rounded))
+                .foregroundStyle(.cyan)
 
                 RewardIconStrip(reward: reward)
             }
@@ -320,12 +348,16 @@ private struct BattlePassRewardRow: View {
             Spacer(minLength: 0)
 
             Button(action: onClaim) {
-                Text(isClaimed ? "OK" : "Abholen")
-                    .font(.system(size: 13, weight: .black, design: .rounded))
-                    .foregroundStyle(canClaim ? .black : .white.opacity(0.7))
-                    .frame(width: 78, height: 34)
-                    .background(canClaim ? .yellow : .black.opacity(0.28))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                Text(
+                    isClaimed
+                        ? AppLocalizationService.text("common.ok")
+                        : AppLocalizationService.text("gift.claim")
+                )
+                .font(.system(size: 13, weight: .black, design: .rounded))
+                .foregroundStyle(canClaim ? .black : .white.opacity(0.7))
+                .frame(width: 78, height: 34)
+                .background(canClaim ? .yellow : .black.opacity(0.28))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.plain)
             .disabled(!canClaim)
@@ -364,6 +396,14 @@ private struct BattlePassRewardRow: View {
             .font(.system(size: 16, weight: .black))
             .foregroundStyle(isClaimed || canClaim ? .black : .cyan)
         }
+    }
+
+    private var rewardTitle: String {
+        if let titleKey = reward.titleKey {
+            return AppLocalizationService.text(titleKey)
+        }
+
+        return reward.title
     }
 }
 
