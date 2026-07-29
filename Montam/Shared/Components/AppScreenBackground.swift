@@ -39,3 +39,69 @@ private struct AppScreenLinePattern: View {
         }
     }
 }
+
+struct GameConfirmationPopup: View {
+    let title: String
+    let message: String
+    let confirmTitle: String
+    let cancelTitle: String
+    var icon: String = "questionmark.circle.fill"
+    var isDestructive = false
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        VStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 34, weight: .black))
+                .foregroundStyle(isDestructive ? .red : .yellow)
+
+            Text(title)
+                .font(.system(size: 24, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.72)
+
+            Text(message)
+                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .foregroundStyle(.cyan)
+                .multilineTextAlignment(.center)
+                .lineLimit(4)
+                .minimumScaleFactor(0.72)
+
+            HStack(spacing: 10) {
+                Button(action: onCancel) {
+                    Text(cancelTitle)
+                        .font(.system(size: 15, weight: .heavy, design: .rounded))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 46)
+                        .background(Color.black.opacity(0.34))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .buttonStyle(.plain)
+
+                Button(action: onConfirm) {
+                    Text(confirmTitle)
+                        .font(.system(size: 15, weight: .heavy, design: .rounded))
+                        .foregroundStyle(isDestructive ? .white : .black)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 46)
+                        .background(isDestructive ? Color.red : Color.yellow)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(20)
+        .frame(width: 320)
+        .background(Color(red: 0.03, green: 0.13, blue: 0.30).opacity(0.96))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(.cyan.opacity(0.9), lineWidth: 3)
+        )
+        .shadow(color: .black.opacity(0.55), radius: 18, y: 10)
+    }
+}

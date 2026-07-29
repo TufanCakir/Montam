@@ -140,6 +140,10 @@ struct RootView: View {
                 onDataDeleted: {
                     closeModals()
                     onResetToStart()
+                },
+                onCacheCleared: {
+                    closeModals()
+                    onResetToStart()
                 }
             )
             .transition(.scale.combined(with: .opacity))

@@ -176,6 +176,9 @@
     "trade.section.currency": "Währungen",
     "trade.notEnoughCurrency": "Nicht genug %@.",
     "trade.completed": "Tausch abgeschlossen.",
+    "trade.confirmTitle": "Tausch starten?",
+    "trade.confirmAction": "Tauschen",
+    "trade.confirmMessage": "%d %@ gegen %d %@ tauschen?",
     "trade.coinsToTicket.title": "Ticket-Tausch",
     "trade.coinsToTicket.subtitle":
         "Tausche Coins gegen ein Beschwörungsticket.",

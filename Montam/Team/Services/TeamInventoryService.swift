@@ -11,13 +11,9 @@ import SwiftData
 enum TeamInventoryService {
     static func syncJSONCompanions(
         ownedMonsters: [OwnedMonsterData],
-        ownedTamers: [OwnedTamerData],
         ownedSupporters: [OwnedSupporterData],
         modelContext: ModelContext
     ) {
-        let monsters =
-            JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-        let ownedMonsterIds = Set(ownedMonsters.map(\.monsterId))
         var seenSupporterIds = Set<String>()
         var didChange = false
 
@@ -27,20 +23,6 @@ enum TeamInventoryService {
             }
 
             modelContext.delete(supporter)
-            didChange = true
-        }
-
-        for (index, monster) in monsters.enumerated()
-        where !ownedMonsterIds.contains(monster.id) {
-            modelContext.insert(
-                OwnedMonsterData(
-                    monsterId: monster.id,
-                    level: 1,
-                    xp: 0,
-                    isSelected: ownedMonsters.isEmpty && index == 0,
-                    equippedImageName: monster.monsterName
-                )
-            )
             didChange = true
         }
 
@@ -142,46 +124,16 @@ enum TeamInventoryService {
         ownedMonsters: [OwnedMonsterData],
         modelContext: ModelContext
     ) {
-        let selectedMonster =
-            ownedMonsters.first { $0.monsterId == id }
-            ?? makeOwnedMonster(id: id, imageName: imageName)
-
-        if selectedMonster.modelContext == nil {
-            modelContext.insert(selectedMonster)
+        guard let selectedMonster = ownedMonsters.first(where: {
+            $0.monsterId == id
+        }) else {
+            return
         }
 
         for monster in ownedMonsters {
             monster.isSelected = monster.monsterId == id
         }
         selectedMonster.isSelected = true
-        try? modelContext.save()
-    }
-
-    private static func makeOwnedMonster(
-        id: String,
-        imageName: String?
-    ) -> OwnedMonsterData {
-        let monsterCatalog =
-            JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-        let catalogImageName = monsterCatalog.first { $0.id == id }?.monsterName
-
-        return OwnedMonsterData(
-            monsterId: id,
-            level: 1,
-            xp: 0,
-            isSelected: true,
-            equippedImageName: imageName ?? catalogImageName
-        )
-    }
-
-    static func selectTamer(
-        id: String,
-        ownedTamers: [OwnedTamerData],
-        modelContext: ModelContext
-    ) {
-        for tamer in ownedTamers {
-            tamer.isSelected = tamer.tamerId == id
-        }
         try? modelContext.save()
     }
 

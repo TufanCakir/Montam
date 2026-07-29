@@ -59,12 +59,10 @@ struct PartnerTeamContent: View {
                         )
                     }
 
-                    VStack(spacing: 10) {
-                        LazyVGrid(columns: columns, spacing: 10) {
-                            ForEach(rows) { row in
-                                TeamMonsterGridTile(row: row) {
-                                    pendingSelection = row
-                                }
+                    LazyVGrid(columns: columns, spacing: 10) {
+                        ForEach(rows) { row in
+                            TeamMonsterGridTile(row: row) {
+                                pendingSelection = row
                             }
                         }
                     }
@@ -115,91 +113,12 @@ struct SupportTeamContent: View {
         } else {
             ZStack {
                 VStack(spacing: 10) {
-                    HStack(spacing: 8) {
-                        SupporterCategoryTabs(
-                            selectedCategory: $selectedCategory
-                        )
+                    SupportTeamHeader(
+                        selectedCategory: $selectedCategory,
+                        onInfoTap: { isBonusInfoPresented = true }
+                    )
 
-                        Button {
-                            isBonusInfoPresented = true
-                        } label: {
-                            Image(systemName: "info.circle.fill")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundStyle(.white)
-                                .frame(width: 40, height: 34)
-                                .background(Color.black.opacity(0.3))
-                                .clipShape(RoundedRectangle(cornerRadius: 7))
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    if filteredRows.isEmpty {
-                        CompactTeamInfo(
-                            title: "Kein \(selectedCategory.title) Support",
-                            message:
-                                "Diese Supporter bekommst du ueber Beschwoerung."
-                        )
-                    } else {
-                        ForEach(filteredRows) { row in
-                            Button {
-                                onSelect(row.id)
-                            } label: {
-                                HStack(spacing: 10) {
-                                    RemoteAssetImage(imageName: row.imageName)
-                                        .scaledToFit()
-                                        .frame(width: 58, height: 58)
-
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(row.name)
-                                            .font(
-                                                .system(
-                                                    size: 18,
-                                                    weight: .heavy,
-                                                    design: .rounded
-                                                )
-                                            )
-                                            .foregroundStyle(.white)
-                                        Text(
-                                            row.isMonster
-                                                ? "Monster Support • Lv. \(row.level)"
-                                                : "Tamer Support • Lv. \(row.level)"
-                                        )
-                                        .font(
-                                            .system(
-                                                size: 12,
-                                                weight: .bold,
-                                                design: .rounded
-                                            )
-                                        )
-                                        .foregroundStyle(.cyan)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.65)
-                                    }
-
-                                    Spacer()
-
-                                    Image(
-                                        systemName: row.isSelected
-                                            ? "checkmark.circle.fill" : "circle"
-                                    )
-                                    .font(.system(size: 22, weight: .bold))
-                                    .foregroundStyle(
-                                        row.isSelected
-                                            ? .yellow : .cyan.opacity(0.55)
-                                    )
-                                }
-                                .padding(.horizontal, 10)
-                                .frame(height: 72)
-                                .background(
-                                    Color.black.opacity(
-                                        row.isSelected ? 0.36 : 0.2
-                                    )
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 7))
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
+                    supportRows
                 }
 
                 if isBonusInfoPresented {
@@ -217,6 +136,22 @@ struct SupportTeamContent: View {
         }
     }
 
+    @ViewBuilder
+    private var supportRows: some View {
+        if filteredRows.isEmpty {
+            CompactTeamInfo(
+                title: "Kein \(selectedCategory.title) Support",
+                message: "Diese Supporter bekommst du ueber Beschwoerung."
+            )
+        } else {
+            ForEach(filteredRows) { row in
+                TeamSupporterRowButton(row: row) {
+                    onSelect(row.id)
+                }
+            }
+        }
+    }
+
     private func selectAvailableCategoryIfNeeded() {
         guard !rows.contains(where: { $0.category == selectedCategory }),
             let firstCategory = rows.first?.category
@@ -225,6 +160,71 @@ struct SupportTeamContent: View {
         }
 
         selectedCategory = firstCategory
+    }
+}
+
+private struct SupportTeamHeader: View {
+    @Binding var selectedCategory: SupporterCategory
+    let onInfoTap: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            SupporterCategoryTabs(selectedCategory: $selectedCategory)
+
+            Button(action: onInfoTap) {
+                Image(systemName: "info.circle.fill")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 40, height: 34)
+                    .background(Color.black.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+}
+
+private struct TeamSupporterRowButton: View {
+    let row: TeamSupporterRow
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack(spacing: 10) {
+                RemoteAssetImage(imageName: row.imageName)
+                    .scaledToFit()
+                    .frame(width: 58, height: 58)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(row.name)
+                        .font(.system(size: 18, weight: .heavy, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    Text(supportTypeText)
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(.cyan)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.65)
+                }
+
+                Spacer()
+
+                Image(systemName: row.isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(row.isSelected ? .yellow : .cyan.opacity(0.55))
+            }
+            .padding(.horizontal, 10)
+            .frame(height: 72)
+            .background(Color.black.opacity(row.isSelected ? 0.36 : 0.2))
+            .clipShape(RoundedRectangle(cornerRadius: 7))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var supportTypeText: String {
+        row.isMonster
+            ? "Monster Support • Lv. \(row.level)"
+            : "Tamer Support • Lv. \(row.level)"
     }
 }
 

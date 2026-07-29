@@ -422,7 +422,6 @@ struct GameStore {
     func syncJSONCompanions() {
         TeamInventoryService.syncJSONCompanions(
             ownedMonsters: ownedMonsters,
-            ownedTamers: ownedTamers,
             ownedSupporters: ownedSupporters,
             modelContext: modelContext
         )
@@ -433,14 +432,6 @@ struct GameStore {
             id: id,
             imageName: imageName,
             ownedMonsters: ownedMonsters,
-            modelContext: modelContext
-        )
-    }
-
-    func selectTamer(id: String) {
-        TeamInventoryService.selectTamer(
-            id: id,
-            ownedTamers: ownedTamers,
             modelContext: modelContext
         )
     }

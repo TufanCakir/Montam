@@ -72,10 +72,6 @@ struct TeamView: View {
         store.selectMonster(id: id)
     }
 
-    private func selectTamer(_ id: String) {
-        store.selectTamer(id: id)
-    }
-
     private func evolveActiveMonster(_ evolution: TeamEvolutionState) {
         let currentImageName =
             store.ownedMonsters.first(where: \.isSelected)?.equippedImageName

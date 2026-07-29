@@ -30,12 +30,33 @@ struct GameView: View {
         .onAppear {
             configureScene()
         }
-        .onChange(of: isPaused) { _, isPaused in
-            BattleSceneContainer.setPaused(isPaused, scene: scene)
-        }
-        .onDisappear {
-            BattleSceneContainer.setPaused(true, scene: scene)
-        }
+            .onChange(of: isPaused) { _, isPaused in
+                BattleSceneContainer.setPaused(isPaused, scene: scene)
+            }
+            .onChange(of: runtimeSelectionSignature) { _, _ in
+                configureScene()
+            }
+            .onDisappear {
+                BattleSceneContainer.setPaused(true, scene: scene)
+            }
+    }
+
+    private var runtimeSelectionSignature: String {
+        let monsters = store.ownedMonsters
+            .filter(\.isSelected)
+            .map {
+                "\($0.monsterId):\($0.level):\($0.xp):\($0.equippedImageName ?? "")"
+            }
+            .sorted()
+            .joined(separator: "|")
+        let supporters = store.ownedSupporters
+            .filter(\.isSelected)
+            .map {
+                "\($0.bannerId):\($0.characterId):\($0.imageName):\($0.level):\($0.isMonster)"
+            }
+            .sorted()
+            .joined(separator: "|")
+        return "\(store.currentStage)#\(monsters)#\(supporters)"
     }
 
     private func configureScene() {

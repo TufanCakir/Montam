@@ -69,6 +69,13 @@ final class GameScene: SKScene {
         self.selectedMonsters = selectedMonsters
         self.selectedTamers = selectedTamers
         self.selectedSupporters = selectedSupporters
+
+        guard didStartBattle, let battleConfig else {
+            return
+        }
+
+        refreshPlayerStats(config: battleConfig)
+        refreshHealthBars()
     }
 
     func updateProgressStage(_ stage: Int) {
@@ -331,9 +338,7 @@ final class GameScene: SKScene {
             }
 
         let configuredTamers =
-            selectedTamers.isEmpty
-            ? config.supportTamers
-            : selectedTamers.map {
+            selectedTamers.map {
                 BattleUnitConfig(
                     id: $0.tamerId,
                     level: $0.level,
@@ -407,6 +412,13 @@ final class GameScene: SKScene {
             ] {
                 unit.node.position = placement.position
                 unit.node.zPosition = placement.zPosition
+            } else {
+                unit.node.position = activeSupporterPosition(
+                    for: unit,
+                    index: index,
+                    config: config
+                )
+                unit.node.zPosition = zPosition(for: unit, index: index)
             }
 
             addChild(unit.node)
@@ -429,9 +441,7 @@ final class GameScene: SKScene {
             }
 
         let configuredTamers =
-            selectedTamers.isEmpty
-            ? config.supportTamers
-            : selectedTamers.map {
+            selectedTamers.map {
                 BattleUnitConfig(
                     id: $0.tamerId,
                     level: $0.level,
@@ -487,6 +497,22 @@ final class GameScene: SKScene {
 
     private func unitPlacementKey(for unit: BattleUnit, index: Int) -> String {
         "\(unit.id)#\(index)"
+    }
+
+    private func activeSupporterPosition(
+        for unit: BattleUnit,
+        index: Int,
+        config: BattleConfigData
+    ) -> CGPoint {
+        let groundY = battleGroundY(config: config)
+        let supportSpacing = max(size.width * 0.1, 44)
+        let position = CGPoint(
+            x: size.width * 0.5 + CGFloat(index) * supportSpacing,
+            y: groundedY(for: unit, groundY: groundY)
+                - max(size.height * 0.06, 46)
+        )
+
+        return positionWithOffsets(position, unit: unit)
     }
 
     private func movePlayersToStart(config: BattleConfigData) {
@@ -593,20 +619,15 @@ final class GameScene: SKScene {
             }
 
             for (index, unit) in supporterUnits.enumerated() {
-
-                let target = CGPoint(
-                    x: size.width * 0.34 + CGFloat(index) * supportSpacing,
-                    y: groundedY(for: unit, groundY: groundY)
-                        - max(size.height * 0.06, 46)
-                )
-
-                let adjusted = positionWithOffsets(target, unit: unit)
-
                 actions.append(
                     .run {
                         unit.node.run(
                             .move(
-                                to: adjusted,
+                                to: self.activeSupporterPosition(
+                                    for: unit,
+                                    index: index,
+                                    config: config
+                                ),
                                 duration: config.walkDuration
                             )
                         )

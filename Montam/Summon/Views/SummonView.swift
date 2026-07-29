@@ -59,32 +59,41 @@ struct SummonView: View {
             }
         }
         .overlay {
-            if let message = viewModel.summonMessage {
-                SummonToast(message: message)
+            ZStack {
+                if pendingSummon != nil {
+                    Color.black.opacity(0.62)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            pendingSummon = nil
+                        }
+
+                    GameConfirmationPopup(
+                        title: AppLocalizationService.text(
+                            "summon.confirmTitle"
+                        ),
+                        message: confirmMessage,
+                        confirmTitle: confirmButtonTitle,
+                        cancelTitle: AppLocalizationService.text(
+                            "settings.cancel"
+                        ),
+                        icon: "sparkles",
+                        onConfirm: confirmPendingSummon,
+                        onCancel: {
+                            pendingSummon = nil
+                        }
+                    )
+                    .transition(.scale.combined(with: .opacity))
+                }
+
+                if let message = viewModel.summonMessage {
+                    SummonToast(message: message)
+                }
             }
         }
         .sheet(item: $selectedRateInfo) { info in
             SummonRateInfoSheet(info: info)
                 .presentationDetents([.height(330)])
                 .presentationDragIndicator(.visible)
-        }
-        .confirmationDialog(
-            AppLocalizationService.text("summon.confirmTitle"),
-            isPresented: isConfirmingSummon,
-            titleVisibility: .visible
-        ) {
-            Button(confirmButtonTitle) {
-                confirmPendingSummon()
-            }
-
-            Button(
-                AppLocalizationService.text("settings.cancel"),
-                role: .cancel
-            ) {
-                pendingSummon = nil
-            }
-        } message: {
-            Text(confirmMessage)
         }
         .padding(.top, 30)
     }
@@ -139,16 +148,6 @@ struct SummonView: View {
         viewModel.summonResultTitle = pendingSummon.summon.title
         viewModel.isShowingSummonResult = true
         self.pendingSummon = nil
-    }
-
-    private var isConfirmingSummon: Binding<Bool> {
-        Binding {
-            pendingSummon != nil
-        } set: { isPresented in
-            if !isPresented {
-                pendingSummon = nil
-            }
-        }
     }
 
     private var confirmButtonTitle: String {

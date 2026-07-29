@@ -43,8 +43,7 @@ struct StartView: View {
                         }
                     },
                     onCacheClear: {
-                        AppSettingsService.clearCache()
-                        showMenuMessage(localized("settings.cacheCleared"))
+                        clearCacheAndReload()
                     },
                     onLegal: {
                         withAnimation(
@@ -65,6 +64,9 @@ struct StartView: View {
                     onDataDeleted: {
                         closeOverlays()
                         onDataDeleted()
+                    },
+                    onCacheCleared: {
+                        closeOverlays()
                     }
                 )
                 .transition(.scale.combined(with: .opacity))
@@ -211,6 +213,15 @@ struct StartView: View {
             if menuMessage == text {
                 menuMessage = nil
             }
+        }
+    }
+
+    private func clearCacheAndReload() {
+        AppSettingsService.clearCache()
+        showMenuMessage(localized("settings.cacheCleared"))
+
+        Task {
+            await remoteContent.updateAtLaunch(showOverlay: true)
         }
     }
 

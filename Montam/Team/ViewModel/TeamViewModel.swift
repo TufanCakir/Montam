@@ -31,18 +31,6 @@ struct TeamAppearanceRow: Identifiable, Equatable {
     let isUnlocked: Bool
 }
 
-struct TeamTamerRow: Identifiable {
-    let id: String
-    let imageName: String
-    let name: String
-    let rarity: String
-    let level: Int
-    let attackBonus: Double
-    let defenseBonus: Double
-    let healthBonus: Double
-    let isSelected: Bool
-}
-
 struct TeamEvolutionState {
     let targetAppearance: TeamAppearanceRow
     let canEvolve: Bool
@@ -297,32 +285,6 @@ final class TeamViewModel {
                 return lhs.isSelected
             }
             return lhs.power > rhs.power
-        }
-    }
-
-    func tamerRows(ownedTamers: [OwnedTamerData]) -> [TeamTamerRow] {
-        ownedTamers.compactMap { owned in
-            guard let tamer = tamersById[owned.tamerId] else {
-                return nil
-            }
-
-            return TeamTamerRow(
-                id: tamer.id,
-                imageName: tamer.tamerName,
-                name: tamer.name,
-                rarity: tamer.rarity ?? "normal",
-                level: owned.level,
-                attackBonus: tamer.supportAttackBonus ?? 0,
-                defenseBonus: tamer.supportDefenseBonus ?? 0,
-                healthBonus: tamer.supportHealthBonus ?? 0,
-                isSelected: owned.isSelected
-            )
-        }
-        .sorted { lhs, rhs in
-            if lhs.isSelected != rhs.isSelected {
-                return lhs.isSelected
-            }
-            return lhs.level > rhs.level
         }
     }
 

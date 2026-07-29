@@ -103,13 +103,6 @@
                     "slot": 0,
                     "hpMultiplier": 1.5,
                     "scaleMultiplier": 1.35
-                },
-                {
-                    "id": "pyron",
-                    "level": 3,
-                    "slot": 0,
-                    "hpMultiplier": 1.5,
-                    "scaleMultiplier": 1.35
                 }
             ]
         }

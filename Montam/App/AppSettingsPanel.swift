@@ -11,6 +11,7 @@ import SwiftUI
 struct AppSettingsPanel: View {
     let onClose: () -> Void
     let onDataDeleted: () -> Void
+    let onCacheCleared: () -> Void
 
     @Environment(\.modelContext) private var modelContext
     @AppStorage(AppSettingsService.musicEnabledKey) private var isMusicEnabled =
@@ -19,6 +20,7 @@ struct AppSettingsPanel: View {
         var languageRawValue =
         AppLocalizationService.fallbackLanguage.rawValue
     @State private var isConfirmingDelete = false
+    @State private var isClearingCache = false
     @State private var message: String?
 
     var body: some View {
@@ -44,11 +46,12 @@ struct AppSettingsPanel: View {
                 languagePicker
 
                 settingsButton(
-                    title: localized("settings.clearCache"),
+                    title: isClearingCache
+                        ? localized("start.downloading")
+                        : localized("settings.clearCache"),
                     icon: "trash.fill"
                 ) {
-                    AppSettingsService.clearCache()
-                    showMessage(localized("settings.cacheCleared"))
+                    clearCacheAndReload()
                 }
 
                 settingsButton(
@@ -79,22 +82,34 @@ struct AppSettingsPanel: View {
                 lineWidth: 3
             )
         )
-        .confirmationDialog(
-            localized("settings.deleteConfirmTitle"),
-            isPresented: $isConfirmingDelete,
-            titleVisibility: .visible
-        ) {
-            Button(
-                localized("settings.deleteConfirmAction"),
-                role: .destructive
-            ) {
-                AppSettingsService.deleteUserData(modelContext: modelContext)
-                onDataDeleted()
-            }
+        .overlay {
+            if isConfirmingDelete {
+                Color.black.opacity(0.62)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        isConfirmingDelete = false
+                    }
 
-            Button(localized("settings.cancel"), role: .cancel) {}
-        } message: {
-            Text(localized("settings.deleteConfirmMessage"))
+                GameConfirmationPopup(
+                    title: localized("settings.deleteConfirmTitle"),
+                    message: localized("settings.deleteConfirmMessage"),
+                    confirmTitle: localized("settings.deleteConfirmAction"),
+                    cancelTitle: localized("settings.cancel"),
+                    icon: "exclamationmark.triangle.fill",
+                    isDestructive: true,
+                    onConfirm: {
+                        AppSettingsService.deleteUserData(
+                            modelContext: modelContext
+                        )
+                        isConfirmingDelete = false
+                        onDataDeleted()
+                    },
+                    onCancel: {
+                        isConfirmingDelete = false
+                    }
+                )
+                .transition(.scale.combined(with: .opacity))
+            }
         }
     }
 
@@ -185,6 +200,21 @@ struct AppSettingsPanel: View {
             if message == text {
                 message = nil
             }
+        }
+    }
+
+    private func clearCacheAndReload() {
+        guard !isClearingCache else {
+            return
+        }
+
+        isClearingCache = true
+        AppSettingsService.clearCache()
+        onCacheCleared()
+
+        Task {
+            await RemoteContentService.shared.updateAtLaunch(showOverlay: true)
+            isClearingCache = false
         }
     }
 

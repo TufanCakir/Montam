@@ -12,8 +12,6 @@ struct MonsterSelectView: View {
 
     private let monsters =
         JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
-    private let tamers =
-        JSONDataLoader.load("tamer", as: [TamerData].self) ?? []
 
     var body: some View {
         let ownedMonstersById = store.ownedMonsters.reduce(
@@ -21,15 +19,6 @@ struct MonsterSelectView: View {
         ) { result, monster in
             result[monster.monsterId] = monster
         }
-        let ownedTamersById = store.ownedTamers.reduce(
-            into: [String: OwnedTamerData]()
-        ) { result, tamer in
-            result[tamer.tamerId] = tamer
-        }
-        let hasSelectedMonster = store.ownedMonsters.contains(
-            where: \.isSelected
-        )
-
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 Text(AppLocalizationService.text("monsterSelect.title"))
@@ -43,11 +32,8 @@ struct MonsterSelectView: View {
                 .foregroundStyle(.cyan)
 
                 monsterRows(
-                    ownedMonstersById: ownedMonstersById,
-                    hasSelectedMonster: hasSelectedMonster
+                    ownedMonstersById: ownedMonstersById
                 )
-
-                tamerRows(ownedTamersById: ownedTamersById)
             }
             .padding(24)
             .padding(.bottom, 60)
@@ -57,10 +43,11 @@ struct MonsterSelectView: View {
     }
 
     private func monsterRows(
-        ownedMonstersById: [String: OwnedMonsterData],
-        hasSelectedMonster: Bool
+        ownedMonstersById: [String: OwnedMonsterData]
     ) -> some View {
-        ForEach(monsters, id: \.id) { monster in
+        let ownedRows = monsters.filter { ownedMonstersById[$0.id] != nil }
+
+        return ForEach(ownedRows, id: \.id) { monster in
             let owned = ownedMonstersById[monster.id]
             SelectionRow(
                 imageName: monster.monsterName,
@@ -71,47 +58,14 @@ struct MonsterSelectView: View {
                         $0.level,
                         $0.xp
                     )
-                }
-                    ?? AppLocalizationService.text(
-                        "monsterSelect.alwaysAvailable"
-                    ),
-                isSelected: owned?.isSelected == true
-                    || (!hasSelectedMonster
-                        && monster.id == monsters.first?.id),
+                } ?? AppLocalizationService.text("monsterSelect.notOwned"),
+                isSelected: owned?.isSelected == true,
                 isEnabled: true
             ) {
                 store.selectMonster(
                     id: monster.id,
                     imageName: monster.monsterName
                 )
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func tamerRows(
-        ownedTamersById: [String: OwnedTamerData]
-    ) -> some View {
-        Text(AppLocalizationService.text("monsterSelect.tamerSupport"))
-            .font(.system(size: 24, weight: .heavy, design: .rounded))
-            .foregroundStyle(.white)
-            .padding(.top, 18)
-
-        ForEach(tamers, id: \.id) { tamer in
-            let owned = ownedTamersById[tamer.id]
-            SelectionRow(
-                imageName: tamer.tamerName,
-                title: tamer.name,
-                subtitle: owned.map {
-                    AppLocalizationService.text(
-                        "monsterSelect.supportActive",
-                        $0.level
-                    )
-                } ?? AppLocalizationService.text("monsterSelect.notOwned"),
-                isSelected: owned?.isSelected == true,
-                isEnabled: owned != nil
-            ) {
-                store.selectTamer(id: tamer.id)
             }
         }
     }
