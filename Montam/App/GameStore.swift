@@ -535,6 +535,7 @@ struct GameStore {
                     GameSaveData.self,
                     OwnedMonsterData.self,
                     OwnedTamerData.self,
+                    OwnedSupporterData.self,
                 ])
                 let configuration = ModelConfiguration(
                     schema: schema,

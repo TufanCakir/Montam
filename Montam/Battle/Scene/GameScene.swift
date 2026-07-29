@@ -40,6 +40,13 @@ final class GameScene: SKScene {
     var onBattleWon: ((BattleWaveReward) -> Void)?
     var onBossBattleWon: (() -> Void)?
 
+    func clearCallbacks() {
+        onStageChanged = nil
+        onStageCompleted = nil
+        onBattleWon = nil
+        onBossBattleWon = nil
+    }
+
     func configureEvent(_ event: EventData?) {
         eventData = event
     }

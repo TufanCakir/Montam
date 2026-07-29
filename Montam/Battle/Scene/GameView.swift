@@ -38,6 +38,7 @@ struct GameView: View {
             }
             .onDisappear {
                 BattleSceneContainer.setPaused(true, scene: scene)
+                scene.clearCallbacks()
             }
     }
 
@@ -82,13 +83,13 @@ struct GameView: View {
 
         scene.updateProgressStage(store.currentStage)
 
-        scene.onBattleWon = { reward in
+        scene.onBattleWon = { [weak scene] reward in
             store.applyBattleReward(
                 reward,
                 monsterCatalog: monsterCatalog,
                 progression: progression
             )
-            scene.updateRuntimeSelection(
+            scene?.updateRuntimeSelection(
                 selectedMonsters: store.runtimeSelectedMonsters(),
                 selectedTamers: store.runtimeSelectedTamers(),
                 selectedSupporters: store.runtimeSelectedSupporters()

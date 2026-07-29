@@ -77,6 +77,10 @@ private struct EventBattleView: View {
         .onAppear {
             configureScene()
         }
+        .onDisappear {
+            scene.isPaused = true
+            scene.clearCallbacks()
+        }
     }
 
     private func configureScene() {

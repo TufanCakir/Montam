@@ -89,17 +89,29 @@ enum BattleTextureCache {
     }
 
     static func texture(named imageName: String) -> SKTexture {
-        let cachedURL = RemoteContentService.cachedAssetURL(named: imageName)
-        let cacheKey = cachedURL.path() as NSString
-        if let texture = textureCache.object(forKey: cacheKey) {
+        for cachedURL in candidateCachedURLs(named: imageName) {
+            let cacheKey = cachedURL.path() as NSString
+            if let texture = textureCache.object(forKey: cacheKey) {
+                return texture
+            }
+
+            if FileManager.default.fileExists(atPath: cachedURL.path()),
+                let image = UIImage(contentsOfFile: cachedURL.path())
+            {
+                let texture = SKTexture(image: image)
+                textureCache.setObject(texture, forKey: cacheKey)
+                return texture
+            }
+        }
+
+        let bundleKey = "bundle:\(imageName)" as NSString
+        if let texture = textureCache.object(forKey: bundleKey) {
             return texture
         }
 
-        if FileManager.default.fileExists(atPath: cachedURL.path()),
-            let image = UIImage(contentsOfFile: cachedURL.path())
-        {
+        if let image = UIImage(named: imageName) {
             let texture = SKTexture(image: image)
-            textureCache.setObject(texture, forKey: cacheKey)
+            textureCache.setObject(texture, forKey: bundleKey)
             return texture
         }
 
@@ -111,6 +123,21 @@ enum BattleTextureCache {
         let texture = SKTexture(image: placeholderImage())
         textureCache.setObject(texture, forKey: placeholderKey)
         return texture
+    }
+
+    private static func candidateCachedURLs(named imageName: String) -> [URL] {
+        var urls = [RemoteContentService.cachedAssetURL(named: imageName)]
+
+        guard !imageName.contains(".") else {
+            return urls
+        }
+
+        urls.append(
+            contentsOf: ["png", "jpg", "jpeg", "webp"].map {
+                RemoteContentService.cachedAssetURL(named: "\(imageName).\($0)")
+            }
+        )
+        return urls
     }
 
     private static func placeholderImage() -> UIImage {
