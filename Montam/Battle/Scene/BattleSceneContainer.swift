@@ -12,7 +12,7 @@ struct BattleSceneContainer: View {
     let scene: GameScene
 
     var body: some View {
-        SpriteView(scene: scene)
+        SpriteView(scene: scene, isPaused: false)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
@@ -20,9 +20,5 @@ struct BattleSceneContainer: View {
         let scene = GameScene()
         scene.scaleMode = .resizeFill
         return scene
-    }
-
-    static func setPaused(_ isPaused: Bool, scene: GameScene) {
-        scene.isPaused = isPaused
     }
 }

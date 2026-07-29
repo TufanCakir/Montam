@@ -99,9 +99,14 @@ final class GameScene: SKScene {
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
+        guard isRenderableSize(size) else {
+            return
+        }
+
         applyBattleCamera()
         installCurrentEnvironment()
         layoutFadeNode()
+        startIfReady()
     }
 
     private func loadBattleData() {
@@ -126,7 +131,8 @@ final class GameScene: SKScene {
     }
 
     private func startIfReady() {
-        guard !didStartBattle, battleConfig != nil, size != .zero else {
+        guard !didStartBattle, battleConfig != nil, isRenderableSize(size)
+        else {
             return
         }
 
@@ -1121,6 +1127,10 @@ final class GameScene: SKScene {
     private func removeAllHealthBars() {
         healthBars.values.forEach { $0.removeFromParent() }
         healthBars.removeAll()
+    }
+
+    private func isRenderableSize(_ size: CGSize) -> Bool {
+        size.width >= 64 && size.height >= 64
     }
 }
 

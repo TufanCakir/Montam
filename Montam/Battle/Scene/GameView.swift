@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct GameView: View {
-    let isPaused: Bool
     let store: GameStore
 
     @State private var stageState = BattleStageState.empty
@@ -30,14 +29,10 @@ struct GameView: View {
         .onAppear {
             configureScene()
         }
-            .onChange(of: isPaused) { _, isPaused in
-                BattleSceneContainer.setPaused(isPaused, scene: scene)
-            }
             .onChange(of: runtimeSelectionSignature) { _, _ in
                 configureScene()
             }
             .onDisappear {
-                BattleSceneContainer.setPaused(true, scene: scene)
                 scene.clearCallbacks()
             }
     }
@@ -68,7 +63,6 @@ struct GameView: View {
                 selectedTamers: store.runtimeSelectedTamers(),
                 selectedSupporters: store.runtimeSelectedSupporters()
             )
-            BattleSceneContainer.setPaused(isPaused, scene: scene)
             return
         }
 

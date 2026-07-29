@@ -103,22 +103,15 @@ struct StartView: View {
 
     private var mainContent: some View {
         VStack(spacing: 0) {
-            Spacer(minLength: 0)
 
             RevealingLogo(progress: isLogoOpen ? 1 : 0)
-                .frame(maxWidth: 340)
-                .frame(height: 150)
-                .padding(.horizontal, 34)
-
-            Spacer(minLength: 0)
+                
 
             Button(action: onStart) {
                 startPrompt
             }
             .buttonStyle(.plain)
             .disabled(remoteContent.isUpdating)
-            .padding(.horizontal, 82)
-            .padding(.bottom, 76)
 
             bottomRow
                 .padding(.horizontal, 32)
@@ -414,38 +407,38 @@ private struct StartMenuButton: View {
     }
 }
 
-private struct RevealingLogo: View {
-    let progress: CGFloat
+private struct RevealingLogo: View, Animatable {
+    var progress: CGFloat
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
 
     var body: some View {
-        RemoteAssetImage(imageName: "montam_logo")
-            .scaledToFill()
-            .opacity(0.18)
-            .overlay(alignment: .leading) {
-                GeometryReader { geometry in
-                    RemoteAssetImage(imageName: "montam_logo")
-                        .scaledToFit()
-                        .frame(
-                            width: geometry.size.width,
-                            height: geometry.size.height
-                        )
-                        .mask(alignment: .leading) {
-                            Rectangle()
-                                .frame(
-                                    width: geometry.size.width
-                                        * min(max(progress, 0), 1)
-                                )
-                        }
-                }
-            }
-            .overlay(alignment: .leading) {
-                GeometryReader { geometry in
+        GeometryReader { geometry in
+            let clampedProgress = min(max(progress, 0), 1)
+            let revealWidth = geometry.size.width * clampedProgress
+
+            ZStack(alignment: .leading) {
+                RemoteAssetImage(imageName: "montam_logo")
+                    .scaledToFit()
+                    .frame(
+                        width: geometry.size.width,
+                        height: geometry.size.height
+                    )
+                    .mask(alignment: .leading) {
+                        Rectangle()
+                            .frame(width: revealWidth)
+                    }
+
+                if clampedProgress > 0 && clampedProgress < 1 {
                     Rectangle()
                         .fill(
                             LinearGradient(
                                 colors: [
                                     .clear,
-                                    .white.opacity(progress < 1 ? 0.7 : 0),
+                                    .white.opacity(0.82),
                                     .clear,
                                 ],
                                 startPoint: .leading,
@@ -453,12 +446,11 @@ private struct RevealingLogo: View {
                             )
                         )
                         .frame(width: 34)
-                        .offset(
-                            x: geometry.size.width
-                                * min(max(progress, 0), 1) - 17
-                        )
+                        .offset(x: revealWidth - 17)
+                        .blendMode(.screen)
                 }
             }
+        }
     }
 }
 

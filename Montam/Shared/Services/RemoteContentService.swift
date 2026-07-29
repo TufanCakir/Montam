@@ -73,7 +73,13 @@ final class RemoteContentService {
         cacheDirectory.appending(path: "Music/\(fileName)")
     }
 
-    func preloadForNavigation(showOverlay: Bool = true) async {
+    func preloadForNavigation(
+        jsonFiles: [String],
+        additionalAssetKeys: Set<String> = [],
+        includeConfiguredAssetFiles: Bool = false,
+        includeMusic: Bool = false,
+        showOverlay: Bool = true
+    ) async {
         guard !isUpdating else {
             return
         }
@@ -83,12 +89,75 @@ final class RemoteContentService {
             return
         }
 
-        let plan = Self.contentUpdatePlan(config: config)
+        let configuredJSONFiles = Set(config.resolvedJSONFiles)
+        let scopedJSONFiles =
+            configuredJSONFiles.isEmpty
+            ? jsonFiles
+            : jsonFiles.filter { configuredJSONFiles.contains($0) }
+        let plan = Self.contentUpdatePlan(
+            config: config,
+            jsonFiles: scopedJSONFiles,
+            additionalAssetKeys: additionalAssetKeys,
+            includeConfiguredAssetFiles: includeConfiguredAssetFiles,
+            includeMusic: includeMusic
+        )
+
         guard !Self.hasAllCachedFiles(plan: plan) else {
             return
         }
 
-        await updateAtLaunch(showOverlay: showOverlay)
+        isUpdating = true
+        completedFileCount = 0
+        totalFileCount = 1
+        downloadedBytes = 0
+
+        if showOverlay {
+            statusText = "Lade Inhalte"
+        }
+
+        defer {
+            isUpdating = false
+
+            if showOverlay {
+                statusText = nil
+            }
+        }
+
+        prepareProgressTotal(plan: plan, includesRemoteConfig: false)
+
+        _ = await updateBackgroundFiles(
+            plan: plan,
+            config: config,
+            showOverlay: showOverlay,
+            forceDownload: false
+        )
+        _ = await updateJSONFiles(
+            plan: plan,
+            showOverlay: showOverlay,
+            forceDownload: false
+        )
+
+        let assetPlan = Self.contentUpdatePlan(
+            config: config,
+            jsonFiles: scopedJSONFiles,
+            additionalAssetKeys: additionalAssetKeys,
+            includeConfiguredAssetFiles: includeConfiguredAssetFiles,
+            includeMusic: includeMusic
+        )
+
+        _ = await updateAssetFiles(
+            plan: assetPlan,
+            config: config,
+            showOverlay: showOverlay,
+            forceDownload: false
+        )
+        _ = await updateMusicFiles(
+            plan: assetPlan,
+            showOverlay: showOverlay,
+            forceDownload: false
+        )
+
+        Self.invalidateLoadedContentCaches()
     }
 
     func updateAtLaunch(showOverlay: Bool = true) async {
@@ -360,9 +429,12 @@ final class RemoteContentService {
         return didSucceed
     }
 
-    private func prepareProgressTotal(plan: ContentUpdatePlan) {
+    private func prepareProgressTotal(
+        plan: ContentUpdatePlan,
+        includesRemoteConfig: Bool = true
+    ) {
         totalFileCount =
-            1
+            (includesRemoteConfig ? 1 : 0)
             + plan.jsonFiles.count
             + plan.assetNames.count
             + plan.musicFiles.count
@@ -609,19 +681,47 @@ final class RemoteContentService {
     private static func contentUpdatePlan(
         config: RemoteContentConfig
     ) -> ContentUpdatePlan {
-        let jsonFiles = config.resolvedJSONFiles
-        let assetNames = Set(config.resolvedAssetFiles)
+        contentUpdatePlan(
+            config: config,
+            jsonFiles: config.resolvedJSONFiles,
+            additionalAssetKeys: [],
+            includeConfiguredAssetFiles: true,
+            includeMusic: true
+        )
+    }
+
+    private static func contentUpdatePlan(
+        config: RemoteContentConfig,
+        jsonFiles: [String],
+        additionalAssetKeys: Set<String>,
+        includeConfiguredAssetFiles: Bool,
+        includeMusic: Bool
+    ) -> ContentUpdatePlan {
+        let assetKeys = Set(config.resolvedAssetKeys)
+            .union(additionalAssetKeys)
+        let configuredAssetNames =
+            includeConfiguredAssetFiles
+            ? Set(config.resolvedAssetFiles)
+            : []
+        let backgroundAssetNames =
+            jsonFiles.contains(backgroundJSONFileName)
+            ? backgroundAssetNames()
+            : []
+        let assetNames = configuredAssetNames
             .union(
                 assetNamesFromCurrentJSON(
                     jsonFiles: jsonFiles,
-                    assetKeys: Set(config.resolvedAssetKeys)
+                    assetKeys: assetKeys
                 )
             )
-        let backgroundAssetNames = backgroundAssetNames()
-        let configuredMusicFiles = config.resolvedMusicFiles
-        let jsonMusicFiles =
-            JSONDataLoader.load("music", as: [MusicData].self)?
-            .map(\.file) ?? []
+            .union(backgroundAssetNames)
+        let configuredMusicFiles =
+            includeMusic ? config.resolvedMusicFiles : []
+        let jsonMusicFiles: [String] =
+            includeMusic
+            ? (JSONDataLoader.load("music", as: [MusicData].self)?
+                .map(\.file) ?? [])
+            : []
         let musicFiles = Set(configuredMusicFiles + jsonMusicFiles)
 
         return ContentUpdatePlan(

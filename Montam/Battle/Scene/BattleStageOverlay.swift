@@ -25,52 +25,66 @@ struct BattleStageOverlay: View {
     let state: BattleStageState
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 10) {
             waveDots
 
-            Text(AppLocalizationService.text("battle.stage", state.stageNumber))
-                .font(.system(size: 18, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
-                .lineLimit(1)
+            ZStack {
+                StageWaveBannerShape()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                .blue,
+                                .black,
+                                .blue
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .shadow(color: accentColor.opacity(0.36), radius: 12, y: 4)
 
-            Text(
-                state.isBossWave
-                    ? AppLocalizationService.text("battle.boss")
-                    : AppLocalizationService.text("battle.wave")
-            )
-            .font(.system(size: 12, weight: .black, design: .rounded))
-            .foregroundStyle(.blue)
-            .lineLimit(1)
+                StageWaveBannerShape()
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                .white.opacity(0.18),
+                                accentColor.opacity(0.95),
+                                .white.opacity(0.22)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ),
+                        lineWidth: 2
+                    )
+
+                HStack(spacing: 0) {
+                    VStack(spacing: 0) {
+                        Text(AppLocalizationService.text("battle.stage", state.stageNumber))
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                    }
+                }
+            }
+            .frame(width: 292, height: 58)
         }
-        .padding(.horizontal, 22)
-        .padding(.vertical, 8)
-        .frame(minWidth: 190)
-        .background(.black.opacity(0.38))
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18).stroke(
-                .cyan.opacity(0.85),
-                lineWidth: 2
-            )
-        )
         .allowsHitTesting(false)
     }
 
     private var waveDots: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             ForEach(0..<max(state.totalWaves, 1), id: \.self) { index in
-                Circle()
+                Capsule()
                     .fill(
                         index <= state.currentWaveIndex
-                            ? Color.yellow
+                            ? accentColor
                             : Color.white.opacity(0.32)
                     )
                     .frame(
-                        width: index == state.currentWaveIndex ? 12 : 9,
-                        height: index == state.currentWaveIndex ? 12 : 9
+                        width: index == state.currentWaveIndex ? 18 : 9,
+                        height: 7
                     )
                     .overlay(
-                        Circle().stroke(
+                        Capsule().stroke(
                             index == state.currentWaveIndex
                                 ? .white.opacity(0.9)
                                 : .clear,
@@ -79,6 +93,72 @@ struct BattleStageOverlay: View {
                     )
             }
         }
+    }
+
+    private var waveTitle: String {
+        state.isBossWave
+            ? AppLocalizationService.text("battle.boss")
+            : AppLocalizationService.text("battle.wave")
+    }
+
+    private var accentColor: Color {
+        state.isBossWave ? .red : .cyan
+    }
+}
+
+private struct StageWaveBannerShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let width = rect.width
+        let height = rect.height
+        let midY = rect.midY
+        let leftInset = width * 0.06
+        let rightInset = width * 0.94
+
+        path.move(to: CGPoint(x: leftInset, y: midY))
+        path.addCurve(
+            to: CGPoint(x: width * 0.18, y: height * 0.13),
+            control1: CGPoint(x: width * 0.07, y: height * 0.22),
+            control2: CGPoint(x: width * 0.11, y: height * 0.1)
+        )
+        path.addCurve(
+            to: CGPoint(x: width * 0.5, y: height * 0.04),
+            control1: CGPoint(x: width * 0.28, y: height * 0.2),
+            control2: CGPoint(x: width * 0.36, y: height * -0.02)
+        )
+        path.addCurve(
+            to: CGPoint(x: width * 0.82, y: height * 0.13),
+            control1: CGPoint(x: width * 0.64, y: height * 0.1),
+            control2: CGPoint(x: width * 0.72, y: height * 0.2)
+        )
+        path.addCurve(
+            to: CGPoint(x: rightInset, y: midY),
+            control1: CGPoint(x: width * 0.89, y: height * 0.1),
+            control2: CGPoint(x: width * 0.93, y: height * 0.22)
+        )
+        path.addCurve(
+            to: CGPoint(x: width * 0.82, y: height * 0.87),
+            control1: CGPoint(x: width * 0.93, y: height * 0.78),
+            control2: CGPoint(x: width * 0.89, y: height * 0.9)
+        )
+        path.addCurve(
+            to: CGPoint(x: width * 0.5, y: height * 0.96),
+            control1: CGPoint(x: width * 0.72, y: height * 0.8),
+            control2: CGPoint(x: width * 0.64, y: height * 1.02)
+        )
+        path.addCurve(
+            to: CGPoint(x: width * 0.18, y: height * 0.87),
+            control1: CGPoint(x: width * 0.36, y: height * 0.9),
+            control2: CGPoint(x: width * 0.28, y: height * 0.8)
+        )
+        path.addCurve(
+            to: CGPoint(x: leftInset, y: midY),
+            control1: CGPoint(x: width * 0.11, y: height * 0.9),
+            control2: CGPoint(x: width * 0.07, y: height * 0.78)
+        )
+        path.closeSubpath()
+
+        return path
     }
 }
 

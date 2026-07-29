@@ -83,8 +83,8 @@
     {
         "id": "embon_mega",
         "monsterId": "embon",
-        "title": "Solarin",
-        "imageName": "mon_solarin",
+        "title": "Solarion",
+        "imageName": "mon_solarion",
         "requiredLevel": 100,
         "isDefault": false,
         "isEvolutionStep": true

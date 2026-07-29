@@ -111,10 +111,89 @@ struct RootView: View {
     }
 
     private func preloadContentForNavigation() {
+        let preloadPlan = preloadPlan(for: selectedTab)
         navigationPreloadTask?.cancel()
         navigationPreloadTask = Task {
             await RemoteContentService.shared.preloadForNavigation(
+                jsonFiles: preloadPlan.jsonFiles,
+                additionalAssetKeys: preloadPlan.additionalAssetKeys,
+                includeConfiguredAssetFiles:
+                    preloadPlan.includeConfiguredAssetFiles,
+                includeMusic: preloadPlan.includeMusic,
                 showOverlay: true
+            )
+        }
+    }
+
+    private func preloadPlan(for tab: RootTab) -> RootContentPreloadPlan {
+        switch tab {
+        case .game:
+            RootContentPreloadPlan(
+                jsonFiles: [
+                    "background",
+                    "battleConfig",
+                    "enemy",
+                    "gameVisual",
+                    "monster",
+                    "music",
+                    "tamer",
+                ],
+                additionalAssetKeys: ["enemyName"],
+                includeMusic: true
+            )
+        case .tamer:
+            RootContentPreloadPlan(
+                jsonFiles: ["gameVisual", "monster"]
+            )
+        case .montam:
+            RootContentPreloadPlan(
+                jsonFiles: [
+                    "evolution",
+                    "monster",
+                    "monsterAppearance",
+                    "summon",
+                    "supportMegaMonster",
+                    "supportMonster",
+                    "supportTamer",
+                    "tamer",
+                ],
+                additionalAssetKeys: ["enemyName"]
+            )
+        case .dungeon:
+            RootContentPreloadPlan(
+                jsonFiles: [
+                    "background",
+                    "battleConfig",
+                    "enemy",
+                    "event",
+                    "gameVisual",
+                    "monster",
+                    "tamer",
+                ],
+                additionalAssetKeys: ["enemyName"]
+            )
+        case .summon:
+            RootContentPreloadPlan(
+                jsonFiles: [
+                    "gameVisual",
+                    "monster",
+                    "monsterAppearance",
+                    "summon",
+                    "summonCategory",
+                    "summonPool",
+                    "supportMegaMonster",
+                    "supportMonster",
+                    "supportTamer",
+                    "tamer",
+                ]
+            )
+        case .shop:
+            RootContentPreloadPlan(
+                jsonFiles: ["gameVisual", "itemShop", "shop"]
+            )
+        case .trade:
+            RootContentPreloadPlan(
+                jsonFiles: ["gameVisual", "trade"]
             )
         }
     }
@@ -187,10 +266,10 @@ struct RootView: View {
     @ViewBuilder
     private var layeredRootContent: some View {
         ZStack {
-            GameView(isPaused: false, store: gameStore)
+            GameView(store: gameStore)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
-                .allowsHitTesting(selectedTab == .game && !isModalPresented)
+                .allowsHitTesting(selectedTab == .game)
 
             if selectedTab != .game {
                 AppScreenBackground()
@@ -235,6 +314,25 @@ private enum RootModal {
     case settings
     case quickMenu
     case legal
+}
+
+private struct RootContentPreloadPlan {
+    let jsonFiles: [String]
+    let additionalAssetKeys: Set<String>
+    let includeConfiguredAssetFiles: Bool
+    let includeMusic: Bool
+
+    init(
+        jsonFiles: [String],
+        additionalAssetKeys: Set<String> = [],
+        includeConfiguredAssetFiles: Bool = false,
+        includeMusic: Bool = false
+    ) {
+        self.jsonFiles = jsonFiles
+        self.additionalAssetKeys = additionalAssetKeys
+        self.includeConfiguredAssetFiles = includeConfiguredAssetFiles
+        self.includeMusic = includeMusic
+    }
 }
 
 #Preview {
