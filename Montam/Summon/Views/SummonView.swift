@@ -29,23 +29,47 @@ struct SummonView: View {
                 selectedCategoryId: $viewModel.selectedCategoryId
             )
 
-            TabView(selection: $viewModel.selectedCategoryId) {
-                ForEach(viewModel.categories) { category in
-                    SummonCategoryPage(
-                        summons: viewModel.summons(for: category.id),
-                        rates: { summon in viewModel.rates(for: summon) },
-                        onShowRates: { summon, rates in
-                            selectedRateInfo = SummonRateInfo(
-                                title: summon.title,
-                                rates: rates
-                            )
-                        },
-                        onSummon: performSummon
-                    )
-                    .tag(category.id)
+            ZStack {
+                TabView(selection: $viewModel.selectedCategoryId) {
+                    ForEach(viewModel.categories) { category in
+                        SummonCategoryPage(
+                            summons: viewModel.summons(for: category.id),
+                            rates: { summon in viewModel.rates(for: summon) },
+                            onShowRates: { summon, rates in
+                                selectedRateInfo = SummonRateInfo(
+                                    title: summon.title,
+                                    rates: rates
+                                )
+                            },
+                            onSummon: performSummon
+                        )
+                        .tag(category.id)
+                    }
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+
+                HStack {
+                    SummonSideChevron(systemName: "chevron.left") {
+                        withAnimation(.snappy(duration: 0.24)) {
+                            viewModel.moveCategory(by: -1)
+                        }
+                    }
+                    .disabled(!viewModel.canMoveCategory(by: -1))
+                    .opacity(viewModel.canMoveCategory(by: -1) ? 1 : 0.28)
+
+                    Spacer(minLength: 0)
+
+                    SummonSideChevron(systemName: "chevron.right") {
+                        withAnimation(.snappy(duration: 0.24)) {
+                            viewModel.moveCategory(by: 1)
+                        }
+                    }
+                    .disabled(!viewModel.canMoveCategory(by: 1))
+                    .opacity(viewModel.canMoveCategory(by: 1) ? 1 : 0.28)
+                }
+                .padding(.horizontal, -16)
+                .allowsHitTesting(viewModel.categories.count > 1)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .padding(.horizontal, SummonLayoutMetrics.screenPadding)
         .padding(.top, SummonLayoutMetrics.topPadding)

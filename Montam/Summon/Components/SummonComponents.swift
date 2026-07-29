@@ -19,7 +19,7 @@ enum SummonLayoutMetrics {
     static let focusMinHeight: CGFloat = 300
     static let focusMaxHeight: CGFloat = 380
     static let actionHeight: CGFloat = 58
-    static let bannerSpacing: CGFloat = 100
+    static let bannerSpacing: CGFloat = 0
     static let cornerRadius: CGFloat = 8
 }
 
@@ -84,7 +84,9 @@ struct SummonCategoryPicker: View {
             HStack(spacing: 12) {
                 ForEach(categories) { category in
                     Button {
-                        selectedCategoryId = category.id
+                        withAnimation(.snappy(duration: 0.24)) {
+                            selectedCategoryId = category.id
+                        }
                     } label: {
                         SummonCategoryTile(
                             title: category.localizedTitle,
@@ -155,40 +157,141 @@ struct SummonCategoryPage: View {
     let rates: (SummonData) -> [SummonRateData]
     let onShowRates: (SummonData, [SummonRateData]) -> Void
     let onSummon: (SummonData, Int) -> Void
+    @State private var selectedSummonId: String?
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            LazyVStack(spacing: SummonLayoutMetrics.bannerSpacing) {
-                ForEach(summons, id: \.id) { summon in
-                    SummonBannerSection(
-                        summon: summon,
-                        rates: rates(summon),
-                        onShowRates: onShowRates,
-                        onSummon: onSummon
+        GeometryReader { proxy in
+            ZStack(alignment: .trailing) {
+                if summons.isEmpty {
+                    SummonEmptyState()
+                        .frame(
+                            width: proxy.size.width,
+                            height: proxy.size.height
+                        )
+                } else {
+                    ScrollView(.vertical, showsIndicators: false) {
+                        LazyVStack(spacing: SummonLayoutMetrics.bannerSpacing) {
+                            ForEach(indexedSummons, id: \.summon.id) { item in
+                                SummonBannerSection(
+                                    summon: item.summon,
+                                    pageIndex: item.index,
+                                    pageCount: summons.count,
+                                    rates: rates(item.summon),
+                                    onShowRates: onShowRates,
+                                    onSummon: onSummon
+                                )
+                                .frame(
+                                    width: proxy.size.width,
+                                    height: proxy.size.height
+                                )
+                            }
+                        }
+                        .scrollTargetLayout()
+                    }
+                    .scrollTargetBehavior(.paging)
+                    .scrollPosition(id: $selectedSummonId, anchor: .center)
+                    .scrollBounceBehavior(.basedOnSize, axes: .vertical)
+
+                    SummonVerticalPageIndicator(
+                        summons: summons,
+                        selectedSummonId: $selectedSummonId
                     )
+                        .padding(.trailing, 2)
                 }
             }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+        .onAppear {
+            selectedSummonId = selectedSummonId ?? summons.first?.id
+        }
+        .onChange(of: summons.map(\.id)) { _, ids in
+            if selectedSummonId == nil
+                || !ids.contains(selectedSummonId ?? "")
+            {
+                selectedSummonId = ids.first
+            }
+        }
+    }
+
+    private var indexedSummons: [IndexedSummon] {
+        summons.enumerated().map {
+            IndexedSummon(index: $0.offset, summon: $0.element)
         }
     }
 }
 
+private struct IndexedSummon {
+    let index: Int
+    let summon: SummonData
+}
+
 private struct SummonBannerSection: View {
     let summon: SummonData
+    let pageIndex: Int
+    let pageCount: Int
     let rates: [SummonRateData]
     let onShowRates: (SummonData, [SummonRateData]) -> Void
     let onSummon: (SummonData, Int) -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 10) {
+            if pageCount > 1 {
+                Text("\(pageIndex + 1)/\(pageCount)")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .foregroundStyle(.cyan)
+                    .monospacedDigit()
+                    .padding(.horizontal, 8)
+                    .frame(height: 22)
+                    .background(Color.black.opacity(0.34))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+
             SummonFocusView(
                 summon: summon,
                 onShowRates: {
                     onShowRates(summon, rates)
                 }
             )
+
             SummonActionRow(summon: summon, onSummon: onSummon)
         }
-        .padding(.bottom, 68)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 8)
+        .padding(.bottom, 16)
+    }
+}
+
+private struct SummonVerticalPageIndicator: View {
+    let summons: [SummonData]
+    @Binding var selectedSummonId: String?
+
+    var body: some View {
+        if summons.count > 1 {
+            VStack(spacing: 6) {
+                ForEach(summons, id: \.id) { summon in
+                    Button {
+                        withAnimation(.snappy(duration: 0.24)) {
+                            selectedSummonId = summon.id
+                        }
+                    } label: {
+                        Capsule()
+                            .fill(
+                                selectedSummonId == summon.id
+                                    ? Color.white : Color.cyan.opacity(0.42)
+                            )
+                            .frame(
+                                width: selectedSummonId == summon.id ? 6 : 4,
+                                height: selectedSummonId == summon.id ? 24 : 14
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 5)
+            .background(Color.black.opacity(0.24))
+            .clipShape(RoundedRectangle(cornerRadius: 7))
+        }
     }
 }
 

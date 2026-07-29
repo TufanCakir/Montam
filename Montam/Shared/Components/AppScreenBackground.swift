@@ -21,6 +21,7 @@ struct AppScreenBackground: View {
             AppScreenLinePattern()
                 .opacity(0.42)
         }
+        .ignoresSafeArea()
     }
 }
 

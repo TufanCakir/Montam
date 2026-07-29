@@ -134,6 +134,19 @@ final class SummonViewModel {
         selectedCategoryId = categories[nextIndex].id
     }
 
+    func canMoveCategory(by offset: Int) -> Bool {
+        guard
+            !categories.isEmpty,
+            let currentIndex = categories.firstIndex(where: {
+                $0.id == selectedCategoryId
+            })
+        else {
+            return false
+        }
+
+        return categories.indices.contains(currentIndex + offset)
+    }
+
     // MARK: - Summon
 
     func makeResults(

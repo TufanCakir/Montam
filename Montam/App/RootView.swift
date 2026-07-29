@@ -19,6 +19,7 @@ struct RootView: View {
     @State private var selectedTab = RootTab.game
     @State private var didShowDailyLogin = false
     @State private var presentedModal: RootModal?
+    @State private var navigationPreloadTask: Task<Void, Never>?
 
     private let monsterCatalog =
         JSONDataLoader.load("monster", as: [MonsterData].self) ?? []
@@ -83,11 +84,17 @@ struct RootView: View {
                 modelContext: modelContext
             )
             presentDailyIfNeeded()
+            preloadContentForNavigation()
         }
         .onChange(of: selectedTab) { _, tab in
             if tab == .game {
                 presentDailyIfNeeded()
             }
+            preloadContentForNavigation()
+        }
+        .onDisappear {
+            navigationPreloadTask?.cancel()
+            navigationPreloadTask = nil
         }
     }
 
@@ -100,6 +107,15 @@ struct RootView: View {
     private func presentModal(_ modal: RootModal) {
         withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
             presentedModal = modal
+        }
+    }
+
+    private func preloadContentForNavigation() {
+        navigationPreloadTask?.cancel()
+        navigationPreloadTask = Task {
+            await RemoteContentService.shared.preloadForNavigation(
+                showOverlay: true
+            )
         }
     }
 

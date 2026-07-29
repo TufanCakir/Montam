@@ -13,41 +13,59 @@ struct RemoteContentLoadingOverlay: View {
     let detailText: String
 
     var body: some View {
-        VStack(spacing: 8) {
-            ProgressView()
-                .tint(.cyan)
+        ZStack {
+            Color.black.opacity(0.38)
+                .ignoresSafeArea()
 
-            Text(text)
-                .font(.system(size: 14, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .minimumScaleFactor(0.75)
+            VStack(spacing: 10) {
+                ProgressView()
+                    .tint(.cyan)
 
-            ProgressView(value: clampedProgress)
-                .progressViewStyle(.linear)
-                .tint(.cyan)
-                .frame(width: 180)
+                Text(text)
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.75)
 
-            Text(detailText)
+                ProgressView(value: clampedProgress)
+                    .progressViewStyle(.linear)
+                    .tint(.cyan)
+                    .frame(maxWidth: .infinity)
+
+                HStack(spacing: 10) {
+                    Text(detailText)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+
+                    Text(progressPercentText)
+                        .monospacedDigit()
+                }
                 .font(.system(size: 11, weight: .bold, design: .rounded))
                 .foregroundStyle(.white.opacity(0.72))
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-        }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 14)
-        .background(Color.black.opacity(0.72))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10).stroke(
-                .cyan.opacity(0.5),
-                lineWidth: 1
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+            .frame(width: 240)
+            .background(Color.black.opacity(0.78))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10).stroke(
+                    .cyan.opacity(0.5),
+                    lineWidth: 1
+                )
             )
-        )
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(text)
+        .accessibilityValue("\(detailText), \(progressPercentText)")
     }
 
     private var clampedProgress: Double {
         min(max(progress, 0), 1)
+    }
+
+    private var progressPercentText: String {
+        "\(Int((clampedProgress * 100).rounded()))%"
     }
 }

@@ -73,6 +73,24 @@ final class RemoteContentService {
         cacheDirectory.appending(path: "Music/\(fileName)")
     }
 
+    func preloadForNavigation(showOverlay: Bool = true) async {
+        guard !isUpdating else {
+            return
+        }
+
+        let config = Self.loadRemoteConfig()
+        guard config.isCompatibleWithCurrentApp else {
+            return
+        }
+
+        let plan = Self.contentUpdatePlan(config: config)
+        guard !Self.hasAllCachedFiles(plan: plan) else {
+            return
+        }
+
+        await updateAtLaunch(showOverlay: showOverlay)
+    }
+
     func updateAtLaunch(showOverlay: Bool = true) async {
         guard !isUpdating else {
             return
@@ -119,13 +137,13 @@ final class RemoteContentService {
 
         prepareProgressTotal(plan: plan)
 
-        await updateBackgroundFiles(
+        let didUpdateBackgrounds = await updateBackgroundFiles(
             plan: plan,
             config: config,
             showOverlay: showOverlay,
             forceDownload: shouldRefreshContent
         )
-        await updateJSONFiles(
+        let didUpdateJSON = await updateJSONFiles(
             plan: plan,
             showOverlay: showOverlay,
             forceDownload: shouldRefreshContent
@@ -133,20 +151,27 @@ final class RemoteContentService {
 
         let assetPlan = Self.contentUpdatePlan(config: config)
 
-        await updateAssetFiles(
+        let didUpdateAssets = await updateAssetFiles(
             plan: assetPlan,
             config: config,
             showOverlay: showOverlay,
             forceDownload: shouldRefreshContent
         )
 
-        await updateMusicFiles(
+        let didUpdateMusic = await updateMusicFiles(
             plan: assetPlan,
             showOverlay: showOverlay,
             forceDownload: shouldRefreshContent
         )
+        let didCompleteContentUpdate =
+            didUpdateBackgrounds
+            && didUpdateJSON
+            && didUpdateAssets
+            && didUpdateMusic
 
-        if let contentVersion = config.contentVersion {
+        if let contentVersion = config.contentVersion,
+            didCompleteContentUpdate
+        {
             Self.downloadedContentVersion = contentVersion
         }
 
@@ -198,21 +223,21 @@ final class RemoteContentService {
         config: RemoteContentConfig,
         showOverlay: Bool,
         forceDownload: Bool
-    ) async {
+    ) async -> Bool {
         guard plan.jsonFiles.contains(Self.backgroundJSONFileName) else {
-            return
+            return true
         }
 
         if showOverlay {
             statusText = "Lade Hintergründe"
         }
-        recordDownload(
-            await Self.downloadJSON(
-                Self.backgroundJSONFileName,
-                session: session,
-                forceDownload: forceDownload
-            )
+        let backgroundResult = await Self.downloadJSON(
+            Self.backgroundJSONFileName,
+            session: session,
+            forceDownload: forceDownload
         )
+        recordDownload(backgroundResult)
+        var didSucceed = backgroundResult.didSucceed
 
         let session = self.session
         await withTaskGroup(of: FileDownloadResult.self) { group in
@@ -229,20 +254,24 @@ final class RemoteContentService {
 
             for await result in group {
                 recordDownload(result)
+                didSucceed = didSucceed && result.didSucceed
             }
         }
+
+        return didSucceed
     }
 
     private func updateJSONFiles(
         plan: ContentUpdatePlan,
         showOverlay: Bool,
         forceDownload: Bool
-    ) async {
+    ) async -> Bool {
 
         if showOverlay {
             statusText = "Lade Daten"
         }
 
+        var didSucceed = true
         let session = self.session
         await withTaskGroup(of: FileDownloadResult.self) { group in
             for fileName in plan.regularJSONFiles {
@@ -257,20 +286,24 @@ final class RemoteContentService {
 
             for await result in group {
                 recordDownload(result)
+                didSucceed = didSucceed && result.didSucceed
             }
         }
+
+        return didSucceed
     }
 
     private func updateMusicFiles(
         plan: ContentUpdatePlan,
         showOverlay: Bool,
         forceDownload: Bool
-    ) async {
+    ) async -> Bool {
 
         if showOverlay {
             statusText = "Lade Musik"
         }
 
+        var didSucceed = true
         let session = self.session
         await withTaskGroup(of: FileDownloadResult.self) { group in
             for fileName in plan.musicFiles {
@@ -286,8 +319,11 @@ final class RemoteContentService {
 
             for await result in group {
                 recordDownload(result)
+                didSucceed = didSucceed && result.didSucceed
             }
         }
+
+        return didSucceed
     }
 
     private func updateAssetFiles(
@@ -295,12 +331,13 @@ final class RemoteContentService {
         config: RemoteContentConfig,
         showOverlay: Bool,
         forceDownload: Bool
-    ) async {
+    ) async -> Bool {
 
         if showOverlay {
             statusText = "Lade Bilder"
         }
 
+        var didSucceed = true
         let session = self.session
         await withTaskGroup(of: FileDownloadResult.self) { group in
             for assetName in plan.regularAssetNames {
@@ -316,8 +353,11 @@ final class RemoteContentService {
 
             for await result in group {
                 recordDownload(result)
+                didSucceed = didSucceed && result.didSucceed
             }
         }
+
+        return didSucceed
     }
 
     private func prepareProgressTotal(plan: ContentUpdatePlan) {
@@ -329,7 +369,7 @@ final class RemoteContentService {
     }
 
     private func recordDownload(_ result: FileDownloadResult) {
-        completedFileCount += 1
+        completedFileCount = min(completedFileCount + 1, totalFileCount)
         downloadedBytes += result.bytes
     }
 
@@ -350,7 +390,7 @@ final class RemoteContentService {
             session: session,
             forceDownload: forceDownload
         )
-        if primaryResult.didDownload {
+        if primaryResult.didSucceed {
             return primaryResult
         }
 
@@ -370,6 +410,12 @@ final class RemoteContentService {
     ) async -> FileDownloadResult {
         let destinationURL = Self.cachedAssetURL(named: fileName)
 
+        if !forceDownload,
+            FileManager.default.fileExists(atPath: destinationURL.path())
+        {
+            return .skipped
+        }
+
         if fileName.contains(".") {
             let result = await downloadFile(
                 remoteURL: Self.assetsURL.appending(path: fileName),
@@ -377,7 +423,7 @@ final class RemoteContentService {
                 session: session,
                 forceDownload: forceDownload
             )
-            if forceDownload && !result.didDownload {
+            if forceDownload && !result.didSucceed {
                 removeCachedFile(at: destinationURL)
             }
             return result
@@ -453,7 +499,11 @@ final class RemoteContentService {
                     "\(data.count) bytes"
                 )
             }
-            return FileDownloadResult(didDownload: true, bytes: data.count)
+            return FileDownloadResult(
+                didDownload: true,
+                didSucceed: true,
+                bytes: data.count
+            )
         } catch {
             if forceDownload {
                 print(
@@ -682,14 +732,17 @@ final class RemoteContentService {
 
 private struct FileDownloadResult: Sendable {
     let didDownload: Bool
+    let didSucceed: Bool
     let bytes: Int
 
     nonisolated static let failed = FileDownloadResult(
         didDownload: false,
+        didSucceed: false,
         bytes: 0
     )
     nonisolated static let skipped = FileDownloadResult(
         didDownload: false,
+        didSucceed: true,
         bytes: 0
     )
 }
